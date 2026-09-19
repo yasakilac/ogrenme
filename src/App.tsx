@@ -4,39 +4,28 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ActiveTab, AlphabetType, KanaCharacter, UserProgressData } from './types';
+import { AlphabetType, UserProgressData } from './types';
+import { MODULE_REGISTRY, getModule } from './modules/registry';
 import { Header } from './components/Header';
 import { LearningHubView } from './components/LearningHubView';
-import { HomeCurriculumTab } from './components/HomeCurriculumTab';
-import { KanaTableTab } from './components/KanaTableTab';
-import { PracticeHubTab, PracticeSubTab } from './components/PracticeHubTab';
-import { DrawingCanvasTab } from './components/DrawingCanvasTab';
-import { CharacterDetailModal } from './components/CharacterDetailModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { UserRegisterModal } from './components/UserRegisterModal';
 import { SettingsModal } from './components/SettingsModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
-import { 
-  loadProgress, 
-  recordCharacterAnswer, 
-  setDirectMastery, 
-  incrementCardFlip, 
-  incrementDrawingPractice, 
-  completeQuizSession, 
-  resetProgressData,
-  saveLastStudied,
-  getActiveUserId
-} from './utils/storage';
+import { loadProgress, getActiveUserId } from './utils/storage';
+
+const firstActiveModule = MODULE_REGISTRY.find((m) => m.component) ?? MODULE_REGISTRY[0];
 
 export default function App() {
-  // Navigation: Learning Hub or Japanese modules (home, table, practice, drawing)
-  const [currentProject, setCurrentProject] = useState<'japanese' | 'hub'>('japanese');
-  const [activeTab, setActiveTab] = useState<ActiveTab>('home');
-  const [practiceSubTab, setPracticeSubTab] = useState<PracticeSubTab>('flashcards');
+  // Navigation: hangi modüldeyiz + modülün hangi sekmesi (App sekme değerini yorumlamaz)
+  const [currentModuleId, setCurrentModuleId] = useState<string>(firstActiveModule.meta.id);
+  const [isHub, setIsHub] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>(firstActiveModule.meta.navTabs?.[0]?.id ?? '');
+
+  // ponytail: alphabet + progress tek aktif modülün şeması; ikinci modül kendi
+  // şemasını getirdiğinde modül state'ine indirilir (şimdi değil).
   const [alphabet, setAlphabet] = useState<AlphabetType>('hiragana');
   const [progress, setProgress] = useState<UserProgressData>(() => loadProgress());
-  const [selectedModalChar, setSelectedModalChar] = useState<KanaCharacter | null>(null);
-  const [drawingChar, setDrawingChar] = useState<KanaCharacter | null>(null);
 
   // Modals state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -45,186 +34,68 @@ export default function App() {
 
   // Sync state with storage
   const reloadUserData = useCallback(() => {
-    const currentUid = getActiveUserId();
-    const loaded = loadProgress(currentUid);
-    setProgress(loaded);
+    setProgress(loadProgress(getActiveUserId()));
   }, []);
 
   useEffect(() => {
     reloadUserData();
   }, [reloadUserData]);
 
-  const handleRecordAnswer = (alp: AlphabetType, kanaId: string, isCorrect: boolean) => {
-    setProgress((prev) => recordCharacterAnswer(prev, alp, kanaId, isCorrect));
-    saveLastStudied('topic_vowels', kanaId, alp);
+  const currentModule = getModule(currentModuleId) ?? firstActiveModule;
+  const ModuleView = currentModule.component;
+
+  const openModule = (moduleId: string) => {
+    const target = getModule(moduleId);
+    if (!target?.component) return; // planlanan modüller henüz açılamaz
+    setCurrentModuleId(moduleId);
+    setActiveTab(target.meta.navTabs?.[0]?.id ?? '');
+    setIsHub(false);
   };
 
-  const handleSetMastery = (level: 0 | 1 | 2 | 3) => {
-    if (!selectedModalChar) return;
-    setProgress((prev) => setDirectMastery(prev, alphabet, selectedModalChar.id, level));
-  };
-
-  const handleCardFlipped = () => {
-    setProgress((prev) => incrementCardFlip(prev));
-  };
-
-  const handleDrawingCompleted = () => {
-    setProgress((prev) => incrementDrawingPractice(prev));
-  };
-
-  const handleQuizSessionCompleted = () => {
-    setProgress((prev) => completeQuizSession(prev));
-  };
-
-  const handleResetProgress = () => {
-    const fresh = resetProgressData();
-    setProgress(fresh);
-  };
-
-  const handleOpenDrawing = (char: KanaCharacter) => {
-    setDrawingChar(char);
-    setActiveTab('drawing');
-  };
-
-  const handleStartTopicStudy = (kanaIds: string[]) => {
-    if (kanaIds.length > 0) {
-      saveLastStudied('topic_vowels', kanaIds[0], alphabet);
-    }
-    setPracticeSubTab('flashcards');
-    setActiveTab('practice');
-  };
-
-  const handleSelectModalCharacter = (char: KanaCharacter) => {
-    setSelectedModalChar(char);
-    saveLastStudied('topic_vowels', char.id, alphabet);
+  const openTab = (tab: string) => {
+    setActiveTab(tab);
+    setIsHub(false);
   };
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-[#1F1E1B] flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900">
-      
-      {/* Top Navigation & App Bar with Top-Level Learning Project Switcher */}
+
+      {/* Top Navigation & App Bar with Top-Level Learning Module Switcher */}
       <Header
+        tabs={currentModule.meta.navTabs ?? []}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={openTab}
+        isHub={isHub}
+        currentModuleId={currentModuleId}
         alphabet={alphabet}
         onOpenSettings={() => setIsSettingsOpen(true)}
-        currentProject={currentProject}
-        onSelectProject={(proj) => {
-          setCurrentProject(proj);
-          if (proj === 'hub') {
-            setActiveTab('hub');
-          } else {
-            setActiveTab('home');
-          }
-        }}
+        onSelectModule={(id) => (id === 'hub' ? setIsHub(true) : openModule(id))}
       />
 
-      {/* Main Content Area */}
+      {/* Main Content Area: Öğrenme Merkezi veya aktif modülün ekranları */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-7">
-        
-        {/* 0. Genel Öğrenme Platformu & Keşif Alanı (Learning Hub) */}
-        {activeTab === 'hub' && (
-          <LearningHubView
+        {isHub || !ModuleView ? (
+          <LearningHubView progress={progress} onSelectModule={openModule} />
+        ) : (
+          <ModuleView
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
             progress={progress}
-            onSelectJapanese={() => {
-              setCurrentProject('japanese');
-              setActiveTab('home');
-            }}
-          />
-        )}
-
-        {/* 1. Japonca Ana Sayfa (İkili Yapı, Kaldığın Yerden Devam Et, Konular) */}
-        {activeTab === 'home' && (
-          <HomeCurriculumTab
+            setProgress={setProgress}
             alphabet={alphabet}
             setAlphabet={setAlphabet}
-            progress={progress}
-            onOpenCharacter={handleSelectModalCharacter}
-            onStartTopicStudy={handleStartTopicStudy}
-            onNavigateTab={(tab) => {
-              if (tab === 'flashcards') {
-                setPracticeSubTab('flashcards');
-                setActiveTab('practice');
-              } else if (tab === 'visual_words') {
-                setPracticeSubTab('visual_words');
-                setActiveTab('practice');
-              } else if (tab === 'quiz') {
-                setPracticeSubTab('quiz');
-                setActiveTab('practice');
-              } else {
-                setActiveTab(tab);
-              }
-            }}
-          />
-        )}
-
-        {/* 2. Harf Tablosu */}
-        {activeTab === 'table' && (
-          <KanaTableTab
-            alphabet={alphabet}
-            setAlphabet={setAlphabet}
-            progress={progress}
-            onSelectCharacter={handleSelectModalCharacter}
-            onOpenDrawing={handleOpenDrawing}
-            onNavigateToFlashcards={() => {
-              setPracticeSubTab('flashcards');
-              setActiveTab('practice');
-            }}
-          />
-        )}
-
-        {/* 3. Alıştırmalar (Ezber Kartları, Resimli Kelimeler, Alıştırma & Test) */}
-        {(activeTab === 'practice' || activeTab === 'flashcards' || activeTab === 'visual_words' || activeTab === 'quiz') && (
-          <PracticeHubTab
-            alphabet={alphabet}
-            setAlphabet={setAlphabet}
-            progress={progress}
-            onRecordAnswer={handleRecordAnswer}
-            onCardFlipped={handleCardFlipped}
-            onSessionComplete={handleQuizSessionCompleted}
-            initialSubTab={
-              activeTab === 'visual_words'
-                ? 'visual_words'
-                : activeTab === 'quiz'
-                ? 'quiz'
-                : practiceSubTab
-            }
-          />
-        )}
-
-        {/* 4. Çizim */}
-        {activeTab === 'drawing' && (
-          <DrawingCanvasTab
-            alphabet={alphabet}
-            setAlphabet={setAlphabet}
-            selectedChar={drawingChar}
-            onSelectCharacter={(char) => setDrawingChar(char)}
-            onDrawingCompleted={handleDrawingCompleted}
           />
         )}
       </main>
 
-      {/* Mobile-First Bottom Navigation Bar (Ana Sayfa, Tablo, Alıştırma, Çizim + Ayarlar ikonu) */}
+      {/* Mobile-First Bottom Navigation Bar (Alanlar + aktif modülün sekmeleri) */}
       <MobileBottomNav
+        tabs={currentModule.meta.navTabs ?? []}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        setActiveTab={openTab}
+        isHub={isHub}
+        onSelectHub={() => setIsHub(true)}
       />
-
-      {/* Character Detail Modal */}
-      {selectedModalChar && (
-        <CharacterDetailModal
-          character={selectedModalChar}
-          alphabet={alphabet}
-          progress={progress.characters[`${alphabet}_${selectedModalChar.id}`]}
-          onClose={() => setSelectedModalChar(null)}
-          onOpenDrawing={() => {
-            handleOpenDrawing(selectedModalChar);
-            setSelectedModalChar(null);
-          }}
-          onSetMastery={handleSetMastery}
-        />
-      )}
 
       {/* Settings Modal (Alfabe seçimi, ses testi, profil ve admin erişimi) */}
       <SettingsModal

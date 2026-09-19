@@ -1,4 +1,4 @@
-import { PracticeWord, TopicLesson } from '../types';
+import { PracticeWord, TopicLesson } from '../../../types';
 
 export const TOPIC_LESSONS: TopicLesson[] = [
   {

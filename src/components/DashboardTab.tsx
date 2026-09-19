@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserProgressData, AlphabetType, KanaCharacter } from '../types';
-import { KANA_DATA } from '../data/kanaData';
+import { KANA_DATA } from '../modules/japanese/data/kanaData';
 import { 
   Trophy, 
   Target, 

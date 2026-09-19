@@ -9,8 +9,8 @@ import {
   Volume2
 } from 'lucide-react';
 import { KanaCharacter, UserProgressData, AlphabetType, ActiveTab } from '../types';
-import { TOPIC_LESSONS } from '../data/wordsData';
-import { KANA_DATA } from '../data/kanaData';
+import { TOPIC_LESSONS } from '../modules/japanese/data/wordsData';
+import { KANA_DATA } from '../modules/japanese/data/kanaData';
 import { loadLastStudied } from '../utils/storage';
 import { soundManager } from '../utils/sound';
 

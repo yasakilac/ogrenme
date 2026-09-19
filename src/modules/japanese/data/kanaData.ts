@@ -1,4 +1,4 @@
-import { KanaCharacter } from '../types';
+import { KanaCharacter } from '../../../types';
 
 export const KANA_DATA: KanaCharacter[] = [
   // --- TEMEL SESLER (GOJŪON / SEION) ---
