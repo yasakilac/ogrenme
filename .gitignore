@@ -7,3 +7,4 @@ coverage/
 .env*
 !.env.example
 *.p8
+ios/.build-artifacts/
