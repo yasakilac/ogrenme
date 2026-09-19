@@ -19,7 +19,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { PracticeWord, AlphabetType } from '../types';
-import { PRACTICE_WORDS } from '../data/wordsData';
+import { PRACTICE_WORDS } from '../modules/japanese/data/wordsData';
 import { loadCustomWords } from '../utils/storage';
 import { soundManager, splitKanaIntoMorae } from '../utils/sound';
 

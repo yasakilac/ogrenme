@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { KanaCharacter, AlphabetType } from '../types';
-import { KANA_DATA } from '../data/kanaData';
+import { KANA_DATA } from '../modules/japanese/data/kanaData';
 import { 
   Eraser, 
   RotateCcw, 

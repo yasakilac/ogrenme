@@ -32,7 +32,7 @@ import {
   resetProgressData
 } from '../utils/storage';
 import { soundManager } from '../utils/sound';
-import { PRACTICE_WORDS } from '../data/wordsData';
+import { PRACTICE_WORDS } from '../modules/japanese/data/wordsData';
 
 interface AdminPanelModalProps {
   isOpen: boolean;

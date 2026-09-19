@@ -14,105 +14,35 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { UserProgressData } from '../types';
+import { MODULE_REGISTRY } from '../modules/registry';
 
 interface LearningHubViewProps {
   progress: UserProgressData;
-  onSelectJapanese: () => void;
-}
-
-interface AreaItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  category: 'Dil' | 'Teknoloji' | 'Kültür & Sanat' | 'Genel';
-  tag: string;
-  description: string;
-  features: string[];
-  status: 'active' | 'planned';
-  progressPercent?: number;
-  highlight?: boolean;
+  onSelectModule: (moduleId: string) => void;
 }
 
 export const LearningHubView: React.FC<LearningHubViewProps> = ({
   progress,
-  onSelectJapanese
+  onSelectModule
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'languages' | 'tech' | 'culture'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Calculate stats for Japanese
-  const studiedCount = Object.values(progress.characters).filter(
-    (c) => c.masteryLevel > 0
-  ).length;
-  const totalKana = 214; // roughly total unique hiragana + katakana entries
-  const jaProgress = Math.min(100, Math.round((studiedCount / totalKana) * 100));
+  // Öne çıkan (ilk aktif) modül: üst bannerdaki hızlı giriş kartı bunu açar
+  const featured = MODULE_REGISTRY.find((m) => m.meta.status === 'active');
+  const featuredProgress = featured?.getProgressPercent?.(progress) ?? 0;
 
-  const learningAreas: AreaItem[] = [
-    {
-      id: 'japanese',
-      title: 'Japonca Öğren',
-      subtitle: 'Hiragana & Katakana Temelleri',
-      category: 'Dil',
-      tag: 'İlk Proje • Aktif',
-      description: 'Sesli telaffuzlar, 13 ders ünitesi, interaktif çizim tuvali, kelime kartları ve testlerle Japonca alfabe ustalığı.',
-      features: ['Hiragana & Katakana', 'Sesli Telaffuzlar', 'İnteraktif Çizim', 'Kelime & Test Modülü'],
-      status: 'active',
-      progressPercent: jaProgress,
-      highlight: true
-    },
-    {
-      id: 'kanji',
-      title: 'Japonca Kanji & N5 Kelimeleri',
-      subtitle: 'Görsel Hatırlatıcılar & Radikaller',
-      category: 'Dil',
-      tag: 'Planlanan • Çok Yakında',
-      description: 'En çok kullanılan temel 100 Kanji, birleşme mantığı ve JLPT N5 sınavına hazırlık kelime dağarcığı.',
-      features: ['100 Temel Kanji', 'On-yomi & Kun-yomi', 'Örnek Cümleler', 'Yazım Sırası Animasyonları'],
-      status: 'planned'
-    },
-    {
-      id: 'korean',
-      title: 'Korece Hangul Alfabesi',
-      subtitle: 'Bilimsel Alfabe Mimarisi',
-      category: 'Dil',
-      tag: 'Planlanan • Dil Modülü',
-      description: 'Kral Sejong tarafından tasarlanan Hangul harf blokları, ünlü ve ünsüz seslerin telaffuzu ve basit cümleler.',
-      features: ['Hangul Blokları', 'Sesli Karşılaştırma', 'Yazım Kuralları', 'Hızlı Ezber Kartları'],
-      status: 'planned'
-    },
-    {
-      id: 'python',
-      title: 'Yapay Zeka & Python Temelleri',
-      subtitle: 'Programlama Mantığı ve Algoritma',
-      category: 'Teknoloji',
-      tag: 'Planlanan • Kodlama',
-      description: 'Temel veri yapıları, fonksiyonlar, algoritmik düşünme ve modern yapay zeka araçları için Python öğrenimi.',
-      features: ['İnteraktif Kod Alanı', 'Algoritmalar', 'Proje Tabanlı Görevler', 'Mini Quizler'],
-      status: 'planned'
-    },
-    {
-      id: 'history_culture',
-      title: 'Dünya Kültürleri & Tarih Notları',
-      subtitle: 'Görsel & Sesli Hikayeler',
-      category: 'Kültür & Sanat',
-      tag: 'Planlanan • Genel Kültür',
-      description: 'Farklı coğrafyaların mimarisi, tarihi olaylar ve kültürel geleneklerin derlendiği kısa öğrenme hapları.',
-      features: ['Görsel Atlas', 'Tarih Zaman Çizelgesi', 'Hap Bilgiler', 'Özet Seslendirmeler'],
-      status: 'planned'
-    }
-  ];
-
-  const filteredAreas = learningAreas.filter((item) => {
+  const filteredAreas = MODULE_REGISTRY.filter(({ meta }) => {
     const matchesFilter =
       selectedFilter === 'all' ||
-      (selectedFilter === 'languages' && item.category === 'Dil') ||
-      (selectedFilter === 'tech' && item.category === 'Teknoloji') ||
-      (selectedFilter === 'culture' && item.category === 'Kültür & Sanat');
+      (selectedFilter === 'languages' && meta.category === 'Dil') ||
+      (selectedFilter === 'tech' && meta.category === 'Teknoloji') ||
+      (selectedFilter === 'culture' && meta.category === 'Kültür & Sanat');
 
     const matchesSearch =
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase());
+      meta.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      meta.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      meta.description.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesFilter && matchesSearch;
   });
@@ -144,7 +74,7 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E8E4DC]">
                 <Layers className="w-4 h-4 text-rose-600" />
-                <span>Harf İlerlemesi: <strong className="text-rose-700">%{jaProgress}</strong></span>
+                <span>Harf İlerlemesi: <strong className="text-rose-700">%{featuredProgress}</strong></span>
               </div>
             </div>
           </div>
@@ -169,7 +99,7 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
             <button
               type="button"
               id="hub-hero-open-japanese"
-              onClick={onSelectJapanese}
+              onClick={() => featured && onSelectModule(featured.meta.id)}
               className="mt-3.5 w-full py-2.5 px-4 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-2xs active:scale-98"
             >
               <span>Japonca Bölümüne Git</span>
@@ -221,8 +151,10 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
 
       {/* 3. ÖĞRENME ALANLARI LİSTESİ */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredAreas.map((item) => {
+        {filteredAreas.map((module) => {
+          const item = module.meta;
           const isActive = item.status === 'active';
+          const progressPercent = module.getProgressPercent?.(progress) ?? 0;
 
           return (
             <div
@@ -260,7 +192,7 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
 
                   {isActive ? (
                     <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center font-japanese font-black text-2xl text-rose-700 shrink-0 shadow-2xs">
-                      日
+                      {item.glyph ?? item.title.charAt(0)}
                     </div>
                   ) : (
                     <div className="w-12 h-12 rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-500 shrink-0">
@@ -290,13 +222,13 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
                 {isActive && (
                   <div className="bg-rose-50/70 border border-rose-200/60 rounded-xl p-3 mb-4">
                     <div className="flex items-center justify-between text-xs font-bold text-rose-950 mb-1.5">
-                      <span>Japonca Öğrenme İlerlemeniz</span>
-                      <span>%{item.progressPercent}</span>
+                      <span>{item.labels?.progress ?? `${item.title} İlerlemeniz`}</span>
+                      <span>%{progressPercent}</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-rose-200/80 overflow-hidden">
                       <div
                         className="h-full bg-rose-600 rounded-full transition-all duration-500"
-                        style={{ width: `${item.progressPercent}%` }}
+                        style={{ width: `${progressPercent}%` }}
                       />
                     </div>
                   </div>
@@ -308,11 +240,11 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
                 {isActive ? (
                   <button
                     type="button"
-                    id="btn-open-japanese-module"
-                    onClick={onSelectJapanese}
+                    id={`btn-open-${item.id}-module`}
+                    onClick={() => onSelectModule(item.id)}
                     className="w-full py-3 px-4 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-2xs active:scale-98"
                   >
-                    <span>Japonca Öğrenmeye Başla / Devam Et</span>
+                    <span>{item.labels?.cta ?? `${item.title} • Başla / Devam Et`}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 ) : (

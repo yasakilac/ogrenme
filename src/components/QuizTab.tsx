@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { KanaCharacter, AlphabetType, UserProgressData, PracticeWord } from '../types';
-import { KANA_DATA } from '../data/kanaData';
-import { PRACTICE_WORDS } from '../data/wordsData';
+import { KANA_DATA } from '../modules/japanese/data/kanaData';
+import { PRACTICE_WORDS } from '../modules/japanese/data/wordsData';
 import { 
   CheckCircle2, 
   XCircle, 

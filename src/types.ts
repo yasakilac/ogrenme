@@ -84,17 +84,4 @@ export interface UserProfile {
   lastStudiedKanaId?: string;
 }
 
-export interface LearningModule {
-  id: string;
-  title: string;
-  subtitle: string;
-  category: 'languages' | 'tech' | 'culture' | 'science';
-  iconName: string;
-  badge: string;
-  status: 'active' | 'coming_soon';
-  description: string;
-  statsLabel: string;
-  colorTheme: string;
-}
-
 export type ActiveTab = 'hub' | 'home' | 'table' | 'practice' | 'drawing' | 'visual_words' | 'flashcards' | 'quiz' | 'guide' | 'admin' | 'dashboard';

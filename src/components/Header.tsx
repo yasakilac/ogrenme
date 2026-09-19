@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ActiveTab, AlphabetType } from '../types';
-import { 
-  Home,
-  Grid3X3, 
-  Sparkles,
-  PenTool,
+import { AlphabetType } from '../types';
+import { ModuleNavTab } from '../modules/types';
+import { MODULE_REGISTRY, getModule } from '../modules/registry';
+import {
   Settings,
   ChevronDown,
   GraduationCap,
@@ -14,21 +12,28 @@ import {
 } from 'lucide-react';
 
 interface HeaderProps {
-  activeTab: ActiveTab;
-  setActiveTab: (tab: ActiveTab) => void;
+  /** Aktif modülün üst sekmeleri (registry meta'sından gelir). */
+  tabs: ModuleNavTab[];
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  isHub: boolean;
+  currentModuleId: string;
+  // ponytail: marka rozeti tek aktif modülün alfabesine bağlı; ikinci aktif
+  // modül gelince meta'dan gelen bir marka alanına çevrilir.
   alphabet: AlphabetType;
   onOpenSettings: () => void;
-  currentProject: 'japanese' | 'hub';
-  onSelectProject: (proj: 'japanese' | 'hub') => void;
+  onSelectModule: (moduleId: string) => void; // 'hub' = Öğrenme Merkezi
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  tabs,
   activeTab,
   setActiveTab,
+  isHub,
+  currentModuleId,
   alphabet,
   onOpenSettings,
-  currentProject,
-  onSelectProject
+  onSelectModule
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -44,12 +49,8 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const desktopTabs = [
-    { id: 'home' as ActiveTab, label: 'Ana Sayfa', icon: Home },
-    { id: 'table' as ActiveTab, label: 'Harf Tablosu', icon: Grid3X3 },
-    { id: 'practice' as ActiveTab, label: 'Alıştırmalar', icon: Sparkles },
-    { id: 'drawing' as ActiveTab, label: 'Çizim', icon: PenTool },
-  ];
+  const currentModule = getModule(currentModuleId);
+  const activeModules = MODULE_REGISTRY.filter((m) => m.component);
 
   return (
     <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E6E1D8] shadow-2xs">
@@ -63,9 +64,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               id="top-menu-hub-button"
-              onClick={() => onSelectProject('hub')}
+              onClick={() => onSelectModule('hub')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-colors font-medium ${
-                activeTab === 'hub' 
+                isHub
                   ? 'bg-rose-700 text-white font-bold' 
                   : 'text-stone-300 hover:text-white hover:bg-stone-800'
               }`}
@@ -86,7 +87,11 @@ export const Header: React.FC<HeaderProps> = ({
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-800 hover:bg-stone-700 text-white font-bold transition-all"
               >
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                <span>{currentProject === 'japanese' ? '1. Proje: Japonca Öğren' : 'Öğrenme Merkezi'}</span>
+                <span>
+                  {isHub
+                    ? 'Öğrenme Merkezi'
+                    : `${activeModules.findIndex((m) => m.meta.id === currentModuleId) + 1}. Proje: ${currentModule?.meta.title ?? ''}`}
+                </span>
                 <ChevronDown className={`w-3.5 h-3.5 text-stone-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -97,42 +102,46 @@ export const Header: React.FC<HeaderProps> = ({
                     Öğrenme Projeleri
                   </div>
                   
-                  {/* Proje 1: Japonca (Aktif) */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onSelectProject('japanese');
-                      setIsDropdownOpen(false);
-                    }}
-                    className={`w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-colors ${
-                      currentProject === 'japanese' && activeTab !== 'hub'
-                        ? 'bg-rose-50 border border-rose-200 text-rose-950 font-bold'
-                        : 'hover:bg-stone-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-rose-600 text-white font-japanese text-sm font-black flex items-center justify-center">
-                        日
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-[#1F1E1B]">Japonca Öğren</div>
-                        <div className="text-[10px] text-[#7A756D]">Hiragana & Katakana</div>
-                      </div>
-                    </div>
-                    {currentProject === 'japanese' && activeTab !== 'hub' && (
-                      <Check className="w-4 h-4 text-rose-600" />
-                    )}
-                  </button>
+                  {/* Aktif (açılabilir) öğrenme modülleri */}
+                  {activeModules.map((mod) => {
+                    const isCurrent = mod.meta.id === currentModuleId && !isHub;
+                    return (
+                      <button
+                        key={mod.meta.id}
+                        type="button"
+                        onClick={() => {
+                          onSelectModule(mod.meta.id);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-colors ${
+                          isCurrent
+                            ? 'bg-rose-50 border border-rose-200 text-rose-950 font-bold'
+                            : 'hover:bg-stone-50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-rose-600 text-white font-japanese text-sm font-black flex items-center justify-center">
+                            {mod.meta.glyph ?? mod.meta.title.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-[#1F1E1B]">{mod.meta.title}</div>
+                            <div className="text-[10px] text-[#7A756D]">{mod.meta.subtitle}</div>
+                          </div>
+                        </div>
+                        {isCurrent && <Check className="w-4 h-4 text-rose-600" />}
+                      </button>
+                    );
+                  })}
 
                   {/* Tüm Alanlar (Hub) */}
                   <button
                     type="button"
                     onClick={() => {
-                      onSelectProject('hub');
+                      onSelectModule('hub');
                       setIsDropdownOpen(false);
                     }}
                     className={`w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-colors mt-1 ${
-                      activeTab === 'hub'
+                      isHub
                         ? 'bg-stone-100 border border-stone-200 text-stone-900 font-bold'
                         : 'hover:bg-stone-50'
                     }`}
@@ -146,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <div className="text-[10px] text-[#7A756D]">Gelecek konular ve keşif</div>
                       </div>
                     </div>
-                    {activeTab === 'hub' && (
+                    {isHub && (
                       <Check className="w-4 h-4 text-stone-900" />
                     )}
                   </button>
@@ -164,19 +173,19 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Sağ Kısım: Hızlı Durum */}
           <div className="flex items-center gap-3">
-            {activeTab === 'hub' ? (
+            {isHub ? (
               <button
                 type="button"
-                onClick={() => onSelectProject('japanese')}
+                onClick={() => onSelectModule(currentModuleId)}
                 className="text-[11px] font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1"
               >
-                <span>Japonca'ya Dön</span>
+                <span>{currentModule?.meta.labels?.back ?? 'Modüle Dön'}</span>
                 <span className="text-xs">→</span>
               </button>
             ) : (
               <button
                 type="button"
-                onClick={() => onSelectProject('hub')}
+                onClick={() => onSelectModule('hub')}
                 className="text-[11px] font-bold text-stone-400 hover:text-white flex items-center gap-1"
               >
                 <span>Başka Bir Şey Öğren</span>
@@ -187,17 +196,17 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* 2. JAPONCA ÖĞRENME KANA ALTI MENÜSÜ */}
+      {/* 2. AKTİF MODÜLÜN ALT MENÜSÜ */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
           
           {/* Brand & Proje Başlığı */}
           <div 
             onClick={() => {
-              if (activeTab === 'hub') {
-                onSelectProject('japanese');
-              } else {
-                setActiveTab('home');
+              if (isHub) {
+                onSelectModule(currentModuleId);
+              } else if (tabs[0]) {
+                setActiveTab(tabs[0].id);
               }
             }}
             className="flex items-center gap-2 sm:gap-2.5 cursor-pointer select-none shrink-0 group"
@@ -207,7 +216,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-base sm:text-lg font-black text-[#1F1E1B] tracking-tight">
-                Japonca Öğren
+                {currentModule?.meta.title}
               </span>
               <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-800">
                 {alphabet === 'hiragana' ? 'Hiragana' : 'Katakana'}
@@ -216,12 +225,11 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Desktop Navigation */}
-          {activeTab !== 'hub' ? (
+          {!isHub ? (
             <nav className="hidden md:flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1">
-              {desktopTabs.map((tab) => {
+              {tabs.map((tab) => {
                 const Icon = tab.icon;
-                const isActive = activeTab === tab.id || 
-                  (tab.id === 'practice' && (activeTab === 'flashcards' || activeTab === 'visual_words' || activeTab === 'quiz'));
+                const isActive = activeTab === tab.id;
 
                 return (
                   <button
@@ -244,11 +252,11 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="hidden md:flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => onSelectProject('japanese')}
+                onClick={() => onSelectModule(currentModuleId)}
                 className="px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Japonca Bölümüne Geç</span>
+                <span>{currentModule?.meta.labels?.enter ?? 'Modüle Geç'}</span>
               </button>
             </div>
           )}
