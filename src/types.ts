@@ -65,6 +65,12 @@ export interface TopicLesson {
   row: string;
   kanaIds: string[];
   descriptionTr: string;
+  titleJaHiragana?: string;
+  titleJaKatakana?: string;
+  subJaHiragana?: string;
+  subJaKatakana?: string;
+  categoryJa?: string;
+  descriptionJa?: string;
 }
 
 export interface UserProfile {
@@ -78,4 +84,17 @@ export interface UserProfile {
   lastStudiedKanaId?: string;
 }
 
-export type ActiveTab = 'home' | 'table' | 'practice' | 'drawing' | 'visual_words' | 'flashcards' | 'quiz' | 'guide' | 'admin' | 'dashboard';
+export interface LearningModule {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: 'languages' | 'tech' | 'culture' | 'science';
+  iconName: string;
+  badge: string;
+  status: 'active' | 'coming_soon';
+  description: string;
+  statsLabel: string;
+  colorTheme: string;
+}
+
+export type ActiveTab = 'hub' | 'home' | 'table' | 'practice' | 'drawing' | 'visual_words' | 'flashcards' | 'quiz' | 'guide' | 'admin' | 'dashboard';

@@ -8,7 +8,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'A, I, U, E, O Sırası',
     row: 'a',
     kanaIds: ['a', 'i', 'u', 'e', 'o'],
-    descriptionTr: "Japonca'daki tüm seslerin temelini oluşturan 5 ana sesli harf."
+    descriptionTr: "Japonca'daki tüm seslerin temelini oluşturan 5 ana sesli harf.",
+    titleJaHiragana: '第1課：あ行（母音）',
+    titleJaKatakana: '第1課：ア行（母音）',
+    subJaHiragana: 'あ・い・う・え・お',
+    subJaKatakana: 'ア・イ・ウ・エ・オ',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '日本語の基本となる5つの母音です。'
   },
   {
     id: 'topic_k',
@@ -17,7 +23,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Ka, Ki, Ku, Ke, Ko Sırası',
     row: 'ka',
     kanaIds: ['ka', 'ki', 'ku', 'ke', 'ko'],
-    descriptionTr: "Sert 'k' konsonantı ile birleşen 5 temel hece."
+    descriptionTr: "Sert 'k' konsonantı ile birleşen 5 temel hece.",
+    titleJaHiragana: '第2課：か行',
+    titleJaKatakana: '第2課：カ行',
+    subJaHiragana: 'か・き・く・け・こ',
+    subJaKatakana: 'カ・キ・ク・ケ・コ',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '子音[k]と母音の組み合わせです。'
   },
   {
     id: 'topic_s',
@@ -26,7 +38,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Sa, Shi, Su, Se, So Sırası',
     row: 'sa',
     kanaIds: ['sa', 'shi', 'su', 'se', 'so'],
-    descriptionTr: "'Shi' sesinin özel telaffuzuna (ş/şi) dikkat edilen grup."
+    descriptionTr: "'Shi' sesinin özel telaffuzuna (ş/şi) dikkat edilen grup.",
+    titleJaHiragana: '第3課：さ行',
+    titleJaKatakana: '第3課：サ行',
+    subJaHiragana: 'さ・し・す・せ・そ',
+    subJaKatakana: 'サ・シ・ス・セ・ソ',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '子音[s]（「し」は[ʃi]）の音節です。'
   },
   {
     id: 'topic_t',
@@ -35,7 +53,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Ta, Chi, Tsu, Te, To Sırası',
     row: 'ta',
     kanaIds: ['ta', 'chi', 'tsu', 'te', 'to'],
-    descriptionTr: "'Chi' (çi) ve 'Tsu' (tsu) özel seslerini içeren kritik grup."
+    descriptionTr: "'Chi' (çi) ve 'Tsu' (tsu) özel seslerini içeren kritik grup.",
+    titleJaHiragana: '第4課：た行',
+    titleJaKatakana: '第4課：タ行',
+    subJaHiragana: 'た・ち・つ・て・と',
+    subJaKatakana: 'タ・チ・ツ・テ・ト',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '「ち[tʃi]」と「つ[tsu]」を含む重要音節です。'
   },
   {
     id: 'topic_n',
@@ -44,7 +68,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Na, Ni, Nu, Ne, No Sırası',
     row: 'na',
     kanaIds: ['na', 'ni', 'nu', 'ne', 'no'],
-    descriptionTr: "Burundan çıkan yumuşak 'n' heceleri."
+    descriptionTr: "Burundan çıkan yumuşak 'n' heceleri.",
+    titleJaHiragana: '第5課：な行',
+    titleJaKatakana: '第5課：ナ行',
+    subJaHiragana: 'な・に・ぬ・ね・の',
+    subJaKatakana: 'ナ・ニ・ヌ・ネ・ノ',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '鼻音[n]による柔らかい音節です。'
   },
   {
     id: 'topic_h',
@@ -53,7 +83,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Ha, Hi, Fu, He, Ho Sırası',
     row: 'ha',
     kanaIds: ['ha', 'hi', 'fu', 'he', 'ho'],
-    descriptionTr: "'Fu' sesinin dudakları değdirmeden üflenerek çıkarıldığı hece grubu."
+    descriptionTr: "'Fu' sesinin dudakları değdirmeden üflenerek çıkarıldığı hece grubu.",
+    titleJaHiragana: '第6課：は行',
+    titleJaKatakana: '第6課：ハ行',
+    subJaHiragana: 'は・ひ・ふ・へ・ほ',
+    subJaKatakana: 'ハ・ヒ・フ・ヘ・ホ',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '「ふ[ɸu]」の発音に注目する音節です。'
   },
   {
     id: 'topic_m',
@@ -62,7 +98,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Ma, Mi, Mu, Me, Mo Sırası',
     row: 'ma',
     kanaIds: ['ma', 'mi', 'mu', 'me', 'mo'],
-    descriptionTr: "Akıcı ve melodik 'm' dudak heceleri."
+    descriptionTr: "Akıcı ve melodik 'm' dudak heceleri.",
+    titleJaHiragana: '第7課：ま行',
+    titleJaKatakana: '第7課：マ行',
+    subJaHiragana: 'ま・み・む・め・も',
+    subJaKatakana: 'マ・ミ・ム・メ・モ',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '唇音[m]による心地よい音節です。'
   },
   {
     id: 'topic_y',
@@ -71,7 +113,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Ya, Yu, Yo Sırası',
     row: 'ya',
     kanaIds: ['ya', 'yu', 'yo'],
-    descriptionTr: "Üç harften oluşan kayıcı yarı-ünlü grubu."
+    descriptionTr: "Üç harften oluşan kayıcı yarı-ünlü grubu.",
+    titleJaHiragana: '第8課：や行',
+    titleJaKatakana: '第8課：ヤ行',
+    subJaHiragana: 'や・ゆ・よ',
+    subJaKatakana: 'ヤ・ユ・ヨ',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '半母音[j]による3つの音節です。'
   },
   {
     id: 'topic_r',
@@ -80,7 +128,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Ra, Ri, Ru, Re, Ro Sırası',
     row: 'ra',
     kanaIds: ['ra', 'ri', 'ru', 're', 'ro'],
-    descriptionTr: "Türkçe 'r' ve 'l' arasında hafifçe dile çarptırılarak söylenen heceler."
+    descriptionTr: "Türkçe 'r' ve 'l' arasında hafifçe dile çarptırılarak söylenen heceler.",
+    titleJaHiragana: '第9課：ら行',
+    titleJaKatakana: '第9課：ラ行',
+    subJaHiragana: 'ら・り・る・れ・ろ',
+    subJaKatakana: 'ラ・リ・ル・レ・ロ',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '舌先を軽く弾く弾き音[ɾ]の行です。'
   },
   {
     id: 'topic_wn',
@@ -89,7 +143,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Son Sıra & Tek Başına N',
     row: 'wa',
     kanaIds: ['wa', 'wo', 'n'],
-    descriptionTr: "Japonca'da tek başına ünlü içermeyen tek harf 'ん/ン' (N) ve 'わ/を'."
+    descriptionTr: "Japonca'da tek başına ünlü içermeyen tek harf 'ん/ン' (N) ve 'わ/を'.",
+    titleJaHiragana: '第10課：わ行・撥音',
+    titleJaKatakana: '第10課：ワ行・撥音',
+    subJaHiragana: 'わ・を・ん',
+    subJaKatakana: 'ワ・ヲ・ン',
+    categoryJa: '清音（五十音）',
+    descriptionJa: '五十音の最後を飾る特別な文字です。'
   },
   {
     id: 'topic_dakuon',
@@ -98,7 +158,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Ga, Za, Da, Ba Serisi',
     row: 'ga',
     kanaIds: ['ga', 'gi', 'gu', 'ge', 'go', 'za', 'ji', 'zu', 'ze', 'zo', 'da', 'de', 'do', 'ba', 'bi', 'bu', 'be', 'bo'],
-    descriptionTr: "Sağ üste eklenen iki çizgiyle seslerin titreşimli (yumuşak) hale gelmesi."
+    descriptionTr: "Sağ üste eklenen iki çizgiyle seslerin titreşimli (yumuşak) hale gelmesi.",
+    titleJaHiragana: '第11課：濁音',
+    titleJaKatakana: '第11課：濁音',
+    subJaHiragana: 'が行・ざ行・だ行・ば行',
+    subJaKatakana: 'ガ行・ザ行・ダ行・バ行',
+    categoryJa: '濁音（濁点 ゛）',
+    descriptionJa: '濁点（゛）をつけて有声音化した音節です。'
   },
   {
     id: 'topic_handakuon',
@@ -107,7 +173,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Pa, Pi, Pu, Pe, Po Serisi',
     row: 'pa',
     kanaIds: ['pa', 'pi', 'pu', 'pe', 'po'],
-    descriptionTr: "Sağ üste eklenen küçük daire işaretiyle patlamalı 'P' seslerinin oluşması."
+    descriptionTr: "Sağ üste eklenen küçük daire işaretiyle patlamalı 'P' seslerinin oluşması.",
+    titleJaHiragana: '第12課：半濁音',
+    titleJaKatakana: '第12課：半濁音',
+    subJaHiragana: 'ぱ・ぴ・ぷ・ぺ・ぽ（ぱ行）',
+    subJaKatakana: 'パ・ピ・プ・ペ・ポ（パ行）',
+    categoryJa: '半濁音（半濁点 ゜）',
+    descriptionJa: '半濁点（゜）をつけて破裂音[p]にした音節です。'
   },
   {
     id: 'topic_yoon',
@@ -116,7 +188,13 @@ export const TOPIC_LESSONS: TopicLesson[] = [
     subtitle: 'Kya, Shu, Cha, Nya...',
     row: 'yoon',
     kanaIds: ['kya', 'kyu', 'kyo', 'sha', 'shu', 'sho', 'cha', 'chu', 'cho', 'nya', 'nyu', 'nyo'],
-    descriptionTr: "Birinci harfin yanına küçük ya, yu, yo eklenerek yapılan akıcı heceler."
+    descriptionTr: "Birinci harfin yanına küçük ya, yu, yo eklenerek yapılan akıcı heceler.",
+    titleJaHiragana: '第13課：拗音',
+    titleJaKatakana: '第13課：拗音',
+    subJaHiragana: 'きゃ・しゅ・ちょ・にゃ…',
+    subJaKatakana: 'キャ・シュ・チョ・ニャ…',
+    categoryJa: '拗音（複合音）',
+    descriptionJa: '小さな「ゃ・ゅ・ょ」を添えた複合音節です。'
   }
 ];
 

@@ -3,9 +3,9 @@ import { ActiveTab } from '../types';
 import { 
   Home, 
   Grid3X3, 
-  Sparkles,
-  PenTool,
-  Settings
+  Sparkles, 
+  PenTool, 
+  GraduationCap
 } from 'lucide-react';
 
 interface MobileBottomNavProps {
@@ -19,9 +19,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   setActiveTab,
   onOpenSettings
 }) => {
-  // Navigation: Exactly 4 sections (Ana Sayfa, Harf Tablosu, Alıştırmalar, Çizim)
   const navItems = [
-    { id: 'home' as ActiveTab, label: 'Ana Sayfa', icon: Home },
+    { id: 'hub' as ActiveTab, label: 'Alanlar', icon: GraduationCap },
+    { id: 'home' as ActiveTab, label: 'Japonca', icon: Home },
     { id: 'table' as ActiveTab, label: 'Tablo', icon: Grid3X3 },
     { id: 'practice' as ActiveTab, label: 'Alıştırma', icon: Sparkles },
     { id: 'drawing' as ActiveTab, label: 'Çizim', icon: PenTool },
@@ -54,17 +54,6 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             </button>
           );
         })}
-
-        {/* Settings button: ICON ONLY, no text label */}
-        <button
-          id="mobile-nav-settings"
-          onClick={onOpenSettings}
-          className="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[#7A756D] hover:text-rose-600 transition-all"
-          title="Ayarlar"
-          aria-label="Ayarlar"
-        >
-          <Settings className="w-5 h-5 text-rose-600" />
-        </button>
       </div>
     </div>
   );

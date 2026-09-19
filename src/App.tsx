@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ActiveTab, AlphabetType, KanaCharacter, UserProgressData } from './types';
 import { Header } from './components/Header';
+import { LearningHubView } from './components/LearningHubView';
 import { HomeCurriculumTab } from './components/HomeCurriculumTab';
 import { KanaTableTab } from './components/KanaTableTab';
 import { PracticeHubTab, PracticeSubTab } from './components/PracticeHubTab';
@@ -28,7 +29,8 @@ import {
 } from './utils/storage';
 
 export default function App() {
-  // Navigation: Exactly 4 sections (home, table, practice, drawing)
+  // Navigation: Learning Hub or Japanese modules (home, table, practice, drawing)
+  const [currentProject, setCurrentProject] = useState<'japanese' | 'hub'>('japanese');
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [practiceSubTab, setPracticeSubTab] = useState<PracticeSubTab>('flashcards');
   const [alphabet, setAlphabet] = useState<AlphabetType>('hiragana');
@@ -100,18 +102,38 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-[#1F1E1B] flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900">
       
-      {/* Top Navigation & App Bar (Only 4 sections: Ana Sayfa, Harf Tablosu, Alıştırmalar, Çizim + Settings Icon) */}
+      {/* Top Navigation & App Bar with Top-Level Learning Project Switcher */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         alphabet={alphabet}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        currentProject={currentProject}
+        onSelectProject={(proj) => {
+          setCurrentProject(proj);
+          if (proj === 'hub') {
+            setActiveTab('hub');
+          } else {
+            setActiveTab('home');
+          }
+        }}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-7">
         
-        {/* 1. Ana Sayfa (İkili Yapı, Kaldığın Yerden Devam Et, Konular) */}
+        {/* 0. Genel Öğrenme Platformu & Keşif Alanı (Learning Hub) */}
+        {activeTab === 'hub' && (
+          <LearningHubView
+            progress={progress}
+            onSelectJapanese={() => {
+              setCurrentProject('japanese');
+              setActiveTab('home');
+            }}
+          />
+        )}
+
+        {/* 1. Japonca Ana Sayfa (İkili Yapı, Kaldığın Yerden Devam Et, Konular) */}
         {activeTab === 'home' && (
           <HomeCurriculumTab
             alphabet={alphabet}
