@@ -1,0 +1,621 @@
+import { PracticeWord, TopicLesson } from '../types';
+
+export const TOPIC_LESSONS: TopicLesson[] = [
+  {
+    id: 'topic_vowels',
+    order: 1,
+    title: '1. Temel Sesli Harfler',
+    subtitle: 'A, I, U, E, O Sırası',
+    row: 'a',
+    kanaIds: ['a', 'i', 'u', 'e', 'o'],
+    descriptionTr: "Japonca'daki tüm seslerin temelini oluşturan 5 ana sesli harf."
+  },
+  {
+    id: 'topic_k',
+    order: 2,
+    title: '2. K Grubu Harfler',
+    subtitle: 'Ka, Ki, Ku, Ke, Ko Sırası',
+    row: 'ka',
+    kanaIds: ['ka', 'ki', 'ku', 'ke', 'ko'],
+    descriptionTr: "Sert 'k' konsonantı ile birleşen 5 temel hece."
+  },
+  {
+    id: 'topic_s',
+    order: 3,
+    title: '3. S Grubu Harfler',
+    subtitle: 'Sa, Shi, Su, Se, So Sırası',
+    row: 'sa',
+    kanaIds: ['sa', 'shi', 'su', 'se', 'so'],
+    descriptionTr: "'Shi' sesinin özel telaffuzuna (ş/şi) dikkat edilen grup."
+  },
+  {
+    id: 'topic_t',
+    order: 4,
+    title: '4. T Grubu Harfler',
+    subtitle: 'Ta, Chi, Tsu, Te, To Sırası',
+    row: 'ta',
+    kanaIds: ['ta', 'chi', 'tsu', 'te', 'to'],
+    descriptionTr: "'Chi' (çi) ve 'Tsu' (tsu) özel seslerini içeren kritik grup."
+  },
+  {
+    id: 'topic_n',
+    order: 5,
+    title: '5. N Grubu Harfler',
+    subtitle: 'Na, Ni, Nu, Ne, No Sırası',
+    row: 'na',
+    kanaIds: ['na', 'ni', 'nu', 'ne', 'no'],
+    descriptionTr: "Burundan çıkan yumuşak 'n' heceleri."
+  },
+  {
+    id: 'topic_h',
+    order: 6,
+    title: '6. H Grubu Harfler',
+    subtitle: 'Ha, Hi, Fu, He, Ho Sırası',
+    row: 'ha',
+    kanaIds: ['ha', 'hi', 'fu', 'he', 'ho'],
+    descriptionTr: "'Fu' sesinin dudakları değdirmeden üflenerek çıkarıldığı hece grubu."
+  },
+  {
+    id: 'topic_m',
+    order: 7,
+    title: '7. M Grubu Harfler',
+    subtitle: 'Ma, Mi, Mu, Me, Mo Sırası',
+    row: 'ma',
+    kanaIds: ['ma', 'mi', 'mu', 'me', 'mo'],
+    descriptionTr: "Akıcı ve melodik 'm' dudak heceleri."
+  },
+  {
+    id: 'topic_y',
+    order: 8,
+    title: '8. Y Grubu Harfler',
+    subtitle: 'Ya, Yu, Yo Sırası',
+    row: 'ya',
+    kanaIds: ['ya', 'yu', 'yo'],
+    descriptionTr: "Üç harften oluşan kayıcı yarı-ünlü grubu."
+  },
+  {
+    id: 'topic_r',
+    order: 9,
+    title: '9. R Grubu Harfler',
+    subtitle: 'Ra, Ri, Ru, Re, Ro Sırası',
+    row: 'ra',
+    kanaIds: ['ra', 'ri', 'ru', 're', 'ro'],
+    descriptionTr: "Türkçe 'r' ve 'l' arasında hafifçe dile çarptırılarak söylenen heceler."
+  },
+  {
+    id: 'topic_wn',
+    order: 10,
+    title: '10. Wa, Wo ve N',
+    subtitle: 'Son Sıra & Tek Başına N',
+    row: 'wa',
+    kanaIds: ['wa', 'wo', 'n'],
+    descriptionTr: "Japonca'da tek başına ünlü içermeyen tek harf 'ん/ン' (N) ve 'わ/を'."
+  },
+  {
+    id: 'topic_dakuon',
+    order: 11,
+    title: '11. Tenten Değişimleri (Dakuon)',
+    subtitle: 'Ga, Za, Da, Ba Serisi',
+    row: 'ga',
+    kanaIds: ['ga', 'gi', 'gu', 'ge', 'go', 'za', 'ji', 'zu', 'ze', 'zo', 'da', 'de', 'do', 'ba', 'bi', 'bu', 'be', 'bo'],
+    descriptionTr: "Sağ üste eklenen iki çizgiyle seslerin titreşimli (yumuşak) hale gelmesi."
+  },
+  {
+    id: 'topic_handakuon',
+    order: 12,
+    title: '12. Maru Değişimleri (Handakuon)',
+    subtitle: 'Pa, Pi, Pu, Pe, Po Serisi',
+    row: 'pa',
+    kanaIds: ['pa', 'pi', 'pu', 'pe', 'po'],
+    descriptionTr: "Sağ üste eklenen küçük daire işaretiyle patlamalı 'P' seslerinin oluşması."
+  },
+  {
+    id: 'topic_yoon',
+    order: 13,
+    title: '13. Bileşik Sesler (Yōon)',
+    subtitle: 'Kya, Shu, Cha, Nya...',
+    row: 'yoon',
+    kanaIds: ['kya', 'kyu', 'kyo', 'sha', 'shu', 'sho', 'cha', 'chu', 'cho', 'nya', 'nyu', 'nyo'],
+    descriptionTr: "Birinci harfin yanına küçük ya, yu, yo eklenerek yapılan akıcı heceler."
+  }
+];
+
+export const PRACTICE_WORDS: PracticeWord[] = [
+  // --- A Grubu ---
+  {
+    id: 'w_ame',
+    kana: 'あめ',
+    romaji: 'ame',
+    meaningTr: 'Yağmur',
+    targetKana: 'あ',
+    targetRomaji: 'a',
+    imageUrl: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Gökten düşen damlalar',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_inu',
+    kana: 'いぬ',
+    romaji: 'inu',
+    meaningTr: 'Köpek',
+    targetKana: 'い',
+    targetRomaji: 'i',
+    imageUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'İnsanın en sadık dostu',
+    category: 'Hayvanlar'
+  },
+  {
+    id: 'w_umi',
+    kana: 'うみ',
+    romaji: 'umi',
+    meaningTr: 'Deniz',
+    targetKana: 'う',
+    targetRomaji: 'u',
+    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Masmavi dalgalar ve sahil',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_eki',
+    kana: 'えき',
+    romaji: 'eki',
+    meaningTr: 'Tren İstasyonu',
+    targetKana: 'え',
+    targetRomaji: 'e',
+    imageUrl: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Trenlerin durduğu durak',
+    category: 'Şehir'
+  },
+  {
+    id: 'w_onigiri',
+    kana: 'おにぎり',
+    romaji: 'onigiri',
+    meaningTr: 'Pirinç Topu',
+    targetKana: 'お',
+    targetRomaji: 'o',
+    imageUrl: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Üçgen Japon pirinç atıştırmalığı',
+    category: 'Yiyecek'
+  },
+
+  // --- K Grubu ---
+  {
+    id: 'w_kasa',
+    kana: 'かさ',
+    romaji: 'kasa',
+    meaningTr: 'Şemsiye',
+    targetKana: 'か',
+    targetRomaji: 'ka',
+    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Yağmurdan koruyan eşya',
+    category: 'Eşyalar'
+  },
+  {
+    id: 'w_ki',
+    kana: 'き',
+    romaji: 'ki',
+    meaningTr: 'Ağaç',
+    targetKana: 'き',
+    targetRomaji: 'ki',
+    imageUrl: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Ormandaki yeşil gövdeli bitki',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_kuruma',
+    kana: 'くるま',
+    romaji: 'kuruma',
+    meaningTr: 'Araba',
+    targetKana: 'く',
+    targetRomaji: 'ku',
+    imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Dört tekerlekli motorlu taşıt',
+    category: 'Ulaşım'
+  },
+  {
+    id: 'w_keshigomu',
+    kana: 'けしごむ',
+    romaji: 'keshigomu',
+    meaningTr: 'Silgi',
+    targetKana: 'け',
+    targetRomaji: 'ke',
+    imageUrl: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Yazılanları temizleyen araç',
+    category: 'Eşyalar'
+  },
+  {
+    id: 'w_kodomo',
+    kana: 'こども',
+    romaji: 'kodomo',
+    meaningTr: 'Çocuk',
+    targetKana: 'こ',
+    targetRomaji: 'ko',
+    imageUrl: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Küçük yaşta neşeli insan',
+    category: 'İnsanlar'
+  },
+
+  // --- S Grubu ---
+  {
+    id: 'w_sakura',
+    kana: 'さくら',
+    romaji: 'sakura',
+    meaningTr: 'Kiraz Çiçeği',
+    targetKana: 'さ',
+    targetRomaji: 'sa',
+    imageUrl: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'İlkbaharın pembe Japon simgesi',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_shinkansen',
+    kana: 'しんかんせん',
+    romaji: 'shinkansen',
+    meaningTr: 'Hızlı Tren',
+    targetKana: 'し',
+    targetRomaji: 'shi',
+    imageUrl: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32b?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Japonya’nın meşhur mermi treni',
+    category: 'Ulaşım'
+  },
+  {
+    id: 'w_sushi',
+    kana: 'すし',
+    romaji: 'sushi',
+    meaningTr: 'Suşi',
+    targetKana: 'す',
+    targetRomaji: 'su',
+    imageUrl: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Pirinç ve taze balık rulosu',
+    category: 'Yiyecek'
+  },
+  {
+    id: 'w_sensei',
+    kana: 'せんせい',
+    romaji: 'sensei',
+    meaningTr: 'Öğretmen / Hoca',
+    targetKana: 'せ',
+    targetRomaji: 'se',
+    imageUrl: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Ders anlatan eğitmen',
+    category: 'İnsanlar'
+  },
+  {
+    id: 'w_sora',
+    kana: 'そら',
+    romaji: 'sora',
+    meaningTr: 'Gökyüzü',
+    targetKana: 'そ',
+    targetRomaji: 'so',
+    imageUrl: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Tepemizdeki engin mavi kubbe',
+    category: 'Doğa'
+  },
+
+  // --- T Grubu ---
+  {
+    id: 'w_tamago',
+    kana: 'たまご',
+    romaji: 'tamago',
+    meaningTr: 'Yumurta',
+    targetKana: 'た',
+    targetRomaji: 'ta',
+    imageUrl: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Kahvaltılık besin',
+    category: 'Yiyecek'
+  },
+  {
+    id: 'w_chikatetsu',
+    kana: 'ちかてつ',
+    romaji: 'chikatetsu',
+    meaningTr: 'Metro',
+    targetKana: 'ち',
+    targetRomaji: 'chi',
+    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Yeraltı raylı ulaşımı',
+    category: 'Ulaşım'
+  },
+  {
+    id: 'w_tsuki',
+    kana: 'つき',
+    romaji: 'tsuki',
+    meaningTr: 'Ay (Gökteki)',
+    targetKana: 'つ',
+    targetRomaji: 'tsu',
+    imageUrl: 'https://images.unsplash.com/photo-1522030299830-16b8d3d049fe?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Gece gökyüzünü aydınlatan hilal ya da dolunay',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_tegami',
+    kana: 'てがみ',
+    romaji: 'tegami',
+    meaningTr: 'Mektup',
+    targetKana: 'て',
+    targetRomaji: 'te',
+    imageUrl: 'https://images.unsplash.com/photo-1579208575657-c595a05383b7?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Zarf içindeki yazılı mesaj',
+    category: 'Eşyalar'
+  },
+  {
+    id: 'w_tori',
+    kana: 'とり',
+    romaji: 'tori',
+    meaningTr: 'Kuş',
+    targetKana: 'と',
+    targetRomaji: 'to',
+    imageUrl: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Kanatlarıyla uçan canlı',
+    category: 'Hayvanlar'
+  },
+
+  // --- N Grubu ---
+  {
+    id: 'w_natsu',
+    kana: 'なつ',
+    romaji: 'natsu',
+    meaningTr: 'Yaz Mevsimi',
+    targetKana: 'な',
+    targetRomaji: 'na',
+    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Sıcak güneşli mevsim',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_nihon',
+    kana: 'にほん',
+    romaji: 'nihon',
+    meaningTr: 'Japonya',
+    targetKana: 'に',
+    targetRomaji: 'ni',
+    imageUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Doğan güneşin ülkesi',
+    category: 'Şehir'
+  },
+  {
+    id: 'w_neko',
+    kana: 'ねこ',
+    romaji: 'neko',
+    meaningTr: 'Kedi',
+    targetKana: 'ね',
+    targetRomaji: 'ne',
+    imageUrl: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Miyavlayan tüylü dostumuz',
+    category: 'Hayvanlar'
+  },
+  {
+    id: 'w_nomimono',
+    kana: 'のみもの',
+    romaji: 'nomimono',
+    meaningTr: 'İçecek',
+    targetKana: 'の',
+    targetRomaji: 'no',
+    imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Su, çay, meyve suyu gibi sıvılar',
+    category: 'Yiyecek'
+  },
+
+  // --- H Grubu ---
+  {
+    id: 'w_hana',
+    kana: 'はな',
+    romaji: 'hana',
+    meaningTr: 'Çiçek',
+    targetKana: 'は',
+    targetRomaji: 'ha',
+    imageUrl: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Mis kokulu rengarenk yapraklar',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_hikouki',
+    kana: 'ひこうき',
+    romaji: 'hikouki',
+    meaningTr: 'Uçak',
+    targetKana: 'ひ',
+    targetRomaji: 'hi',
+    imageUrl: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Gökyüzünde uçan yolcu taşıtı',
+    category: 'Ulaşım'
+  },
+  {
+    id: 'w_fuji',
+    kana: 'ふじさん',
+    romaji: 'fujisan',
+    meaningTr: 'Fuji Dağı',
+    targetKana: 'ふ',
+    targetRomaji: 'fu',
+    imageUrl: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Zirvesi karlı kutsal Japon dağı',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_heya',
+    kana: 'へや',
+    romaji: 'heya',
+    meaningTr: 'Oda',
+    targetKana: 'へ',
+    targetRomaji: 'he',
+    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Evin bölümlerinden biri',
+    category: 'Ev'
+  },
+  {
+    id: 'w_hon',
+    kana: 'ほん',
+    romaji: 'hon',
+    meaningTr: 'Kitap',
+    targetKana: 'ほ',
+    targetRomaji: 'ho',
+    imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Sayfaları olan okuma kaynağı',
+    category: 'Eşyalar'
+  },
+
+  // --- M Grubu ---
+  {
+    id: 'w_machi',
+    kana: 'まち',
+    romaji: 'machi',
+    meaningTr: 'Şehir / Kasaba',
+    targetKana: 'ま',
+    targetRomaji: 'ma',
+    imageUrl: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Binaların ve sokakların olduğu yerleşim',
+    category: 'Şehir'
+  },
+  {
+    id: 'w_mizu',
+    kana: 'みず',
+    romaji: 'mizu',
+    meaningTr: 'Su',
+    targetKana: 'み',
+    targetRomaji: 'mi',
+    imageUrl: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Yaşamın berrak temel içeceği',
+    category: 'Yiyecek'
+  },
+  {
+    id: 'w_mori',
+    kana: 'もり',
+    romaji: 'mori',
+    meaningTr: 'Orman',
+    targetKana: 'も',
+    targetRomaji: 'mo',
+    imageUrl: 'https://images.unsplash.com/photo-1511497584788-87676104235f?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Ağaçlarla kaplı geniş yeşil alan',
+    category: 'Doğa'
+  },
+
+  // --- Y, R, W Grubu ---
+  {
+    id: 'w_yama',
+    kana: 'やま',
+    romaji: 'yama',
+    meaningTr: 'Dağ',
+    targetKana: 'や',
+    targetRomaji: 'ya',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Yeryüzünün yüksek tepeli kaya kütlesi',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_yuki',
+    kana: 'ゆき',
+    romaji: 'yuki',
+    meaningTr: 'Kar',
+    targetKana: 'ゆ',
+    targetRomaji: 'yu',
+    imageUrl: 'https://images.unsplash.com/photo-1491002052546-bf38f186af56?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Kışın yağan beyaz kristaller',
+    category: 'Doğa'
+  },
+  {
+    id: 'w_ringo',
+    kana: 'りんご',
+    romaji: 'ringo',
+    meaningTr: 'Elma',
+    targetKana: 'り',
+    targetRomaji: 'ri',
+    imageUrl: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Kırmızı tatlı sulu meyve',
+    category: 'Yiyecek'
+  },
+  {
+    id: 'w_wa',
+    kana: 'わに',
+    romaji: 'wani',
+    meaningTr: 'Timsah',
+    targetKana: 'わ',
+    targetRomaji: 'wa',
+    imageUrl: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'hiragana',
+    hint: 'Suda yaşayan büyük sürüngen',
+    category: 'Hayvanlar'
+  },
+
+  // --- Katakana Örnekleri ---
+  {
+    id: 'w_pan',
+    kana: 'パン',
+    romaji: 'pan',
+    meaningTr: 'Ekmek',
+    targetKana: 'パ',
+    targetRomaji: 'pa',
+    imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'katakana',
+    hint: 'Fırından yeni çıkmış sıcak unlu gıda',
+    category: 'Yiyecek'
+  },
+  {
+    id: 'w_kamera',
+    kana: 'カメラ',
+    romaji: 'kamera',
+    meaningTr: 'Kamera / Fotoğraf Makinesi',
+    targetKana: 'カ',
+    targetRomaji: 'ka',
+    imageUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'katakana',
+    hint: 'Anları yakalayan objektifli cihaz',
+    category: 'Eşyalar'
+  },
+  {
+    id: 'w_basu',
+    kana: 'バス',
+    romaji: 'basu',
+    meaningTr: 'Otobüs',
+    targetKana: 'バ',
+    targetRomaji: 'ba',
+    imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'katakana',
+    hint: 'Toplu taşıma aracı',
+    category: 'Ulaşım'
+  },
+  {
+    id: 'w_terebi',
+    kana: 'テレビ',
+    romaji: 'terebi',
+    meaningTr: 'Televizyon',
+    targetKana: 'テ',
+    targetRomaji: 'te',
+    imageUrl: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=500&auto=format&fit=crop&q=80',
+    alphabet: 'katakana',
+    hint: 'Evdeki yayın izleme ekranı',
+    category: 'Eşyalar'
+  }
+];
