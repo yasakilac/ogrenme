@@ -14,7 +14,7 @@ export interface LearningModuleMeta {
   id: string;                    // 'japanese', 'korean', 'kanji', ...
   title: string;
   subtitle: string;
-  category: 'Dil' | 'Teknoloji' | 'Kültür & Sanat' | 'Genel';
+  category: 'Dil' | 'Teknoloji' | 'Kültür & Sanat' | 'Doğa & Bilim' | 'Genel';
   tag: string;
   description: string;
   features: string[];

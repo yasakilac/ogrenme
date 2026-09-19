@@ -1,5 +1,33 @@
 import { UserProgressData, AlphabetType, UserProfile, PracticeWord } from '../types';
 
+/** Jenerik localStorage yardımcıları — modüllerin kendi ilerleme verisini tutması için. */
+export function getStorageItem<T>(key: string, defaultValue: T): T {
+  try {
+    const item = localStorage.getItem(key);
+    if (item === null) return defaultValue;
+    return JSON.parse(item) as T;
+  } catch (error) {
+    console.warn(`Error reading localStorage key "${key}":`, error);
+    return defaultValue;
+  }
+}
+
+export function setStorageItem<T>(key: string, value: T): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn(`Error writing to localStorage key "${key}":`, error);
+  }
+}
+
+export function removeStorageItem(key: string): void {
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {
+    console.warn(`Error removing localStorage key "${key}":`, error);
+  }
+}
+
 const PROGRESS_PREFIX = 'nihongo_kana_progress_user_';
 const PROFILES_KEY = 'nihongo_kana_profiles_v2';
 const ACTIVE_USER_KEY = 'nihongo_kana_active_user_v2';

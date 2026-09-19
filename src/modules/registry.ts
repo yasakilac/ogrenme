@@ -1,5 +1,6 @@
 import { LearningModule } from './types';
 import { japaneseModule } from './japanese';
+import { kusTurleriModule } from './kus-turleri';
 
 /**
  * Yeni öğrenme modülü eklemek için:
@@ -9,6 +10,7 @@ import { japaneseModule } from './japanese';
  */
 export const MODULE_REGISTRY: LearningModule[] = [
   japaneseModule,
+  kusTurleriModule,
 
   // Planlanan modüller: henüz component yok, sadece Hub kartı için meta.
   {
