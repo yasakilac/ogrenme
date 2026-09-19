@@ -25,11 +25,14 @@ uymayan çıktı, entegrasyon öncesi elle düzeltilmek zorunda kalır — bu is
   Çalışma zamanında bilinmeyen bir dış API'ye `fetch` atma. Ses/görsel gerekiyorsa
   ya tarayıcının yerleşik `SpeechSynthesis` API'sini kullan ya da veriyi metin/URL
   olarak bırak, gerçek dosya üretme.
-- **Yeni npm bağımlılığı ekleme.** Sadece şunlar mevcut ve kullanılabilir: `react`,
-  `lucide-react` (ikonlar için), `tailwindcss` utility class'ları, proje içindeki
-  `../../utils/storage.ts` yardımcıları (aşağıda). Başka bir kütüphane
-  (chart, drag-drop, animasyon vb.) gerekiyorsa **ekleme, bunun yerine düz
-  React state + CSS ile çöz**, ya da çıktının başına "şu paket lazım" diye not düş.
+- **Yeni npm bağımlılığı ekleme — varsayılan hayır.** Sadece şunlar mevcut ve
+  kullanılabilir: `react`, `lucide-react` (ikonlar için), `tailwindcss` utility
+  class'ları, proje içindeki `../../utils/storage.ts` yardımcıları (aşağıda).
+  Basit ihtiyaçlar (chart, drag-drop, animasyon vb.) için düz React state + CSS
+  ile çöz. **İstisna:** gerçekten haklı bir teknik gerekçe varsa (örn. gerçek GPS
+  koordinatlı bir harita için `leaflet` — bir örnek zaten kabul edildi) paketi
+  kullanabilirsin AMA çıktının EN BAŞINA kalın harfle yaz: "YENİ BAĞIMLILIK:
+  <paket adı> — gerekçe: ...". Sessizce ekleme, her zaman açıkça belirt.
 - **Dosya sınırları — SADECE kendi klasörüne yaz:**
   `src/modules/<modul-id>/` altına her şeyi koy (component'ler, veri, alt klasörler
   serbest). `src/App.tsx`, `src/components/Header.tsx`, `src/modules/types.ts` gibi
@@ -53,7 +56,7 @@ export interface LearningModuleMeta {
   id: string;                    // kebab-case, benzersiz, örn. 'kus-turleri'
   title: string;
   subtitle: string;
-  category: 'Dil' | 'Teknoloji' | 'Kültür & Sanat' | 'Genel';
+  category: 'Dil' | 'Teknoloji' | 'Kültür & Sanat' | 'Doğa & Bilim' | 'Genel';
   tag: string;                   // örn. 'Yeni • Genel Kültür'
   description: string;
   features: string[];            // hub kartında 3-4 madde
@@ -108,15 +111,25 @@ değil.
   kendini göremiyor, kabul edilmez.
 - **Ders bitirme testi (`finalTest`) — ZORUNLU.** `LearningModule.finalTest` alanı
   BOŞ OLAMAZ: en az 8-10 çoktan seçmeli soru, tüm modül konusunu kapsayacak şekilde.
-  Bu, modülün "bitirme testi" sekmesinde (`navTabs`'e bir `{ id: 'final-test', ... }`
-  ekle) kullanıcının çözebileceği bir test olarak render edilmeli. Bu sorular aynı
-  zamanda ileride tüm modüllerden toplanan genel "Bilgi Yarışması" havuzunu
-  besleyecek — o yüzden şekle (`FinalTestQuestion`) birebir uy, atlanmaz.
+  **Sık yapılan hata:** modül içinde zengin bir sınav component'i/soru havuzu kurup
+  bunu `LearningModule.finalTest` alanına BAĞLAMAYI unutmak — sınav ekranı olması
+  yetmez, aynı sorular `export const myModule: LearningModule` nesnesinin `finalTest`
+  dizisinde de DÜZ VERİ olarak bulunmalı (bkz. aşağıdaki örnek). Bu, modülün "bitirme
+  testi" sekmesinde kullanıcının çözebileceği bir test olarak render edilmeli. Bu
+  sorular aynı zamanda ileride tüm modüllerden toplanan genel "Bilgi Yarışması"
+  havuzunu besleyecek — o yüzden şekle (`FinalTestQuestion`) birebir uy, atlanmaz.
 - **Gerçek görsel/ses, placeholder değil.** Emoji veya renkli kutucuk "görsel" yerine
-  kullanılmaz (ciddi bir konuda amatör durur) — serbest lisanslı gerçek görsel URL'leri
-  kullan (örn. Wikimedia Commons). Ses için yeni bir dosya pipeline'ı KURMA — tarayıcının
-  `SpeechSynthesis` API'siyle veya mevcut `soundManager` yardımcısıyla gerçekçi telaffuz/
-  seslendirme sağla.
+  kullanılmaz (ciddi bir konuda amatör durur). Görsel için **doğrudan, kalıcı foto CDN
+  URL'leri** kullan — daha önce Unsplash'in kalıcı foto URL formatı
+  (`https://images.unsplash.com/photo-<id>?...`) başarıyla kullanıldı, bu deseni
+  tercih et; Wikimedia Commons da uygundur. (Deprecated/yönlendirmeli
+  `source.unsplash.com` gibi rastgele-sonuç veren servisleri KULLANMA — her yüklemede
+  farklı görsel döndürür, tutarsız olur.) `<img>`'e her zaman bir `fallbackSrc` +
+  `onError` ile basit bir SVG/illüstrasyon yedeği ekle (görsel yüklenemezse boş
+  kalmasın). Ses için yeni bir dosya pipeline'ı KURMA — insan sesi/telaffuz için
+  tarayıcının `SpeechSynthesis` API'siyle, insan-dışı sesler (hayvan sesi, doğa sesi
+  vb.) için Web Audio API ile kendi sentezleyicini yaz (örnek: kuş modülündeki
+  `audioSynth.ts`) ya da mevcut `soundManager` yardımcısını kullan.
 - **Tasarım bütünlüğü.** Modül, uygulamanın geri kalanından "farklı bir app gibi"
   hissettirmemeli — aşağıdaki Stil bölümündeki palete ve mobil-öncelikli düzene uy.
 - **Pedagojik çoklu-duyu yapı.** Tek bir etkinlik türüne (sadece flashcard, sadece
@@ -249,7 +262,11 @@ npm paketi olup olmadığı.
 - [ ] `progress`/`alphabet` prop'larını kullanmadım mı?
 - [ ] `LearningModule`/`LearningModuleMeta`/`LearningModuleProps`/`FinalTestQuestion` şekillerine birebir uydum mu?
 - [ ] `navTabs`'teki ikonlar gerçekten `lucide-react`'te var mı?
-- [ ] `finalTest` en az 8-10 soru içeriyor mu, boş/eksik değil mi?
+- [ ] `finalTest` en az 8-10 soru içeriyor mu, boş/eksik değil mi? (sınav component'i
+  içeride olması yetmez, `LearningModule.finalTest` alanına gerçekten bağlandı mı?)
+- [ ] Yeni bir npm paketi eklediysem çıktının en başında kalın harfle belirttim mi?
+- [ ] Görsel URL'leri kalıcı/doğrudan mı (rastgele-sonuç veren servis değil), her
+  `<img>`'in bir fallback'i var mı?
 - [ ] Her etkinlik bir skor/sonuç üretiyor mu, kullanıcı kendi ilerlemesini görebiliyor mu?
 - [ ] Görsel/ses placeholder değil, gerçek/gerçekçi mi?
 - [ ] En az 3-4 farklı etkinlik türü var mı (tek tip tekrar değil)?
