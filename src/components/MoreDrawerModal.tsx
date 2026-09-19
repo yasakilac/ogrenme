@@ -8,9 +8,11 @@ import {
   ShieldCheck, 
   User, 
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Settings
 } from 'lucide-react';
 import { ActiveTab } from '../types';
+import { loadProfiles, getActiveUserId } from '../utils/storage';
 
 interface MoreDrawerModalProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ interface MoreDrawerModalProps {
   onSelectTab: (tab: ActiveTab) => void;
   onOpenUserModal: () => void;
   onOpenAdminModal: () => void;
+  onOpenSettings?: () => void;
 }
 
 export const MoreDrawerModal: React.FC<MoreDrawerModalProps> = ({
@@ -25,9 +28,15 @@ export const MoreDrawerModal: React.FC<MoreDrawerModalProps> = ({
   onClose,
   onSelectTab,
   onOpenUserModal,
-  onOpenAdminModal
+  onOpenAdminModal,
+  onOpenSettings
 }) => {
   if (!isOpen) return null;
+
+  const profiles = loadProfiles();
+  const activeId = getActiveUserId();
+  const activeProfile = profiles.find((p) => p.id === activeId);
+  const isAdmin = activeProfile?.role === 'admin';
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm">
@@ -48,17 +57,35 @@ export const MoreDrawerModal: React.FC<MoreDrawerModalProps> = ({
         </div>
 
         <div className="space-y-2">
+          {onOpenSettings && (
+            <button
+              onClick={() => { onClose(); onOpenSettings(); }}
+              className="w-full p-3 rounded-2xl bg-[#FAF8F5] hover:bg-white border border-[#E6E1D8] flex items-center justify-between text-left transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700">
+                  <Settings className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-[#1F1E1B] block">Ayarlar ve Tercihler</span>
+                  <span className="text-xs text-[#7A756D]">Alfabe, ses ve profil ayarları</span>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#7A756D]" />
+            </button>
+          )}
+
           <button
             onClick={() => { onSelectTab('drawing'); onClose(); }}
             className="w-full p-3 rounded-2xl bg-[#FAF8F5] hover:bg-white border border-[#E6E1D8] flex items-center justify-between text-left transition-all"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700">
+              <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700">
                 <PenTool className="w-4 h-4" />
               </div>
               <div>
                 <span className="text-sm font-bold text-[#1F1E1B] block">Çizim Tuvali</span>
-                <span className="text-xs text-[#7A756D]">Doğru fırça vuruşlarıyla el yazısı pratiği</span>
+                <span className="text-xs text-[#7A756D]">Vuruş sırasıyla harf yazma pratiği</span>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-[#7A756D]" />
@@ -69,12 +96,12 @@ export const MoreDrawerModal: React.FC<MoreDrawerModalProps> = ({
             className="w-full p-3 rounded-2xl bg-[#FAF8F5] hover:bg-white border border-[#E6E1D8] flex items-center justify-between text-left transition-all"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700">
                 <BookOpen className="w-4 h-4" />
               </div>
               <div>
                 <span className="text-sm font-bold text-[#1F1E1B] block">Konu Anlatımı & Rehber</span>
-                <span className="text-xs text-[#7A756D]">Japonca alfabe kuralları ve ipuçları</span>
+                <span className="text-xs text-[#7A756D]">Kurallar, tarihçe ve fonetik rehberi</span>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-[#7A756D]" />
@@ -114,21 +141,24 @@ export const MoreDrawerModal: React.FC<MoreDrawerModalProps> = ({
             <ChevronRight className="w-4 h-4 text-[#7A756D]" />
           </button>
 
-          <button
-            onClick={() => { onClose(); onOpenAdminModal(); }}
-            className="w-full p-3 rounded-2xl bg-[#1F1E1B] text-white flex items-center justify-between text-left hover:bg-black transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-amber-400">
-                <ShieldCheck className="w-4 h-4" />
+          {/* SADECE ADMİN GİRİŞİ YAPILDIĞINDA GÖRÜNÜR */}
+          {isAdmin && (
+            <button
+              onClick={() => { onClose(); onOpenAdminModal(); }}
+              className="w-full p-3 rounded-2xl bg-[#1F1E1B] text-white flex items-center justify-between text-left hover:bg-black transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-amber-400">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-white block">Yönetici Paneli (Admin)</span>
+                  <span className="text-xs text-gray-300">Yeni kelimeler, ses ayarları, veri yedekleme</span>
+                </div>
               </div>
-              <div>
-                <span className="text-sm font-bold text-white block">Yönetici Paneli (Admin)</span>
-                <span className="text-xs text-gray-300">Yeni kelimeler, ses ayarları, veri yedekleme</span>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-          </button>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </button>
+          )}
         </div>
       </motion.div>
     </div>

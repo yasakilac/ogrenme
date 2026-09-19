@@ -78,4 +78,4 @@ export interface UserProfile {
   lastStudiedKanaId?: string;
 }
 
-export type ActiveTab = 'home' | 'table' | 'visual_words' | 'flashcards' | 'quiz' | 'drawing' | 'guide' | 'admin' | 'dashboard';
+export type ActiveTab = 'home' | 'table' | 'practice' | 'drawing' | 'visual_words' | 'flashcards' | 'quiz' | 'guide' | 'admin' | 'dashboard';

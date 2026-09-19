@@ -2,20 +2,21 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Volume2, 
-  Sparkles, 
   ChevronLeft, 
   ChevronRight, 
   Shuffle, 
   CheckCircle, 
   XCircle, 
-  Filter, 
   Search,
   Eye,
   EyeOff,
   Play,
   Layers,
   HelpCircle,
-  BookOpen
+  BookOpen,
+  Bookmark,
+  ArrowLeft,
+  Sparkles
 } from 'lucide-react';
 import { PracticeWord, AlphabetType } from '../types';
 import { PRACTICE_WORDS } from '../data/wordsData';
@@ -24,9 +25,13 @@ import { soundManager, splitKanaIntoMorae } from '../utils/sound';
 
 interface VisualWordsTabProps {
   initialAlphabet?: AlphabetType;
+  alphabet?: AlphabetType;
 }
 
-export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ initialAlphabet = 'hiragana' }) => {
+export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ 
+  initialAlphabet = 'hiragana',
+  alphabet
+}) => {
   // Combine built-in visual words with any user-created words from admin panel
   const customWords = loadCustomWords();
   const allWords: PracticeWord[] = useMemo(() => {
@@ -36,8 +41,14 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ initialAlphabet 
   // Tab sub-mode: 'cards' (Resimli Kartlar) | 'quiz' (Kırmızı Harfi Bul) | 'gallery' (Görsel Sözlük)
   const [subMode, setSubMode] = useState<'cards' | 'quiz' | 'gallery'>('cards');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedAlphabet, setSelectedAlphabet] = useState<string>('all');
+  const [selectedAlphabet, setSelectedAlphabet] = useState<string>(alphabet || initialAlphabet);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    if (alphabet) {
+      setSelectedAlphabet(alphabet);
+    }
+  }, [alphabet]);
 
   // Synchronized Mora Playback State
   const [activePlayingWord, setActivePlayingWord] = useState<string>('');
@@ -80,11 +91,27 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ initialAlphabet 
     return unsub;
   }, []);
 
-  // Available categories
-  const categories = useMemo(() => {
-    const set = new Set(allWords.map((w) => w.category));
-    return ['all', ...Array.from(set)];
-  }, [allWords]);
+  // Available categories matching the requested list
+  const CATEGORY_ITEMS = [
+    { id: 'all', label: 'Tümü' },
+    { id: 'Doğa', label: 'Doğa' },
+    { id: 'Hayvanlar', label: 'Hayvanlar' },
+    { id: 'Şehir', label: 'Şehir' },
+    { id: 'Yiyecek', label: 'Yiyecek' },
+    { id: 'Eşyalar', label: 'Eşyalar' },
+    { id: 'Ulaşım', label: 'Ulaşım' },
+    { id: 'İnsanlar', label: 'İnsanlar' },
+    { id: 'Ev', label: 'Ev' },
+  ];
+
+  const ALPHABET_ITEMS = [
+    { id: 'all', label: 'Tümü' },
+    { id: 'hiragana', label: 'Hiragana' },
+    { id: 'katakana', label: 'Katakana' },
+  ];
+
+  // Session state: Do not start immediately; show launcher until user clicks Continue / Start
+  const [isSessionActive, setIsSessionActive] = useState(false);
 
   const activeCardWord = filteredWords[currentIndex] || filteredWords[0] || allWords[0];
 
@@ -234,117 +261,199 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ initialAlphabet 
 
   return (
     <div className="space-y-5 pb-24 sm:pb-12 max-w-4xl mx-auto">
-      {/* --- HEADER BANNER --- */}
-      <div className="bg-white border border-[#E8E4DC] rounded-3xl p-4 sm:p-5 shadow-2xs">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/80">
-                <Sparkles className="w-3.5 h-3.5 text-rose-600" />
-                Resimli Kelime Ezberi
-              </span>
-              <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                %100 Doğal İnsan Sesi
-              </span>
+      {!isSessionActive ? (
+        <>
+          {/* 1. BAŞLIK VE AÇIKLAMA */}
+          <div className="bg-white border border-[#E8E4DC] rounded-3xl p-5 sm:p-6 shadow-2xs space-y-6">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black text-[#1F1E1B] tracking-tight">
+                Görsel Hafıza ile Harf & Kelime Öğrenimi
+              </h1>
+              <p className="text-xs sm:text-sm text-[#5C574F] mt-1 leading-relaxed max-w-2xl">
+                Tüm harfler ve kelimeler harf tablosundaki gerçek Tokyo yerlisi konuşmacının stüdyo kayıtlarıyla seslendirilir.
+              </p>
             </div>
-            <h1 className="text-xl sm:text-2xl font-black text-[#1F1E1B] tracking-tight">
-              Görsel Hafıza ile Harf & Kelime Öğrenimi
-            </h1>
-            <p className="text-xs sm:text-sm text-[#5C574F] mt-0.5 max-w-xl">
-              Tüm harfler ve kelimeler harf tablosundaki gerçek Tokyo yerlisi konuşmacının stüdyo kayıtlarıyla seslendirilir.
-            </p>
-          </div>
 
-          {/* Sub-Mode Selector with Icons */}
-          <div className="flex bg-[#F2EFEA] p-1 rounded-2xl border border-[#E2DDD4] w-full sm:w-auto shadow-inner">
-            <button
-              id="mode-cards"
-              onClick={() => { soundManager.stopAllAudio(); setSubMode('cards'); }}
-              className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
-                subMode === 'cards'
-                  ? 'bg-white text-rose-700 shadow-2xs'
-                  : 'text-[#6C675E] hover:text-[#1F1E1B]'
-              }`}
-            >
-              <Layers className="w-4 h-4 text-rose-600" />
-              <span>Kartlar</span>
-            </button>
-            <button
-              id="mode-quiz"
-              onClick={() => { soundManager.stopAllAudio(); setSubMode('quiz'); }}
-              className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
-                subMode === 'quiz'
-                  ? 'bg-white text-rose-700 shadow-2xs'
-                  : 'text-[#6C675E] hover:text-[#1F1E1B]'
-              }`}
-            >
-              <HelpCircle className="w-4 h-4 text-rose-600" />
-              <span>Harf Testi</span>
-            </button>
-            <button
-              id="mode-gallery"
-              onClick={() => { soundManager.stopAllAudio(); setSubMode('gallery'); }}
-              className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
-                subMode === 'gallery'
-                  ? 'bg-white text-rose-700 shadow-2xs'
-                  : 'text-[#6C675E] hover:text-[#1F1E1B]'
-              }`}
-            >
-              <BookOpen className="w-4 h-4 text-rose-600" />
-              <span>Galeri ({filteredWords.length})</span>
-            </button>
-          </div>
-        </div>
-
-        {/* --- FILTERS ROW --- */}
-        <div className="mt-3 pt-3 border-t border-[#E6E1D8]/80 flex flex-wrap items-center justify-between gap-2.5">
-          {/* Categories */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
-            <span className="text-xs font-bold text-[#7A756D] mr-1 shrink-0 flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5" /> Kategori:
-            </span>
-            {categories.map((cat) => (
+            {/* 2. ÇALIŞMA MODLARI: KARTLAR, HARF TESTİ, GALERİ */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
-                key={cat}
+                type="button"
+                id="mode-select-cards"
                 onClick={() => {
                   soundManager.stopAllAudio();
-                  setSelectedCategory(cat);
-                  setCurrentIndex(0);
+                  setSubMode('cards');
                 }}
-                className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
-                  selectedCategory === cat
-                    ? 'bg-rose-700 text-white'
-                    : 'bg-white text-[#5C574F] border border-[#E6E1D8] hover:bg-[#F9F7F2]'
+                className={`p-4 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
+                  subMode === 'cards'
+                    ? 'bg-rose-50/70 border-rose-400 ring-2 ring-rose-200 text-rose-800 font-bold shadow-2xs'
+                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-rose-300 hover:text-[#1F1E1B]'
                 }`}
               >
-                {cat === 'all' ? 'Tümü' : cat}
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  subMode === 'cards' ? 'bg-rose-600 text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
+                }`}>
+                  <Layers className="w-6 h-6" />
+                </div>
+                <span className="text-sm font-bold">Kartlar</span>
               </button>
-            ))}
+
+              <button
+                type="button"
+                id="mode-select-quiz"
+                onClick={() => {
+                  soundManager.stopAllAudio();
+                  setSubMode('quiz');
+                }}
+                className={`p-4 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
+                  subMode === 'quiz'
+                    ? 'bg-rose-50/70 border-rose-400 ring-2 ring-rose-200 text-rose-800 font-bold shadow-2xs'
+                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-rose-300 hover:text-[#1F1E1B]'
+                }`}
+              >
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  subMode === 'quiz' ? 'bg-rose-600 text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
+                }`}>
+                  <HelpCircle className="w-6 h-6" />
+                </div>
+                <span className="text-sm font-bold">Harf Testi</span>
+              </button>
+
+              <button
+                type="button"
+                id="mode-select-gallery"
+                onClick={() => {
+                  soundManager.stopAllAudio();
+                  setSubMode('gallery');
+                }}
+                className={`p-4 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
+                  subMode === 'gallery'
+                    ? 'bg-rose-50/70 border-rose-400 ring-2 ring-rose-200 text-rose-800 font-bold shadow-2xs'
+                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-rose-300 hover:text-[#1F1E1B]'
+                }`}
+              >
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  subMode === 'gallery' ? 'bg-rose-600 text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
+                }`}>
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <span className="text-sm font-bold">Galeri ({allWords.length})</span>
+              </button>
+            </div>
+
+            {/* 3. KATEGORİ: TÜMÜ, DOĞA, HAYVANLAR, ŞEHİR, YİYECEK, EŞYALAR, ULAŞIM, İNSANLAR, EV */}
+            <div className="space-y-2 pt-3 border-t border-[#F0ECE4]">
+              <div className="text-xs font-bold text-[#7A756D] uppercase tracking-wider">
+                Kategori:
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {CATEGORY_ITEMS.map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => {
+                      soundManager.stopAllAudio();
+                      setSelectedCategory(cat.id);
+                      setCurrentIndex(0);
+                    }}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                      selectedCategory === cat.id
+                        ? 'bg-rose-700 text-white shadow-2xs'
+                        : 'bg-[#FAF8F5] text-[#5C574F] border border-[#E8E4DC] hover:bg-white hover:border-rose-300'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 4. ALFABE: TÜMÜ, HIRAGANA, KATAKANA */}
+            <div className="space-y-2 pt-3 border-t border-[#F0ECE4]">
+              <div className="text-xs font-bold text-[#7A756D] uppercase tracking-wider">
+                Alfabe:
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {ALPHABET_ITEMS.map((alp) => (
+                  <button
+                    key={alp.id}
+                    type="button"
+                    onClick={() => {
+                      soundManager.stopAllAudio();
+                      setSelectedAlphabet(alp.id);
+                      setCurrentIndex(0);
+                    }}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                      selectedAlphabet === alp.id
+                        ? 'bg-rose-700 text-white shadow-2xs'
+                        : 'bg-[#FAF8F5] text-[#5C574F] border border-[#E8E4DC] hover:bg-white hover:border-rose-300'
+                    }`}
+                  >
+                    {alp.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Alphabet toggle */}
-          <div className="flex items-center gap-1 text-xs">
-            <button
-              onClick={() => { soundManager.stopAllAudio(); setSelectedAlphabet('all'); setCurrentIndex(0); }}
-              className={`px-2.5 py-1 rounded-lg font-bold ${selectedAlphabet === 'all' ? 'bg-white border border-[#D1CABE] text-[#1F1E1B]' : 'text-[#7A756D]'}`}
-            >
-              Tümü
-            </button>
-            <button
-              onClick={() => { soundManager.stopAllAudio(); setSelectedAlphabet('hiragana'); setCurrentIndex(0); }}
-              className={`px-2.5 py-1 rounded-lg font-bold ${selectedAlphabet === 'hiragana' ? 'bg-white border border-rose-300 text-rose-700' : 'text-[#7A756D]'}`}
-            >
-              Hiragana
-            </button>
-            <button
-              onClick={() => { soundManager.stopAllAudio(); setSelectedAlphabet('katakana'); setCurrentIndex(0); }}
-              className={`px-2.5 py-1 rounded-lg font-bold ${selectedAlphabet === 'katakana' ? 'bg-white border border-amber-300 text-amber-700' : 'text-[#7A756D]'}`}
-            >
-              Katakana
-            </button>
+          {/* 5. KALDIĞIN YERDEN DEVAM ET */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E8E4DC] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200/80 flex items-center justify-center text-center shrink-0 shadow-2xs">
+                <Bookmark className="w-6 h-6 text-rose-600" />
+              </div>
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700 block">
+                  Kaldığın Yer
+                </span>
+                <h3 className="text-sm sm:text-base font-bold text-[#1F1E1B] mt-0.5">
+                  {activeCardWord ? `${activeCardWord.kana} (${activeCardWord.romaji}) • ${activeCardWord.meaningTr}` : 'Kelime Çalışması'}
+                </h3>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                id="resume-visual-study-btn"
+                onClick={() => {
+                  soundManager.stopAllAudio();
+                  setIsSessionActive(true);
+                }}
+                className="px-5 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-2xs active:scale-95"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Devam Et</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      ) : (
+        <>
+          {/* Active Session Return Bar */}
+          <div className="bg-white border border-[#E8E4DC] rounded-2xl p-3 sm:p-4 shadow-2xs flex items-center justify-between gap-3">
+            <button
+              type="button"
+              id="back-to-setup-screen-btn"
+              onClick={() => {
+                soundManager.stopAllAudio();
+                setIsSessionActive(false);
+              }}
+              className="px-3.5 py-2 rounded-xl bg-[#FAF8F5] border border-[#E8E4DC] hover:bg-white hover:border-rose-300 text-xs sm:text-sm font-bold text-[#1F1E1B] flex items-center gap-2 transition-all shadow-2xs active:scale-95"
+            >
+              <ArrowLeft className="w-4 h-4 text-rose-600" />
+              <span>Seçim Ekranına Dön</span>
+            </button>
+
+            <div className="text-xs text-[#5C574F] font-semibold flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <span className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 font-bold border border-rose-200">
+                {subMode === 'cards' ? 'Kartlar' : subMode === 'quiz' ? 'Harf Testi' : `Galeri (${filteredWords.length})`}
+              </span>
+              <span>•</span>
+              <span>{selectedCategory === 'all' ? 'Tüm Kategoriler' : selectedCategory}</span>
+              <span>•</span>
+              <span>{selectedAlphabet === 'all' ? 'Tümü' : selectedAlphabet === 'hiragana' ? 'Hiragana' : 'Katakana'}</span>
+            </div>
+          </div>
 
       {/* ========================================================= */}
       {/* SUB-MODE 1: RESİMLİ KELİME KARTLARI                       */}
@@ -358,47 +467,49 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ initialAlphabet 
               animate={{ opacity: 1, scale: 1 }}
               className="bg-white border border-[#E6E1D8] rounded-3xl overflow-hidden shadow-2xs hover:shadow-sm transition-all"
             >
-              {/* Card Image Container */}
-              <div className="relative w-full h-64 sm:h-80 bg-[#F2EFE9] overflow-hidden group">
-                <img
-                  src={activeCardWord.imageUrl}
-                  alt={activeCardWord.meaningTr}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                  loading="eager"
-                />
+              {/* Card Image Container (More compact & elegant) */}
+              <div className="p-3 sm:p-4 bg-[#FAF8F5] border-b border-[#E6E1D8]">
+                <div className="relative w-full max-w-md mx-auto h-44 sm:h-52 bg-[#F2EFE9] rounded-2xl overflow-hidden group border border-[#E6E1D8]/80 shadow-2xs">
+                  <img
+                    src={activeCardWord.imageUrl}
+                    alt={activeCardWord.meaningTr}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                    loading="eager"
+                  />
 
-                {/* Top overlay pills */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/65 backdrop-blur-md text-white shadow-2xs">
-                    {activeCardWord.category}
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/90 backdrop-blur-md text-[#1F1E1B] border border-white/40 shadow-2xs">
-                    {currentIndex + 1} / {filteredWords.length}
-                  </span>
-                </div>
-
-                {/* Target Letter Floating Badge on the image */}
-                <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md border border-white/60 rounded-2xl p-2.5 shadow-md flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center shadow-inner">
-                    <span className="text-2xl font-black text-rose-600">
-                      {activeCardWord.targetKana || activeCardWord.kana.slice(0, 1)}
+                  {/* Top overlay pills */}
+                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-black/65 backdrop-blur-md text-white shadow-2xs">
+                      {activeCardWord.category}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-white/90 backdrop-blur-md text-[#1F1E1B] border border-white/40 shadow-2xs">
+                      {currentIndex + 1} / {filteredWords.length}
                     </span>
                   </div>
-                  <div className="text-left pr-1">
-                    <span className="text-[10px] uppercase font-bold text-[#7A756D] block">Hedef Harf</span>
-                    <span className="text-xs font-bold text-[#1F1E1B]">
-                      {activeCardWord.targetRomaji || 'hedef'}
-                    </span>
+
+                  {/* Target Letter Floating Badge on the image */}
+                  <div className="absolute bottom-2.5 right-2.5 bg-white/95 backdrop-blur-md border border-white/60 rounded-xl p-1.5 sm:p-2 shadow-md flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center shadow-inner">
+                      <span className="text-lg font-black text-rose-600">
+                        {activeCardWord.targetKana || activeCardWord.kana.slice(0, 1)}
+                      </span>
+                    </div>
+                    <div className="text-left pr-1">
+                      <span className="text-[9px] uppercase font-bold text-[#7A756D] block">Hedef</span>
+                      <span className="text-xs font-bold text-[#1F1E1B]">
+                        {activeCardWord.targetRomaji || 'hedef'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handlePlayLetter(activeCardWord.targetKana || activeCardWord.kana.slice(0, 1))}
+                      className="w-7 h-7 rounded-lg bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center transition-all active:scale-95 shadow-xs"
+                      title="Hedef harfin doğal insan sesini dinle"
+                    >
+                      <Volume2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handlePlayLetter(activeCardWord.targetKana || activeCardWord.kana.slice(0, 1))}
-                    className="w-9 h-9 rounded-xl bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center transition-all active:scale-95 shadow-xs"
-                    title="Hedef harfin doğal insan sesini dinle"
-                  >
-                    <Volume2 className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
 
@@ -573,16 +684,16 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ initialAlphabet 
               </div>
             </div>
 
-            {/* Quiz Image & Clue */}
-            <div className="flex flex-col sm:flex-row items-center gap-5">
-              <div className="w-full sm:w-56 h-44 sm:h-48 rounded-2xl overflow-hidden border border-[#E6E1D8] relative shrink-0 shadow-inner">
+            {/* Quiz Image & Clue (More compact) */}
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="w-full sm:w-44 h-32 sm:h-36 rounded-2xl overflow-hidden border border-[#E6E1D8] relative shrink-0 shadow-inner">
                 <img
                   src={currentQuizWord.imageUrl}
                   alt={currentQuizWord.meaningTr}
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"
                 />
-                <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-black/60 text-white backdrop-blur-xs">
+                <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur-xs">
                   {currentQuizWord.category}
                 </span>
               </div>
@@ -725,8 +836,8 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ initialAlphabet 
                 key={item.id}
                 className="bg-white border border-[#E6E1D8] rounded-2xl overflow-hidden shadow-2xs hover:shadow-xs transition-all group flex flex-col"
               >
-                {/* Thumbnail Image */}
-                <div className="relative h-32 w-full bg-[#F2EFE9] overflow-hidden">
+                {/* Thumbnail Image (Compact) */}
+                <div className="relative h-24 sm:h-26 w-full bg-[#F2EFE9] overflow-hidden">
                   <img
                     src={item.imageUrl}
                     alt={item.meaningTr}
@@ -782,6 +893,8 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({ initialAlphabet 
             ))}
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

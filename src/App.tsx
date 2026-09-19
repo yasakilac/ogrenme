@@ -7,18 +7,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ActiveTab, AlphabetType, KanaCharacter, UserProgressData } from './types';
 import { Header } from './components/Header';
 import { HomeCurriculumTab } from './components/HomeCurriculumTab';
-import { VisualWordsTab } from './components/VisualWordsTab';
-import { DashboardTab } from './components/DashboardTab';
 import { KanaTableTab } from './components/KanaTableTab';
-import { GuideTab } from './components/GuideTab';
-import { FlashcardsTab } from './components/FlashcardsTab';
-import { QuizTab } from './components/QuizTab';
+import { PracticeHubTab, PracticeSubTab } from './components/PracticeHubTab';
 import { DrawingCanvasTab } from './components/DrawingCanvasTab';
 import { CharacterDetailModal } from './components/CharacterDetailModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { UserRegisterModal } from './components/UserRegisterModal';
+import { SettingsModal } from './components/SettingsModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
-import { MoreDrawerModal } from './components/MoreDrawerModal';
 import { 
   loadProgress, 
   recordCharacterAnswer, 
@@ -32,17 +28,18 @@ import {
 } from './utils/storage';
 
 export default function App() {
-  // 1st page: Home with Progress Tracking, Resume Where Left Off, and Topics Curriculum
+  // Navigation: Exactly 4 sections (home, table, practice, drawing)
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
+  const [practiceSubTab, setPracticeSubTab] = useState<PracticeSubTab>('flashcards');
   const [alphabet, setAlphabet] = useState<AlphabetType>('hiragana');
   const [progress, setProgress] = useState<UserProgressData>(() => loadProgress());
   const [selectedModalChar, setSelectedModalChar] = useState<KanaCharacter | null>(null);
   const [drawingChar, setDrawingChar] = useState<KanaCharacter | null>(null);
 
   // Modals state
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
-  const [isMoreDrawerOpen, setIsMoreDrawerOpen] = useState(false);
 
   // Sync state with storage
   const reloadUserData = useCallback(() => {
@@ -91,7 +88,8 @@ export default function App() {
     if (kanaIds.length > 0) {
       saveLastStudied('topic_vowels', kanaIds[0], alphabet);
     }
-    setActiveTab('flashcards');
+    setPracticeSubTab('flashcards');
+    setActiveTab('practice');
   };
 
   const handleSelectModalCharacter = (char: KanaCharacter) => {
@@ -102,21 +100,18 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-[#1F1E1B] flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900">
       
-      {/* Top Navigation & App Bar */}
+      {/* Top Navigation & App Bar (Only 4 sections: Ana Sayfa, Harf Tablosu, Alıştırmalar, Çizim + Settings Icon) */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         alphabet={alphabet}
-        setAlphabet={setAlphabet}
-        streakDays={progress.stats.streakDays}
-        onOpenUserModal={() => setIsUserModalOpen(true)}
-        onOpenAdminModal={() => setIsAdminOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-7">
         
-        {/* Page 1: Home Curriculum Tab (Takip, Kaldığın Yer, Konu Başlıkları) */}
+        {/* 1. Ana Sayfa (İkili Yapı, Kaldığın Yerden Devam Et, Konular) */}
         {activeTab === 'home' && (
           <HomeCurriculumTab
             alphabet={alphabet}
@@ -124,16 +119,24 @@ export default function App() {
             progress={progress}
             onOpenCharacter={handleSelectModalCharacter}
             onStartTopicStudy={handleStartTopicStudy}
-            onNavigateTab={(tab) => setActiveTab(tab)}
+            onNavigateTab={(tab) => {
+              if (tab === 'flashcards') {
+                setPracticeSubTab('flashcards');
+                setActiveTab('practice');
+              } else if (tab === 'visual_words') {
+                setPracticeSubTab('visual_words');
+                setActiveTab('practice');
+              } else if (tab === 'quiz') {
+                setPracticeSubTab('quiz');
+                setActiveTab('practice');
+              } else {
+                setActiveTab(tab);
+              }
+            }}
           />
         )}
 
-        {/* Visual Words & Red Letter Practice (Resimli Kelime Ezberi & İlk Harf Kırmızı) */}
-        {activeTab === 'visual_words' && (
-          <VisualWordsTab initialAlphabet={alphabet} />
-        )}
-
-        {/* Kana Reading Table */}
+        {/* 2. Harf Tablosu */}
         {activeTab === 'table' && (
           <KanaTableTab
             alphabet={alphabet}
@@ -141,33 +144,33 @@ export default function App() {
             progress={progress}
             onSelectCharacter={handleSelectModalCharacter}
             onOpenDrawing={handleOpenDrawing}
-            onNavigateToFlashcards={() => setActiveTab('flashcards')}
+            onNavigateToFlashcards={() => {
+              setPracticeSubTab('flashcards');
+              setActiveTab('practice');
+            }}
           />
         )}
 
-        {/* Flashcards */}
-        {activeTab === 'flashcards' && (
-          <FlashcardsTab
+        {/* 3. Alıştırmalar (Ezber Kartları, Resimli Kelimeler, Alıştırma & Test) */}
+        {(activeTab === 'practice' || activeTab === 'flashcards' || activeTab === 'visual_words' || activeTab === 'quiz') && (
+          <PracticeHubTab
             alphabet={alphabet}
             setAlphabet={setAlphabet}
             progress={progress}
             onRecordAnswer={handleRecordAnswer}
             onCardFlipped={handleCardFlipped}
-          />
-        )}
-
-        {/* Quizzes & Exercises */}
-        {activeTab === 'quiz' && (
-          <QuizTab
-            alphabet={alphabet}
-            setAlphabet={setAlphabet}
-            progress={progress}
-            onRecordAnswer={handleRecordAnswer}
             onSessionComplete={handleQuizSessionCompleted}
+            initialSubTab={
+              activeTab === 'visual_words'
+                ? 'visual_words'
+                : activeTab === 'quiz'
+                ? 'quiz'
+                : practiceSubTab
+            }
           />
         )}
 
-        {/* Stroke Drawing Canvas */}
+        {/* 4. Çizim */}
         {activeTab === 'drawing' && (
           <DrawingCanvasTab
             alphabet={alphabet}
@@ -177,37 +180,13 @@ export default function App() {
             onDrawingCompleted={handleDrawingCompleted}
           />
         )}
-
-        {/* Comprehensive Guide & Rules */}
-        {activeTab === 'guide' && <GuideTab />}
-
-        {/* Detailed Stats / Dashboard */}
-        {activeTab === 'dashboard' && (
-          <DashboardTab
-            progress={progress}
-            alphabet={alphabet}
-            setAlphabet={setAlphabet}
-            onNavigateTab={(tab) => setActiveTab(tab)}
-            onSelectCharacter={handleSelectModalCharacter}
-            onResetProgress={handleResetProgress}
-          />
-        )}
       </main>
 
-      {/* Mobile-First Bottom Navigation Bar (Sticky Thumb Controls) */}
+      {/* Mobile-First Bottom Navigation Bar (Ana Sayfa, Tablo, Alıştırma, Çizim + Ayarlar ikonu) */}
       <MobileBottomNav
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onOpenMoreMenu={() => setIsMoreDrawerOpen(true)}
-      />
-
-      {/* Mobile Extra Drawer Menu */}
-      <MoreDrawerModal
-        isOpen={isMoreDrawerOpen}
-        onClose={() => setIsMoreDrawerOpen(false)}
-        onSelectTab={(tab) => setActiveTab(tab)}
-        onOpenUserModal={() => setIsUserModalOpen(true)}
-        onOpenAdminModal={() => setIsAdminOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       {/* Character Detail Modal */}
@@ -225,6 +204,18 @@ export default function App() {
         />
       )}
 
+      {/* Settings Modal (Alfabe seçimi, ses testi, profil ve admin erişimi) */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        alphabet={alphabet}
+        setAlphabet={setAlphabet}
+        progress={progress}
+        onOpenUserModal={() => setIsUserModalOpen(true)}
+        onOpenAdminModal={() => setIsAdminOpen(true)}
+        onUserChanged={reloadUserData}
+      />
+
       {/* Admin Panel Modal (Kelime & Veri Yönetimi) */}
       <AdminPanelModal
         isOpen={isAdminOpen}
@@ -232,7 +223,7 @@ export default function App() {
         onDataChanged={reloadUserData}
       />
 
-      {/* Simple User Registration & Profile Switch Modal */}
+      {/* User Registration & Profile Switch Modal */}
       <UserRegisterModal
         isOpen={isUserModalOpen}
         onClose={() => setIsUserModalOpen(false)}
