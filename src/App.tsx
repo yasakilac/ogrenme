@@ -12,7 +12,8 @@ import { AdminPanelModal } from './components/AdminPanelModal';
 import { UserRegisterModal } from './components/UserRegisterModal';
 import { SettingsModal } from './components/SettingsModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
-import { loadProgress, getActiveUserId } from './utils/storage';
+import { loadProgress, saveProgress, getActiveUserId } from './utils/storage';
+import { useFirebaseSync } from './hooks/useFirebaseSync';
 
 const firstActiveModule = MODULE_REGISTRY.find((m) => m.component) ?? MODULE_REGISTRY[0];
 
@@ -40,6 +41,22 @@ export default function App() {
   useEffect(() => {
     reloadUserData();
   }, [reloadUserData]);
+
+  // Bulut senkronu: opsiyonel katman, giriş yapılmadan yerel-mod olduğu gibi çalışır.
+  const cloudSync = useFirebaseSync({
+    onCloudProgress: (cloudProgress) => {
+      // Bulutta veri varsa aktif profilin üzerine yaz (basit kural: bulut kazanır).
+      saveProgress(cloudProgress, getActiveUserId());
+      setProgress(cloudProgress);
+    },
+    getLocalProgress: () => progress
+  });
+
+  // Write-through: ilerleme değiştikçe (hangi mutasyon olursa olsun) giriş yapılmışsa
+  // debounce ile buluta yaz. Tüm setProgress çağrıları buradan tek noktadan geçer.
+  useEffect(() => {
+    cloudSync.pushProgress(progress);
+  }, [progress, cloudSync.pushProgress]);
 
   const currentModule = getModule(currentModuleId) ?? firstActiveModule;
   const ModuleView = currentModule.component;
@@ -107,6 +124,13 @@ export default function App() {
         onOpenUserModal={() => setIsUserModalOpen(true)}
         onOpenAdminModal={() => setIsAdminOpen(true)}
         onUserChanged={reloadUserData}
+        authUser={cloudSync.user}
+        authLoading={cloudSync.authLoading}
+        authError={cloudSync.error}
+        onClearAuthError={() => cloudSync.setError('')}
+        onSignUp={cloudSync.signUp}
+        onSignIn={cloudSync.signIn}
+        onSignOut={cloudSync.signOutUser}
       />
 
       {/* Admin Panel Modal (Kelime & Veri Yönetimi) */}

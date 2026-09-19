@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Settings, 
-  X, 
-  Volume2, 
-  Flame, 
-  User, 
-  ShieldCheck, 
-  Check, 
+import {
+  Settings,
+  X,
+  Volume2,
+  Flame,
+  User,
+  ShieldCheck,
+  Check,
   Sparkles,
   Lock,
   LogOut,
   ChevronRight,
-  Award
+  Award,
+  Cloud,
+  CloudOff,
+  Loader2
 } from 'lucide-react';
 import { AlphabetType, UserProgressData, UserProfile } from '../types';
 import { soundManager } from '../utils/sound';
@@ -27,6 +30,14 @@ interface SettingsModalProps {
   onOpenUserModal: () => void;
   onOpenAdminModal: () => void;
   onUserChanged: () => void;
+  // Bulut senkronu (opsiyonel katman — giriş yapılmadan da uygulama tamamen çalışır)
+  authUser: { email: string | null; uid: string } | null;
+  authLoading: boolean;
+  authError: string;
+  onClearAuthError: () => void;
+  onSignUp: (email: string, password: string) => Promise<void>;
+  onSignIn: (email: string, password: string) => Promise<void>;
+  onSignOut: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -37,12 +48,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   progress,
   onOpenUserModal,
   onOpenAdminModal,
-  onUserChanged
+  onUserChanged,
+  authUser,
+  authLoading,
+  authError,
+  onClearAuthError,
+  onSignUp,
+  onSignIn,
+  onSignOut
 }) => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPin, setAdminPin] = useState('');
   const [pinError, setPinError] = useState('');
+
+  // Bulut senkronu formu
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authSubmitting, setAuthSubmitting] = useState(false);
 
   const profiles = loadProfiles();
   const activeUserId = getActiveUserId();
@@ -78,6 +102,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       onUserChanged();
     } else {
       setPinError('Geçersiz yönetici şifresi. (Varsayılan: admin veya 1234)');
+    }
+  };
+
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthSubmitting(true);
+    try {
+      if (authMode === 'signup') {
+        await onSignUp(authEmail.trim(), authPassword);
+      } else {
+        await onSignIn(authEmail.trim(), authPassword);
+      }
+      setAuthPassword('');
+    } catch {
+      // Hata mesajı authError üzerinden zaten gösteriliyor.
+    } finally {
+      setAuthSubmitting(false);
     }
   };
 
@@ -234,6 +275,86 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </span>
               </div>
             </div>
+          </div>
+
+          {/* 3.5 BULUT SENKRONU (Firebase Auth — opsiyonel, giriş yapılmadan yerel mod devam eder) */}
+          <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E6E1D8] space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700 shrink-0">
+                {authUser ? <Cloud className="w-5 h-5" /> : <CloudOff className="w-5 h-5" />}
+              </div>
+              <div>
+                <span className="text-sm font-bold text-[#1F1E1B] block">Bulut Senkronu</span>
+                <span className="text-xs text-[#7A756D]">İlerlemeni cihazlar arasında senkronla</span>
+              </div>
+            </div>
+
+            {authLoading ? (
+              <div className="flex items-center gap-2 text-xs text-[#7A756D] py-1">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Kontrol ediliyor...</span>
+              </div>
+            ) : authUser ? (
+              <div className="space-y-1.5">
+                <div className="p-3 rounded-xl bg-white border border-[#E6E1D8] flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-[#1F1E1B] block">{authUser.email}</span>
+                    <span className={`text-[11px] ${authError ? 'text-rose-600' : 'text-emerald-700'}`}>
+                      {authError ? 'Senkron hatası' : 'Senkron aktif'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={onSignOut}
+                    className="p-2 text-[#7A756D] hover:text-rose-700 transition-colors"
+                    title="Bulut hesabından çıkış yap"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+                {authError && <span className="text-[11px] text-rose-600 font-semibold block px-1">{authError}</span>}
+              </div>
+            ) : (
+              <form onSubmit={handleAuthSubmit} className="space-y-2">
+                <input
+                  type="email"
+                  required
+                  value={authEmail}
+                  onChange={(e) => setAuthEmail(e.target.value)}
+                  placeholder="E-posta"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-[#E6E1D8] text-xs text-[#1F1E1B] focus:outline-none focus:ring-1 focus:ring-sky-500"
+                />
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={authPassword}
+                  onChange={(e) => setAuthPassword(e.target.value)}
+                  placeholder="Şifre (en az 6 karakter)"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white border border-[#E6E1D8] text-xs text-[#1F1E1B] focus:outline-none focus:ring-1 focus:ring-sky-500"
+                />
+                {authError && <span className="text-[11px] text-rose-600 font-semibold block">{authError}</span>}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="submit"
+                    disabled={authSubmitting}
+                    className="flex-1 py-1.5 px-3 rounded-xl bg-sky-700 hover:bg-sky-800 disabled:opacity-60 text-white text-xs font-bold transition-all shadow-2xs"
+                  >
+                    {authSubmitting ? '...' : authMode === 'signup' ? 'Kayıt Ol' : 'Giriş Yap'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMode((m) => (m === 'signup' ? 'signin' : 'signup'));
+                      onClearAuthError();
+                    }}
+                    className="text-[11px] font-semibold text-[#8C877E] hover:text-[#1F1E1B] transition-colors shrink-0"
+                  >
+                    {authMode === 'signup' ? 'Zaten hesabın var mı?' : 'Hesabın yok mu?'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
 
           {/* 4. KULLANICI / ÖĞRENCİ PROFİLİ */}
