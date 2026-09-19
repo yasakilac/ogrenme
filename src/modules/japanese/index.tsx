@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Home, Grid3X3, Sparkles, PenTool } from 'lucide-react';
 import { AlphabetType, KanaCharacter, UserProgressData } from '../../types';
 import { LearningModule, LearningModuleProps } from '../types';
-import { HomeCurriculumTab } from '../../components/HomeCurriculumTab';
-import { KanaTableTab } from '../../components/KanaTableTab';
-import { PracticeHubTab, PracticeSubTab } from '../../components/PracticeHubTab';
-import { DrawingCanvasTab } from '../../components/DrawingCanvasTab';
-import { CharacterDetailModal } from '../../components/CharacterDetailModal';
+import { HomeCurriculumTab } from './components/HomeCurriculumTab';
+import { KanaTableTab } from './components/KanaTableTab';
+import { PracticeHubTab, PracticeSubTab } from './components/PracticeHubTab';
+import { DrawingCanvasTab } from './components/DrawingCanvasTab';
+import { CharacterDetailModal } from './components/CharacterDetailModal';
 import {
   recordCharacterAnswer,
   setDirectMastery,

@@ -1,7 +1,7 @@
 import React from 'react';
-import { KanaCharacter, AlphabetType, CharacterProgress } from '../types';
+import { KanaCharacter, AlphabetType, CharacterProgress } from '../../../types';
 import { Volume2, X, PenTool, CheckCircle2, Bookmark } from 'lucide-react';
-import { soundManager } from '../utils/sound';
+import { soundManager } from '../../../utils/sound';
 
 interface CharacterDetailModalProps {
   character: KanaCharacter | null;

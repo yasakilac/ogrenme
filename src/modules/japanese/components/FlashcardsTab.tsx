@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { KanaCharacter, AlphabetType, KanaCategory, UserProgressData } from '../types';
-import { KANA_DATA } from '../modules/japanese/data/kanaData';
+import { KanaCharacter, AlphabetType, KanaCategory, UserProgressData } from '../../../types';
+import { KANA_DATA } from '../data/kanaData';
 import { 
   Volume2, 
   RotateCw, 
@@ -13,7 +13,7 @@ import {
   Bookmark,
   VolumeX
 } from 'lucide-react';
-import { soundManager } from '../utils/sound';
+import { soundManager } from '../../../utils/sound';
 
 interface FlashcardsTabProps {
   alphabet: AlphabetType;

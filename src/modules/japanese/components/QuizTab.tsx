@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { KanaCharacter, AlphabetType, UserProgressData, PracticeWord } from '../types';
-import { KANA_DATA } from '../modules/japanese/data/kanaData';
-import { PRACTICE_WORDS } from '../modules/japanese/data/wordsData';
+import { KanaCharacter, AlphabetType, UserProgressData, PracticeWord } from '../../../types';
+import { KANA_DATA } from '../data/kanaData';
+import { PRACTICE_WORDS } from '../data/wordsData';
 import { 
   CheckCircle2, 
   XCircle, 
@@ -16,7 +16,7 @@ import {
   HelpCircle,
   Eye
 } from 'lucide-react';
-import { soundManager } from '../utils/sound';
+import { soundManager } from '../../../utils/sound';
 
 type QuizMode = 'kana_to_romaji' | 'romaji_to_kana' | 'audio_quiz' | 'words';
 

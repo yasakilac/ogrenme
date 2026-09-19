@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { KanaCharacter, AlphabetType, KanaCategory, UserProgressData } from '../types';
-import { KANA_DATA, GOJUON_ROW_LABELS } from '../modules/japanese/data/kanaData';
+import { KanaCharacter, AlphabetType, KanaCategory, UserProgressData } from '../../../types';
+import { KANA_DATA, GOJUON_ROW_LABELS } from '../data/kanaData';
 import { 
   Volume2, 
   Search, 
@@ -15,7 +15,7 @@ import {
   Compass,
   Eye
 } from 'lucide-react';
-import { soundManager } from '../utils/sound';
+import { soundManager } from '../../../utils/sound';
 
 interface KanaTableTabProps {
   alphabet: AlphabetType;

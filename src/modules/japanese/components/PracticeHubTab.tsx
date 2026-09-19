@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Layers, Image as ImageIcon, HelpCircle } from 'lucide-react';
-import { AlphabetType, UserProgressData } from '../types';
+import { AlphabetType, UserProgressData } from '../../../types';
 import { FlashcardsTab } from './FlashcardsTab';
 import { VisualWordsTab } from './VisualWordsTab';
 import { QuizTab } from './QuizTab';

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { KanaCharacter, AlphabetType } from '../types';
-import { KANA_DATA } from '../modules/japanese/data/kanaData';
+import { KanaCharacter, AlphabetType } from '../../../types';
+import { KANA_DATA } from '../data/kanaData';
 import { 
   Eraser, 
   RotateCcw, 
@@ -14,7 +14,7 @@ import {
   Sparkles,
   Info
 } from 'lucide-react';
-import { soundManager } from '../utils/sound';
+import { soundManager } from '../../../utils/sound';
 
 interface DrawingCanvasTabProps {
   alphabet: AlphabetType;
