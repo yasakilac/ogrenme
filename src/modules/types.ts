@@ -23,6 +23,8 @@ export interface LearningModuleMeta {
   shortTitle?: string;           // 'Japonca' — dar alanlar için
   glyph?: string;                // '日' — kart/menü ikonu
   navTabs?: ModuleNavTab[];      // sadece status='active' modüllerde
+  difficulty?: 'başlangıç' | 'orta' | 'ileri';
+  estimatedMinutes?: number;     // hub kartında "~X dk" göstermek için
   /** Modüle özel buton/etiket metinleri (Türkçe ek grameri modüle ait). */
   labels?: {
     cta?: string;      // Hub kartındaki giriş butonu
@@ -30,6 +32,16 @@ export interface LearningModuleMeta {
     back?: string;     // Header: modüle geri dön
     enter?: string;    // Header: modüle geç
   };
+}
+
+/** Bir modülün "ders bitirme testi" sorusu. Bilgi Yarışması havuzu buradan besleniyor. */
+export interface FinalTestQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;          // doğru cevap sonrası kısa açıklama
+  mode?: 'recognition' | 'production'; // ileride tekrar algoritması için
 }
 
 /**
@@ -54,4 +66,6 @@ export interface LearningModule {
   component?: React.ComponentType<LearningModuleProps>;
   /** Hub kartındaki % ilerleme çubuğu için. */
   getProgressPercent?: (progress: UserProgressData) => number;
+  /** Modülün ders bitirme testi. Yeni modüllerde ZORUNLU (bkz. ICERIK_MODUL_PROMPTU.md). */
+  finalTest?: FinalTestQuestion[];
 }

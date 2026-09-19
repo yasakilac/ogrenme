@@ -78,6 +78,17 @@ export interface LearningModule {
   meta: LearningModuleMeta;
   component: React.ComponentType<LearningModuleProps>;
   getProgressPercent?: (progress: UserProgressData) => number; // ATLA, kullanma
+  finalTest: FinalTestQuestion[];  // ZORUNLU, aşağıya bak
+}
+
+/** Ders bitirme testi sorusu. */
+export interface FinalTestQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;                 // doğru cevap sonrası kısa açıklama
+  mode?: 'recognition' | 'production';   // tanıma mı üretme mi — bkz. aşağıdaki etkinlik tipleri notu
 }
 ```
 
@@ -87,6 +98,39 @@ ilerleme durumunu kendi `useState` + (istersen) kendi `localStorage` anahtarıyl
 tutar, örn. `localStorage.getItem('ogrenme_<modul-id>_progress')`. `getProgressPercent`
 alanını hiç yazma / boş bırak — hub'da o modül için % çubuğu gösterilmeyecek, sorun
 değil.
+
+## Zorunlu standartlar (her modülde olmalı — pazarlık konusu değil)
+
+- **Skor/puan.** Her etkinlik bir sonuç üretmeli (`{ correct: boolean }` ya da kısmi
+  puanlı etkinliklerde `{ scoreOutOf100: number }`). Modül bunları kendi state/
+  localStorage'ında biriktirip kullanıcıya kendi ilerlemesini (doğru/yanlış sayısı,
+  genel % başarı gibi) modülün kendi ana ekranında göstermeli — bu olmadan kişi
+  kendini göremiyor, kabul edilmez.
+- **Ders bitirme testi (`finalTest`) — ZORUNLU.** `LearningModule.finalTest` alanı
+  BOŞ OLAMAZ: en az 8-10 çoktan seçmeli soru, tüm modül konusunu kapsayacak şekilde.
+  Bu, modülün "bitirme testi" sekmesinde (`navTabs`'e bir `{ id: 'final-test', ... }`
+  ekle) kullanıcının çözebileceği bir test olarak render edilmeli. Bu sorular aynı
+  zamanda ileride tüm modüllerden toplanan genel "Bilgi Yarışması" havuzunu
+  besleyecek — o yüzden şekle (`FinalTestQuestion`) birebir uy, atlanmaz.
+- **Gerçek görsel/ses, placeholder değil.** Emoji veya renkli kutucuk "görsel" yerine
+  kullanılmaz (ciddi bir konuda amatör durur) — serbest lisanslı gerçek görsel URL'leri
+  kullan (örn. Wikimedia Commons). Ses için yeni bir dosya pipeline'ı KURMA — tarayıcının
+  `SpeechSynthesis` API'siyle veya mevcut `soundManager` yardımcısıyla gerçekçi telaffuz/
+  seslendirme sağla.
+- **Tasarım bütünlüğü.** Modül, uygulamanın geri kalanından "farklı bir app gibi"
+  hissettirmemeli — aşağıdaki Stil bölümündeki palete ve mobil-öncelikli düzene uy.
+- **Pedagojik çoklu-duyu yapı.** Tek bir etkinlik türüne (sadece flashcard, sadece
+  çoktan seçmeli) sıkışma — konuya uygun en az 3-4 FARKLI etkinlik türü seç, hem
+  "tanıma" (flashcard, çoktan seçmeli) hem "üretme/hatırlama" (yazılı cevap, sesli
+  anlatım, senaryo) tarafından örnekler olsun. Etkinlikleri "Etkinlik tipleri"
+  bölümündeki kataloğa göre konuya özel seç — hepsini kullanmak zorunda değilsin,
+  konuya en uygun olanları seç.
+- **Meta bilgisi.** `LearningModuleMeta.difficulty` (`'başlangıç'|'orta'|'ileri'`) ve
+  `estimatedMinutes` alanlarını doldur — kullanıcı hub'da paketin ne kadar süreceğini
+  görsün.
+- **(opsiyonel ama tercih edilir) Kaynak.** Bilgi içerikli konularda (tarih, bilim vb.)
+  yanlış bilgi riskine karşı, paket verisine opsiyonel bir `sources?: string[]` alanı
+  (kaynak URL/referans) eklemen iyi olur — zorunlu değil.
 
 ## Component yapısı — referans (Japonca modülünden, birebir bu deseni izle)
 
@@ -120,12 +164,26 @@ export const myModule: LearningModule = {
     status: 'active',
     shortTitle: '...',
     glyph: '🐦',
+    difficulty: 'başlangıç',
+    estimatedMinutes: 20,
     navTabs: [
       { id: 'home', label: 'Ana Sayfa', icon: Home },
-      { id: 'quiz', label: 'Test', icon: ListChecks }
+      { id: 'quiz', label: 'Test', icon: ListChecks },
+      { id: 'final-test', label: 'Bitirme Testi', icon: ListChecks }
     ]
   },
-  component: MyModule
+  component: MyModule,
+  finalTest: [
+    {
+      id: 'ft1',
+      question: '...',
+      options: ['...', '...', '...', '...'],
+      correctIndex: 0,
+      explanation: '...',
+      mode: 'recognition'
+    }
+    // ... en az 8-10 soru
+  ]
 };
 ```
 
@@ -142,13 +200,30 @@ Uygulamanın ana paleti sıcak/editoryal: arka plan `#FAF8F5`, metin `#1F1E1B`, 
 zorunda değilsin, ama parlak/soğuk bir tema açma). Mobil-öncelikli tasarla (dar ekran
 önce), `max-w-*` + responsive class'lar kullan.
 
-## Etkinlik tipleri (bugün desteklenenler)
+## Etkinlik tipleri (konuya özel seç, kataloğa göre)
 
-Modülün içindeki ekranları/etkinlikleri şu temel tiplerden kur (React component olarak,
-serbestçe): flashcard (ön/arka çevirme), çoktan seçmeli, doğru/yanlış, eşleştirme
-(görsel/ses ile). Daha karmaşık tipler (cloze, sıralama, kavram haritası, senaryo,
-metafor vb.) istersen dahil et — kısıtlama yok, önemli olan yukarıdaki dosya/tip
-sözleşmesine uyman.
+Aşağıdaki katalogdan konuya en uygun 3-4+ türü seç (hepsi zorunlu değil, çeşitlilik
+zorunlu — bkz. yukarıdaki "Pedagojik çoklu-duyu yapı" maddesi). Her biri serbest bir
+React component olarak uygulanır, tek bir sabit format yok.
+
+**Temel / Klasik (tanıma ağırlıklı):** flashcard, sesle eşleştirme, kısa çoktan
+seçmeli, yazılı (açık uçlu) cevap, video/görsel eşleştirme.
+
+**Tanıma & üretme ekseninde ek türler:** boşluk doldurma (cloze), sıralama (adım/
+kronoloji), kategorize etme (drag-drop gruplama), doğru/yanlış, hata bulma,
+etiketleme (görsel/diyagram üzerinde işaretleme), karşılaştırma (fark/benzerlik
+doldurma), sesli anlatım (Feynman tekniği — kendi cümleleriyle anlatma/kayıt),
+senaryo/uygulama (kavramı hangi durumda kullanacağını seçme).
+
+**Disiplinlerarası / derin anlam (üretme ağırlıklı):** analoji tamamlama, semantik
+harita/ağ kurma, sınıflandırma + savunma (nedenini açıklama), kolokasyon/birliktelik
+eşleştirme, hikaye tamamlama, çizerek anlatma, metafor/benzetme kurma, atasözü/
+deyimle ilişkilendirme.
+
+Flashcard ve çoktan seçmeli "tanıma" tarafında; yazılı, sesli anlatım, senaryo ve
+metafor kurma "üretme/hatırlama" tarafında — her etkinliğe (ve `finalTest`
+sorularına) uygun olduğunda `mode: 'recognition' | 'production'` etiketini ekle,
+ileride tekrar algoritması bu ayrıma göre kurulacak.
 
 ## Çıktı formatı
 
@@ -172,8 +247,13 @@ npm paketi olup olmadığı.
 - [ ] Next.js'e özgü hiçbir şey yok mu?
 - [ ] Yeni npm paketi eklemedim mi (eklediysem açıkça belirttim mi)?
 - [ ] `progress`/`alphabet` prop'larını kullanmadım mı?
-- [ ] `LearningModule`/`LearningModuleMeta`/`LearningModuleProps` şekillerine birebir uydum mu?
+- [ ] `LearningModule`/`LearningModuleMeta`/`LearningModuleProps`/`FinalTestQuestion` şekillerine birebir uydum mu?
 - [ ] `navTabs`'teki ikonlar gerçekten `lucide-react`'te var mı?
+- [ ] `finalTest` en az 8-10 soru içeriyor mu, boş/eksik değil mi?
+- [ ] Her etkinlik bir skor/sonuç üretiyor mu, kullanıcı kendi ilerlemesini görebiliyor mu?
+- [ ] Görsel/ses placeholder değil, gerçek/gerçekçi mi?
+- [ ] En az 3-4 farklı etkinlik türü var mı (tek tip tekrar değil)?
+- [ ] `difficulty` ve `estimatedMinutes` dolduruldu mu?
 
 ---
 
