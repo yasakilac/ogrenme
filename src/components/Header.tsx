@@ -48,11 +48,11 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   const desktopTabs = [
-    { id: 'home' as ActiveTab, label: 'Başlangıç & Müfredat', icon: Home },
-    { id: 'table' as ActiveTab, label: 'Harf Tablosu', icon: Grid3X3 },
+    { id: 'home' as ActiveTab, label: 'Ana Sayfa', icon: Home },
     { id: 'visual_words' as ActiveTab, label: 'Resimli Kelimeler', icon: ImageIcon, badge: 'Yeni' },
+    { id: 'table' as ActiveTab, label: 'Harf Tablosu', icon: Grid3X3 },
     { id: 'flashcards' as ActiveTab, label: 'Ezber Kartları', icon: Layers },
-    { id: 'quiz' as ActiveTab, label: 'Alıştırmalar', icon: HelpCircle },
+    { id: 'quiz' as ActiveTab, label: 'Alıştırma & Test', icon: HelpCircle },
     { id: 'drawing' as ActiveTab, label: 'Çizim', icon: PenTool },
     { id: 'guide' as ActiveTab, label: 'Rehber', icon: BookOpen },
   ];

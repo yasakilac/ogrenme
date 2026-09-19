@@ -681,17 +681,30 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                   <p className="text-xs text-[#5C574F] mt-1">
                     Net, yüksek kaliteli ve tüm harfler için gerçek insan stüdyo kaydı.
                   </p>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      soundManager.speak('あ');
-                    }}
-                    className="mt-3 px-3 py-1.5 rounded-xl bg-white border border-[#E6E1D8] text-xs font-bold flex items-center gap-1.5"
-                  >
-                    <Volume2 className="w-3.5 h-3.5 text-rose-600" />
-                    <span>Örnek Dinle ("あ")</span>
-                  </button>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        soundManager.speakSingleLetter('あ');
+                      }}
+                      className="px-2.5 py-1.5 rounded-xl bg-white border border-[#E6E1D8] text-xs font-bold flex items-center gap-1.5 hover:bg-[#F2EFE9]"
+                    >
+                      <Volume2 className="w-3.5 h-3.5 text-rose-600" />
+                      <span>Harf: "あ"</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        soundManager.playWordInNativeVoice('あめ');
+                      }}
+                      className="px-2.5 py-1.5 rounded-xl bg-rose-100/70 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-1.5 hover:bg-rose-100"
+                    >
+                      <Volume2 className="w-3.5 h-3.5 text-rose-700" />
+                      <span>Kelime: "あめ" (Aynı Ses)</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div
@@ -716,17 +729,30 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                   <p className="text-xs text-[#5C574F] mt-1">
                     Derin, tok ve net telaffuzlu ikinci stüdyo kayıt paketi.
                   </p>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      soundManager.speak('か');
-                    }}
-                    className="mt-3 px-3 py-1.5 rounded-xl bg-white border border-[#E6E1D8] text-xs font-bold flex items-center gap-1.5"
-                  >
-                    <Volume2 className="w-3.5 h-3.5 text-rose-600" />
-                    <span>Örnek Dinle ("か")</span>
-                  </button>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        soundManager.speakSingleLetter('か');
+                      }}
+                      className="px-2.5 py-1.5 rounded-xl bg-white border border-[#E6E1D8] text-xs font-bold flex items-center gap-1.5 hover:bg-[#F2EFE9]"
+                    >
+                      <Volume2 className="w-3.5 h-3.5 text-rose-600" />
+                      <span>Harf: "か"</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        soundManager.playWordInNativeVoice('ねこ');
+                      }}
+                      className="px-2.5 py-1.5 rounded-xl bg-rose-100/70 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-1.5 hover:bg-rose-100"
+                    >
+                      <Volume2 className="w-3.5 h-3.5 text-rose-700" />
+                      <span>Kelime: "ねこ" (Aynı Ses)</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

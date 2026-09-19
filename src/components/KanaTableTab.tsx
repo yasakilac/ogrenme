@@ -99,23 +99,23 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
     <div className="space-y-6 animate-in fade-in duration-200">
       
       {/* 🎯 SPOTLIGHT BANNER: "SIRADAKİ ÇALIŞMAN GEREKEN HARF" */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-white to-[#FDF8F3] border-2 border-rose-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E8E4DC] shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5">
         
         <div className="flex items-center gap-4">
           {/* Big Interactive Next Kana Tile */}
           <button
             id="spotlight-next-char"
             onClick={() => onSelectCharacter(nextChar)}
-            className="group relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white border-2 border-rose-400 hover:border-rose-600 flex flex-col items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all"
+            className="group relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-[#FAF8F5] border border-[#E2DDD4] hover:border-rose-400 flex flex-col items-center justify-center shadow-2xs hover:scale-102 active:scale-95 transition-all"
             title="Detaylar ve telaffuz için tıkla"
           >
-            <span className="text-4xl sm:text-5xl font-bold text-[#1F1E1D] group-hover:text-rose-600 font-japanese leading-none">
+            <span className="text-3xl sm:text-4xl font-black text-[#1F1E1D] group-hover:text-rose-600 font-japanese leading-none">
               {nextCharKana}
             </span>
             <span className="text-xs font-mono font-bold text-rose-700 mt-1">
               {nextChar.romaji}
             </span>
-            <div className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold shadow-xs">
+            <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[9px] font-bold shadow-2xs">
               Sıradaki
             </div>
           </button>

@@ -21,9 +21,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   onOpenMoreMenu
 }) => {
   const navItems = [
-    { id: 'home' as ActiveTab, label: 'Konular', icon: Home },
-    { id: 'table' as ActiveTab, label: 'Tablo', icon: Grid3X3 },
+    { id: 'home' as ActiveTab, label: 'Ana Sayfa', icon: Home },
     { id: 'visual_words' as ActiveTab, label: 'Görsel', icon: ImageIcon, badge: 'Yeni' },
+    { id: 'table' as ActiveTab, label: 'Tablo', icon: Grid3X3 },
     { id: 'flashcards' as ActiveTab, label: 'Kartlar', icon: Layers },
     { id: 'quiz' as ActiveTab, label: 'Test', icon: HelpCircle },
   ];
