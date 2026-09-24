@@ -3,6 +3,7 @@ import { Volume2, CheckCircle2, XCircle, RotateCcw, Music, Sparkles } from 'luci
 import { TURKEY_BIRDS, BirdSpecies } from '../data/birds';
 import { birdAudioSynth } from '../utils/audioSynth';
 import { BirdPhoto } from './BirdPhoto';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 interface AudioMatchActivityProps {
   onScoreUpdate?: (score: number) => void;
@@ -70,23 +71,23 @@ export const AudioMatchActivity: React.FC<AudioMatchActivityProps> = ({ onScoreU
   return (
     <div className="w-full max-w-2xl mx-auto space-y-5">
       {/* Skor ve Tur Başlığı */}
-      <div className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-stone-200/80 shadow-2xs text-xs">
+      <div className="flex items-center justify-between p-3.5 bg-white rounded-[20px] border border-stone-200/80 shadow-2xs text-xs">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600">
+          <div className="p-1.5 rounded-lg bg-[var(--accent-light)] text-[var(--accent)]">
             <Music className="w-4 h-4" />
           </div>
           <span className="font-semibold text-stone-900">Sesi Dinle & Kuşu Teşhis Et</span>
         </div>
 
         <div className="flex items-center gap-3 font-medium">
-          <span className="text-stone-500">Doğru Seri: <strong className="text-rose-600">{streak}</strong></span>
+          <span className="text-stone-500">Doğru Seri: <strong className="text-[var(--accent)]">{streak}</strong></span>
           <span className="text-stone-300">|</span>
           <span className="text-stone-500">Puan: <strong className="text-stone-900">{score}</strong></span>
         </div>
       </div>
 
       {/* Ses Çalma Kartı (Minimalist & Odaklı) */}
-      <div className="p-8 bg-white rounded-3xl border border-stone-200/80 text-center shadow-xs flex flex-col items-center justify-center space-y-4">
+      <div className="p-8 bg-white rounded-[24px] border border-stone-200/80 text-center shadow-xs flex flex-col items-center justify-center space-y-4">
         <p className="text-xs text-stone-500 font-medium">
           {!hasPlayedCurrentRound
             ? 'Gizemli kuşun sesini duymak için butona tıklayın'
@@ -99,9 +100,9 @@ export const AudioMatchActivity: React.FC<AudioMatchActivityProps> = ({ onScoreU
           onClick={() => handlePlaySound()}
           className={`flex items-center justify-center w-20 h-20 rounded-full transition-all active:scale-95 shadow-md ${
             isPlaying
-              ? 'bg-rose-600 text-white ring-8 ring-rose-100 shadow-rose-200 animate-pulse'
+              ? 'bg-[var(--accent)] text-white ring-8 ring-[var(--accent)] shadow-[var(--accent-light)] animate-pulse'
               : !hasPlayedCurrentRound
-              ? 'bg-rose-600 text-white hover:bg-rose-700 ring-4 ring-rose-100'
+              ? 'bg-[var(--accent)] text-white hover:bg-[var(--accent)] ring-4 ring-[var(--accent)]'
               : 'bg-stone-900 text-white hover:bg-stone-800'
           }`}
         >
@@ -114,7 +115,7 @@ export const AudioMatchActivity: React.FC<AudioMatchActivityProps> = ({ onScoreU
             <div
               key={i}
               className={`w-1 rounded-full transition-all duration-150 ${
-                isPlaying ? 'bg-rose-500' : 'bg-stone-200'
+                isPlaying ? 'bg-[var(--accent)]' : 'bg-stone-200'
               }`}
               style={{
                 height: isPlaying ? `${Math.max(6, (h * (1 + Math.sin(i * 1.8))) % 26)}px` : '4px'
@@ -139,15 +140,15 @@ export const AudioMatchActivity: React.FC<AudioMatchActivityProps> = ({ onScoreU
           const isSelected = selectedBirdId === option.id;
           const isTarget = option.id === targetBird.id;
 
-          let btnBorder = 'border-stone-200 hover:border-stone-400 bg-white';
+          let btnStyle: React.CSSProperties = { borderColor: '#E7E5E4', background: '#FFFFFF' };
 
           if (selectedBirdId !== null) {
             if (isTarget) {
-              btnBorder = 'border-emerald-500 bg-emerald-50/50 ring-2 ring-emerald-200';
+              btnStyle = { borderColor: CORRECT.border, background: `${CORRECT.bg}80`, boxShadow: `0 0 0 2px ${CORRECT.border}` };
             } else if (isSelected && !isTarget) {
-              btnBorder = 'border-rose-400 bg-rose-50/50';
+              btnStyle = { borderColor: WRONG.border, background: `${WRONG.bg}80` };
             } else {
-              btnBorder = 'border-stone-100 opacity-40';
+              btnStyle = { borderColor: '#F5F5F4', opacity: 0.4 };
             }
           }
 
@@ -157,16 +158,17 @@ export const AudioMatchActivity: React.FC<AudioMatchActivityProps> = ({ onScoreU
               id={`audio-option-${option.id}`}
               disabled={selectedBirdId !== null}
               onClick={() => handleSelectOption(option)}
-              className={`p-2.5 rounded-2xl border text-left flex items-center gap-3 transition-all ${btnBorder}`}
+              style={btnStyle}
+              className="p-2.5 rounded-[20px] border text-left flex items-center gap-3 transition-all hover:border-stone-400"
             >
-              <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-stone-100">
+              <div className="w-14 h-14 rounded-[16px] overflow-hidden shrink-0 bg-stone-100">
                 <BirdPhoto
                   src={option.imageUrl}
                   fallbackSrc={option.fallbackImageUrl}
                   alt={option.name}
                   birdId={option.id}
                   aspectRatio="square"
-                  className="w-full h-full rounded-xl"
+                  className="w-full h-full rounded-[16px]"
                 />
               </div>
 
@@ -176,10 +178,10 @@ export const AudioMatchActivity: React.FC<AudioMatchActivityProps> = ({ onScoreU
               </div>
 
               {selectedBirdId !== null && isTarget && (
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: CORRECT.border }} />
               )}
               {selectedBirdId !== null && isSelected && !isTarget && (
-                <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                <XCircle className="w-5 h-5 shrink-0" style={{ color: WRONG.border }} />
               )}
             </button>
           );
@@ -188,12 +190,12 @@ export const AudioMatchActivity: React.FC<AudioMatchActivityProps> = ({ onScoreU
 
       {/* Sonuç & Sonraki Adım */}
       {selectedBirdId !== null && (
-        <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs flex items-center justify-between gap-3 text-xs animate-fade-in">
+        <div className="p-4 bg-white rounded-[20px] border border-stone-200 shadow-xs flex items-center justify-between gap-3 text-xs animate-fade-in">
           <div className="flex items-center gap-2">
             {isCorrect ? (
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: CORRECT.border }} />
             ) : (
-              <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <XCircle className="w-5 h-5 shrink-0" style={{ color: WRONG.border }} />
             )}
             <div>
               <span className="font-bold text-stone-900 block">
@@ -206,7 +208,7 @@ export const AudioMatchActivity: React.FC<AudioMatchActivityProps> = ({ onScoreU
           <button
             id="next-sound-round-btn"
             onClick={() => setRound((prev) => prev + 1)}
-            className="px-4 py-2 rounded-xl bg-stone-900 text-white hover:bg-stone-800 font-semibold whitespace-nowrap"
+            className="px-4 py-2 rounded-[16px] bg-stone-900 text-white hover:bg-stone-800 font-semibold whitespace-nowrap"
           >
             Sonraki Soru →
           </button>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Image as ImageIcon, CheckCircle2, XCircle, Award } from 'lucide-react';
 import { VISUAL_MATCH_ITEMS, type VisualMatchItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 interface VisualMatchingActivityProps {
   onScoreUpdate?: (points: number) => void;
@@ -38,10 +39,10 @@ export const VisualMatchingActivity: React.FC<VisualMatchingActivityProps> = ({ 
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-5 rounded-2xl border border-[#EBE7E0]">
+      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
+            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
               Görsel Algı & Optik Etki Eşleştirme
             </span>
             <h3 className="text-lg font-bold text-[#1F1E1B]">Görseldeki Optik Etkiyi Bulma</h3>
@@ -49,8 +50,8 @@ export const VisualMatchingActivity: React.FC<VisualMatchingActivityProps> = ({ 
               Fotoğraftaki optik etkiyi analiz edin ve buna sebep olan temel ayarı bulun.
             </p>
           </div>
-          <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200">
-            <Award className="w-4 h-4 text-rose-600" />
+          <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-[16px] border border-stone-200">
+            <Award className="w-4 h-4 text-[var(--accent)]" />
             <span className="text-xs font-bold text-stone-800">
               {totalScore} / {VISUAL_MATCH_ITEMS.length} Doğru
             </span>
@@ -58,17 +59,17 @@ export const VisualMatchingActivity: React.FC<VisualMatchingActivityProps> = ({ 
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex items-center justify-between text-xs text-[#8A8680] font-mono">
+      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-[24px] p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="flex items-center justify-between text-xs text-[#8A8680] ">
           <span>SORU {currentIndex + 1} / {VISUAL_MATCH_ITEMS.length}</span>
-          <span className="px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-bold font-sans">
+          <span className="px-2 py-0.5 rounded bg-[var(--accent-light)] text-[var(--accent)] font-bold font-sans">
             Kategori: {item.primarySetting}
           </span>
         </div>
 
         {/* Görsel Kartı */}
         <div className="space-y-3">
-          <div className="relative rounded-2xl overflow-hidden aspect-16/10 bg-stone-900 border border-stone-200 shadow-inner group">
+          <div className="relative rounded-[20px] overflow-hidden aspect-16/10 bg-stone-900 border border-stone-200 shadow-inner group">
             <img
               src={item.photoUrl}
               alt={item.title}
@@ -96,14 +97,14 @@ export const VisualMatchingActivity: React.FC<VisualMatchingActivityProps> = ({ 
               const isSelected = userResult?.selected === opt;
               const isCorrect = opt === item.correctAnswer;
 
-              let btnStyle = 'bg-stone-50 border-stone-200 text-stone-800 hover:bg-stone-100';
+              let btnStyle: React.CSSProperties = { background: '#FAFAF9', borderColor: '#E7E5E4', color: '#292524' };
               if (userResult) {
                 if (isCorrect) {
-                  btnStyle = 'bg-emerald-50 border-emerald-400 text-emerald-950 font-bold';
+                  btnStyle = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, fontWeight: 700 };
                 } else if (isSelected) {
-                  btnStyle = 'bg-rose-50 border-rose-400 text-rose-950';
+                  btnStyle = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg };
                 } else {
-                  btnStyle = 'opacity-50 bg-stone-50 border-stone-200';
+                  btnStyle = { background: '#FAFAF9', borderColor: '#E7E5E4', opacity: 0.5 };
                 }
               }
 
@@ -112,11 +113,12 @@ export const VisualMatchingActivity: React.FC<VisualMatchingActivityProps> = ({ 
                   key={opt}
                   onClick={() => handleSelect(opt)}
                   disabled={Boolean(userResult)}
-                  className={`w-full p-4 rounded-xl border text-left text-sm font-semibold transition-all flex items-center justify-between ${btnStyle}`}
+                  style={btnStyle}
+                  className="w-full p-4 rounded-[16px] border text-left text-sm font-semibold transition-all flex items-center justify-between"
                 >
                   <span>{opt}</span>
-                  {userResult && isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
-                  {userResult && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-rose-600" />}
+                  {userResult && isCorrect && <CheckCircle2 className="w-5 h-5" style={{ color: CORRECT.border }} />}
+                  {userResult && isSelected && !isCorrect && <XCircle className="w-5 h-5" style={{ color: WRONG.border }} />}
                 </button>
               );
             })}
@@ -126,11 +128,12 @@ export const VisualMatchingActivity: React.FC<VisualMatchingActivityProps> = ({ 
         {/* Açıklama */}
         {userResult && (
           <div
-            className={`p-4 rounded-xl border text-xs leading-relaxed space-y-1 ${
-              userResult.isCorrect
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
-                : 'bg-amber-50 border-amber-200 text-amber-950'
-            }`}
+            className="p-4 rounded-[16px] border text-xs leading-relaxed space-y-1"
+            style={{
+              background: userResult.isCorrect ? CORRECT.bg : WRONG.bg,
+              borderColor: userResult.isCorrect ? CORRECT.border : WRONG.border,
+              color: userResult.isCorrect ? CORRECT.fg : WRONG.fg
+            }}
           >
             <strong className="block font-bold">
               {userResult.isCorrect ? '✨ Doğru Eşleştirme!' : 'İpucu:'}
@@ -144,7 +147,7 @@ export const VisualMatchingActivity: React.FC<VisualMatchingActivityProps> = ({ 
           <div className="flex justify-end pt-2">
             <button
               onClick={handleNext}
-              className="px-5 py-2.5 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-colors"
+              className="px-5 py-2.5 rounded-[16px] font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent)] text-white transition-colors"
             >
               Sonraki Görsel Eşleştirme →
             </button>

@@ -9,18 +9,31 @@ import {
   ArrowRight,
   CheckCircle2,
   Award,
+  CheckCircle,
+  CheckSquare,
+  ArrowUpDown,
+  Volume2,
+  Image as ImageIcon,
+  Target,
+  AlertTriangle,
+  Compass,
+  FolderTree,
+  Columns,
+  PenTool,
+  Network,
+  Mic,
 } from 'lucide-react';
-import type { LearningModule, LearningModuleProps } from '../types';
+import type { LearningModule, LearningModuleProps, ModuleExerciseTile } from '../types';
 import { CameraSimulator } from './components/CameraSimulator';
-import { ActivitiesHubTab } from './components/ActivitiesHubTab';
+import { ActivitiesHubTab, type ActivityTypeId } from './components/ActivitiesHubTab';
 import { FinalTestTab } from './components/FinalTestTab';
 import { TopicAperture } from './components/TopicAperture';
 import { TopicShutter } from './components/TopicShutter';
 import { TopicIso } from './components/TopicIso';
-import { ModuleProgressHeader } from './components/ModuleProgressHeader';
 import { MasteryCertificateModal } from './components/MasteryCertificateModal';
 import { PHOTOGRAPHY_FINAL_TEST } from './data/photographyData';
 import { cameraAudio } from './utils/cameraAudio';
+import { getStorageItem } from '../../utils/storage';
 
 const LOCAL_STORAGE_KEY = 'ogrenme_dijital_fotograf_ayarlari_progress';
 
@@ -33,6 +46,7 @@ interface ModuleLocalProgress {
 export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
   activeTab: externalTab,
   setActiveTab: setExternalTab,
+  initialActivityId,
 }) => {
   const [currentView, setCurrentView] = useState<string>('home');
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState<boolean>(false);
@@ -203,20 +217,9 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // RENDER: Üstte Sadeleştirilmiş İlerleme Göstergesi + Altında İçerik
+  // RENDER: İlerleme artık ModuleTopBar'da (App kabuğu) gösteriliyor, burada tekrar edilmiyor.
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      {/* 1. SADELEŞTİRİLMİŞ ÖĞRENCİ İLERLEMESİ GÖSTERGESİ */}
-      <ModuleProgressHeader
-        currentView={currentView}
-        completedTopics={completedTopicsList}
-        totalScore={progressData?.totalScore || 0}
-        finalTestScore={progressData?.finalTestScore}
-        onNavigate={navigateTo}
-        onResetProgress={resetAllProgress}
-        onOpenCertificate={() => setIsCertificateModalOpen(true)}
-      />
-
       {/* 2. ANA SAYFA: KONU KARTLARI VE DENEME KARTLARI */}
       {currentView === 'home' && (
         <div className="space-y-8">
@@ -225,19 +228,19 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
             <section className="animate-fadeIn">
               <div
                 onClick={() => setIsCertificateModalOpen(true)}
-                className="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 rounded-3xl p-1 shadow-md cursor-pointer group hover:scale-[1.005] transition-all"
+                className="bg-gradient-to-r from-[var(--accent)] via-[var(--accent)] to-[var(--accent)] rounded-[24px] p-1 shadow-md cursor-pointer group hover:scale-[1.005] transition-all"
               >
-                <div className="bg-[#FFFDF9] rounded-[22px] p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-amber-200">
+                <div className="bg-[#FFFDF9] rounded-[22px] p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-5 border border-[var(--accent)]/30">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-stone-950 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-gradient-to-tr from-[var(--accent)] via-[var(--accent)] to-[var(--accent)] text-stone-950 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                       <Award className="w-8 h-8 sm:w-9 sm:h-9 text-stone-950" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-md font-mono border border-amber-200">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent-light)] px-2.5 py-0.5 rounded-md border border-[var(--accent)]/30">
                           🏆 Ustalık Başarısı Açıldı
                         </span>
-                        <span className="text-xs text-stone-500 font-mono">
+                        <span className="text-xs text-stone-500 ">
                           {completedCount >= 5 ? '5/5+ Modül Tamamlandı' : '%100 İlerleme'}
                         </span>
                       </div>
@@ -256,7 +259,7 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
                         e.stopPropagation();
                         setIsCertificateModalOpen(true);
                       }}
-                      className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 text-stone-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-md hover:from-amber-400 hover:to-yellow-400 transition-all group-hover:translate-x-1 cursor-pointer"
+                      className="px-5 py-3 rounded-[20px] bg-gradient-to-r from-[var(--accent)] to-[var(--accent)] text-stone-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-md hover:from-[var(--accent)] hover:to-[var(--accent)] transition-all group-hover:translate-x-1 cursor-pointer"
                     >
                       <Award className="w-4 h-4" />
                       <span>Sertifikamı Görüntüle</span>
@@ -270,7 +273,7 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
           {/* KONU KARTLARI BÖLÜMÜ */}
           <section className="space-y-3">
             <div className="flex items-center gap-2 px-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-stone-500 font-mono">
+              <span className="text-xs font-bold uppercase tracking-wider text-stone-500 ">
                 1. Bölüm: Öğrenme Konuları
               </span>
             </div>
@@ -289,24 +292,24 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
                   <button
                     key={topic.id}
                     onClick={() => navigateTo(topic.id)}
-                    className="group bg-white border-2 border-[#EBE7E0] hover:border-stone-400 hover:shadow-md rounded-2xl p-4 text-left transition-all duration-200 flex flex-col justify-between gap-3 cursor-pointer min-h-[110px]"
+                    className="group bg-white border-2 border-[#EBE7E0] hover:border-stone-400 hover:shadow-md rounded-[20px] p-4 text-left transition-all duration-200 flex flex-col justify-between gap-3 cursor-pointer min-h-[110px]"
                   >
                     <div className="flex items-center justify-between w-full">
                       <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${
+                        className={`w-10 h-10 rounded-[16px] flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${
                           topic.color === 'amber'
-                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            ? 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
                             : topic.color === 'blue'
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            ? 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
                             : topic.color === 'purple'
-                            ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                            : 'bg-rose-50 text-rose-700 border border-rose-200'
+                            ? 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
+                            : 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
                         }`}
                       >
                         <Icon className="w-5 h-5" />
                       </div>
                       {isCompleted ? (
-                        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                        <span className="text-[11px] font-bold text-[var(--accent)] bg-[var(--accent-light)] px-2 py-0.5 rounded-md border border-[var(--accent)]/30">
                           Tamamlandı
                         </span>
                       ) : (
@@ -315,7 +318,7 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
                     </div>
 
                     <div>
-                      <h3 className="text-base font-bold text-[#1F1E1B] group-hover:text-rose-600 transition-colors">
+                      <h3 className="text-base font-bold text-[#1F1E1B] group-hover:text-[var(--accent)] transition-colors">
                         {topic.title}
                       </h3>
                       <p className="text-xs text-stone-500 font-medium">
@@ -331,7 +334,7 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
           {/* DENEME & ETKİNLİK KARTLARI BÖLÜMÜ */}
           <section className="space-y-3">
             <div className="flex items-center gap-2 px-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-stone-500 font-mono">
+              <span className="text-xs font-bold uppercase tracking-wider text-stone-500 ">
                 2. Bölüm: Deneme & Etkinlik Kartları
               </span>
             </div>
@@ -340,17 +343,17 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
               {/* Kavram Deneme Kartı */}
               <div
                 onClick={() => navigateTo('activities')}
-                className="group bg-white border-2 border-[#EBE7E0] hover:border-emerald-400 hover:shadow-md rounded-3xl p-5 sm:p-6 transition-all duration-200 cursor-pointer flex items-center justify-between gap-4"
+                className="group bg-white border-2 border-[#EBE7E0] hover:border-[var(--accent)] hover:shadow-md rounded-[24px] p-5 sm:p-6 transition-all duration-200 cursor-pointer flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 rounded-[20px] bg-[var(--accent-light)] border border-[var(--accent)]/30 text-[var(--accent)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                     <Layers className="w-6 h-6" />
                   </div>
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded-md font-mono">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent-light)]/60 px-2 py-0.5 rounded-md ">
                       Deneme & Pratik
                     </span>
-                    <h3 className="text-lg font-black text-stone-900 group-hover:text-emerald-700 transition-colors mt-0.5">
+                    <h3 className="text-lg font-black text-stone-900 group-hover:text-[var(--accent)] transition-colors mt-0.5">
                       Kavram Ezberleme & Denemeleri
                     </h3>
                     <p className="text-xs text-stone-500 mt-0.5">
@@ -358,30 +361,30 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
                     </p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-stone-300 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all shrink-0" />
+                <ArrowRight className="w-5 h-5 text-stone-300 group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all shrink-0" />
               </div>
 
               {/* Bitirme Sınavı Link Kartı (Tıklayınca Başlar) */}
               <div
                 onClick={() => navigateTo('final-test')}
-                className="group bg-gradient-to-br from-white to-rose-50/40 border-2 border-[#EBE7E0] hover:border-rose-400 hover:shadow-md rounded-3xl p-5 sm:p-6 transition-all duration-200 cursor-pointer flex items-center justify-between gap-4"
+                className="group bg-gradient-to-br from-white to-[var(--accent-light)]/40 border-2 border-[#EBE7E0] hover:border-[var(--accent)] hover:shadow-md rounded-[24px] p-5 sm:p-6 transition-all duration-200 cursor-pointer flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 rounded-[20px] bg-[var(--accent-light)] border border-[var(--accent)]/30 text-[var(--accent)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                     <ListChecks className="w-6 h-6" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700 bg-rose-100/70 px-2 py-0.5 rounded-md font-mono">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent-light)]/70 px-2 py-0.5 rounded-md ">
                         Resmi Sınav
                       </span>
                       {progressData.finalTestScore !== undefined && (
-                        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 font-mono">
+                        <span className="text-[11px] font-bold text-[var(--accent)] bg-[var(--accent-light)] px-2 py-0.5 rounded-md border border-[var(--accent)]/30 ">
                           %{progressData.finalTestScore}
                         </span>
                       )}
                     </div>
-                    <h3 className="text-lg font-black text-stone-900 group-hover:text-rose-600 transition-colors mt-0.5">
+                    <h3 className="text-lg font-black text-stone-900 group-hover:text-[var(--accent)] transition-colors mt-0.5">
                       Ünite Sonu Bitirme Sınavı
                     </h3>
                     <p className="text-xs text-stone-500 mt-0.5">
@@ -389,7 +392,7 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900 group-hover:bg-rose-600 text-white text-xs font-bold transition-colors shrink-0">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-[16px] bg-stone-900 group-hover:bg-[var(--accent)] text-white text-xs font-bold transition-colors shrink-0">
                   <span>Başla</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
@@ -433,6 +436,7 @@ export const DigitalPhotographyModule: React.FC<LearningModuleProps> = ({
       {currentView === 'activities' && (
         <div className="space-y-4">
           <ActivitiesHubTab
+            initialActivityId={initialActivityId as ActivityTypeId | undefined}
             onScoreEarned={(pts) => {
               handleScoreEarned(pts);
               markTopicComplete('activities', pts);
@@ -482,19 +486,43 @@ export const myModule: LearningModule = {
     colorTheme: 'violet',
     shortTitle: 'Fotoğrafçılık',
     glyph: '📷',
+    accent: { color: '#B45309', light: '#FBEFE2' },
+    icon: Camera,
     difficulty: 'başlangıç',
     estimatedMinutes: 25,
     navTabs: [
       { id: 'home', label: 'Ana Sayfa', icon: Layers },
-      { id: 'aperture', label: 'Diyafram', icon: Aperture },
-      { id: 'shutter', label: 'Enstantane', icon: Timer },
-      { id: 'iso', label: 'ISO', icon: Sparkles },
-      { id: 'simulator', label: 'Simülatör', icon: Camera },
-      { id: 'activities', label: 'Etkinlikler', icon: Layers },
-      { id: 'final-test', label: 'Sınav', icon: ListChecks },
+      { id: 'aperture', label: 'Diyafram', icon: Aperture, kind: 'topic' },
+      { id: 'shutter', label: 'Enstantane', icon: Timer, kind: 'topic' },
+      { id: 'iso', label: 'ISO', icon: Sparkles, kind: 'topic' },
+      { id: 'simulator', label: 'Simülatör', icon: Camera, kind: 'topic' },
+      { id: 'final-test', label: 'Sınav', icon: ListChecks, kind: 'topic' },
+      { id: 'activities', label: 'Etkinlikler', icon: Layers, kind: 'exercise' },
     ],
+    // 14 kavram etkinliğinin her biri Öğrenme Alanı giriş ekranında kendi karosunda açılır
+    // (tabId her zaman 'activities', activityId ActivitiesHubTab'in ActivityTypeId'sine denk gelir).
+    exerciseTiles: [
+      { id: 'flashcard', label: 'Kartlar', icon: Layers, tabId: 'activities', activityId: 'flashcard' },
+      { id: 'true-false', label: 'Doğru/Yanlış', icon: CheckCircle, tabId: 'activities', activityId: 'true-false' },
+      { id: 'cloze', label: 'Boşluk Doldur', icon: CheckSquare, tabId: 'activities', activityId: 'cloze' },
+      { id: 'sequencing', label: 'Sırala', icon: ArrowUpDown, tabId: 'activities', activityId: 'sequencing' },
+      { id: 'sound-matching', label: 'Ses Eşle', icon: Volume2, tabId: 'activities', activityId: 'sound-matching' },
+      { id: 'visual-matching', label: 'Görsel Bul', icon: ImageIcon, tabId: 'activities', activityId: 'visual-matching' },
+      { id: 'diagram-labeling', label: 'Vizör Etiketle', icon: Target, tabId: 'activities', activityId: 'diagram-labeling' },
+      { id: 'error-finding', label: 'Hata Bul', icon: AlertTriangle, tabId: 'activities', activityId: 'error-finding' },
+      { id: 'scenario', label: 'Senaryo', icon: Compass, tabId: 'activities', activityId: 'scenario' },
+      { id: 'categorize', label: 'Grupla', icon: FolderTree, tabId: 'activities', activityId: 'categorize' },
+      { id: 'comparison', label: 'Kıyasla', icon: Columns, tabId: 'activities', activityId: 'comparison' },
+      { id: 'written', label: 'Yazılı Cevap', icon: PenTool, tabId: 'activities', activityId: 'written' },
+      { id: 'analogy-metaphor', label: 'Benzetme', icon: Network, tabId: 'activities', activityId: 'analogy-metaphor' },
+      { id: 'feynman-voice', label: 'Anlat', icon: Mic, tabId: 'activities', activityId: 'feynman-voice' },
+    ] satisfies ModuleExerciseTile[],
   },
   component: DigitalPhotographyModule,
+  getProgressPercent: () => {
+    const saved = getStorageItem<ModuleLocalProgress>(LOCAL_STORAGE_KEY, { totalScore: 0, completedTopics: [] });
+    return Math.min(100, Math.round((saved.completedTopics.length / 6) * 100));
+  },
   finalTest: PHOTOGRAPHY_FINAL_TEST,
 };
 

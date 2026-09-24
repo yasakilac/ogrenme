@@ -25,8 +25,8 @@ export const ComparisonActivity: React.FC<ComparisonActivityProps> = ({ onScoreU
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-5 rounded-2xl border border-[#EBE7E0]">
-        <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
+      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
+        <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
           Parametre Karşılaştırma Analizi
         </span>
         <h3 className="text-lg font-bold text-[#1F1E1B]">Karşılaştırma & Zıtlık Matrisi</h3>
@@ -41,9 +41,9 @@ export const ComparisonActivity: React.FC<ComparisonActivityProps> = ({ onScoreU
           <button
             key={item.parameter}
             onClick={() => handleSelectTab(idx)}
-            className={`px-4 py-2.5 rounded-xl font-bold text-xs shrink-0 transition-colors ${
+            className={`px-4 py-2.5 rounded-[16px] font-bold text-xs shrink-0 transition-colors ${
               selectedIndex === idx
-                ? 'bg-rose-600 text-white shadow-sm'
+                ? 'bg-[var(--accent)] text-white shadow-sm'
                 : 'bg-white border border-[#EBE7E0] text-[#1F1E1B] hover:bg-stone-100'
             }`}
           >
@@ -55,12 +55,12 @@ export const ComparisonActivity: React.FC<ComparisonActivityProps> = ({ onScoreU
       {/* Karşılaştırma Tablosu (2 Yan Yana Sütun) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Sol Kolon: Düşük / Açık Değer */}
-        <div className="bg-white border-2 border-amber-200 rounded-3xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-amber-100">
-            <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
+        <div className="bg-white border-2 border-[var(--accent)]/30 rounded-[24px] p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--accent)]/30">
+            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
               AÇIK / DÜŞÜK UÇ
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-900 font-extrabold text-xs">
+            <span className="px-2.5 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-extrabold text-xs">
               {currentComparison.lowValue.label}
             </span>
           </div>
@@ -79,7 +79,7 @@ export const ComparisonActivity: React.FC<ComparisonActivityProps> = ({ onScoreU
               <strong className="text-stone-500 block text-[11px] uppercase tracking-wide">
                 Görsel İmzası:
               </strong>
-              <p className="text-[#1F1E1B] mt-0.5 leading-relaxed bg-amber-50/50 p-3 rounded-xl border border-amber-100">
+              <p className="text-[#1F1E1B] mt-0.5 leading-relaxed bg-[var(--accent-light)]/50 p-3 rounded-[16px] border border-[var(--accent)]/30">
                 {currentComparison.lowValue.visualEffect}
               </p>
             </div>
@@ -96,12 +96,12 @@ export const ComparisonActivity: React.FC<ComparisonActivityProps> = ({ onScoreU
         </div>
 
         {/* Sağ Kolon: Yüksek / Kısık Değer */}
-        <div className="bg-white border-2 border-blue-200 rounded-3xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-blue-100">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">
+        <div className="bg-white border-2 border-[var(--accent)]/30 rounded-[24px] p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--accent)]/30">
+            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
               KISIK / YÜKSEK UÇ
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-900 font-extrabold text-xs">
+            <span className="px-2.5 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-extrabold text-xs">
               {currentComparison.highValue.label}
             </span>
           </div>
@@ -120,7 +120,7 @@ export const ComparisonActivity: React.FC<ComparisonActivityProps> = ({ onScoreU
               <strong className="text-stone-500 block text-[11px] uppercase tracking-wide">
                 Görsel İmzası:
               </strong>
-              <p className="text-[#1F1E1B] mt-0.5 leading-relaxed bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+              <p className="text-[#1F1E1B] mt-0.5 leading-relaxed bg-[var(--accent-light)]/50 p-3 rounded-[16px] border border-[var(--accent)]/30">
                 {currentComparison.highValue.visualEffect}
               </p>
             </div>

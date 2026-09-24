@@ -148,10 +148,10 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in duration-300">
       
       {/* Header & Character Navigator */}
-      <div className="p-4 rounded-3xl bg-white border border-[#E8E3D8] shadow-xs flex items-center justify-between gap-4">
+      <div className="p-4 rounded-[24px] bg-white border border-[#E8E3D8] shadow-xs flex items-center justify-between gap-4">
         
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-700 font-bold text-3xl flex items-center justify-center border border-rose-200">
+          <div className="w-12 h-12 rounded-[20px] bg-[var(--accent-light)] text-[var(--accent)] font-bold text-3xl flex items-center justify-center border border-[var(--accent)]/30">
             {currentKana}
           </div>
           <div>
@@ -159,7 +159,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
               <h3 className="text-base font-bold text-[#1F1E1D]">
                 {currentChar.romaji.toUpperCase()} Çizim Alıştırması
               </h3>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-100 text-rose-800">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--accent-light)] text-[var(--accent)]">
                 {currentChar.strokeCount} Vuruş
               </span>
             </div>
@@ -175,7 +175,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
             id="btn-speak-drawing-char"
             onClick={() => soundManager.speak(currentKana)}
             title="Karakteri dinle"
-            className="p-2.5 rounded-xl bg-[#FAF8F5] text-rose-600 hover:bg-rose-50 border border-[#E8E2D6] transition-colors"
+            className="p-2.5 rounded-[16px] bg-[#FAF8F5] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[#E8E2D6] transition-colors"
           >
             <Volume2 className="w-4 h-4" />
           </button>
@@ -184,7 +184,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
             id="btn-prev-draw-char"
             disabled={currentIndex === 0}
             onClick={handlePrev}
-            className="p-2 rounded-xl border border-[#E8E2D6] text-[#555047] hover:bg-white disabled:opacity-30 transition-colors"
+            className="p-2 rounded-[16px] border border-[#E8E2D6] text-[#555047] hover:bg-white disabled:opacity-30 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -192,7 +192,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
             id="btn-next-draw-char"
             disabled={currentIndex === KANA_DATA.length - 1}
             onClick={handleNext}
-            className="p-2 rounded-xl border border-[#E8E2D6] text-[#555047] hover:bg-white disabled:opacity-30 transition-colors"
+            className="p-2 rounded-[16px] border border-[#E8E2D6] text-[#555047] hover:bg-white disabled:opacity-30 transition-colors"
           >
             <ArrowRight className="w-4 h-4" />
           </button>
@@ -201,14 +201,14 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
       </div>
 
       {/* Drawing Canvas Stage */}
-      <div className="relative rounded-3xl bg-white border-2 border-[#E2DDD3] shadow-md overflow-hidden select-none">
+      <div className="relative rounded-[24px] bg-white border-2 border-[#E2DDD3] shadow-md overflow-hidden select-none">
         
         {/* Japanese Calligraphy Grid Watermark (4 quadrants + diagonals) */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
           {/* Subtle Grid cross lines */}
-          <div className="w-full h-[1px] bg-red-200/50 absolute top-1/2 left-0" />
-          <div className="h-full w-[1px] bg-red-200/50 absolute top-0 left-1/2" />
-          <div className="w-full h-full border border-dashed border-red-200/40 rounded-2xl m-4" />
+          <div className="w-full h-[1px] bg-[var(--accent-light)]/50 absolute top-1/2 left-0" />
+          <div className="h-full w-[1px] bg-[var(--accent-light)]/50 absolute top-0 left-1/2" />
+          <div className="w-full h-full border border-dashed border-[var(--accent)]/40 rounded-[20px] m-4" />
           
           {/* Background Kana Watermark for tracing */}
           {showGuide && (
@@ -235,7 +235,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
 
         {/* Success Overlay Flash */}
         {feedbackSuccess && (
-          <div className="absolute inset-0 z-20 bg-emerald-500/80 backdrop-blur-xs flex items-center justify-center text-white font-bold text-xl gap-2 animate-in fade-in zoom-in duration-200">
+          <div className="absolute inset-0 z-20 bg-[var(--accent)]/80 backdrop-blur-xs flex items-center justify-center text-white font-bold text-xl gap-2 animate-in fade-in zoom-in duration-200">
             <Check className="w-8 h-8 text-white" />
             <span>Harika Çizim! İlerlemene Eklendi</span>
           </div>
@@ -244,7 +244,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
       </div>
 
       {/* Canvas Tool Controls */}
-      <div className="p-4 rounded-3xl bg-white border border-[#E8E3D8] shadow-xs flex flex-wrap items-center justify-between gap-4">
+      <div className="p-4 rounded-[24px] bg-white border border-[#E8E3D8] shadow-xs flex flex-wrap items-center justify-between gap-4">
         
         {/* Brush Color & Width */}
         <div className="flex items-center gap-3">
@@ -259,7 +259,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
                 onClick={() => setStrokeColor(c.color)}
                 style={{ backgroundColor: c.color }}
                 className={`w-6 h-6 rounded-full border-2 transition-all ${
-                  strokeColor === c.color ? 'scale-110 border-amber-400 shadow-xs' : 'border-white'
+                  strokeColor === c.color ? 'scale-110 border-[var(--accent)] shadow-xs' : 'border-white'
                 }`}
                 title={c.label}
               />
@@ -293,9 +293,9 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
           <button
             id="btn-toggle-guide"
             onClick={() => setShowGuide(!showGuide)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all ${
+            className={`px-3 py-1.5 rounded-[16px] text-xs font-semibold flex items-center gap-1.5 border transition-all ${
               showGuide
-                ? 'bg-rose-50 text-rose-800 border-rose-200'
+                ? 'bg-[var(--accent-light)] text-[var(--accent)] border-[var(--accent)]/30'
                 : 'bg-[#F5F2EC] text-[#555047] border-transparent'
             }`}
           >
@@ -306,7 +306,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
           <button
             id="btn-clear-canvas"
             onClick={handleClear}
-            className="p-2 rounded-xl bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] transition-colors"
+            className="p-2 rounded-[16px] bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] transition-colors"
             title="Çizimi Temizle"
           >
             <RotateCcw className="w-4 h-4" />
@@ -316,9 +316,9 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
       </div>
 
       {/* Confirmation Action Bar */}
-      <div className="flex items-center justify-between p-4 rounded-2xl bg-[#FAF8F5] border border-[#E8E2D6]">
+      <div className="flex items-center justify-between p-4 rounded-[20px] bg-[#FAF8F5] border border-[#E8E2D6]">
         <div className="flex items-center gap-2 text-xs text-[#6A655C]">
-          <Info className="w-4 h-4 text-rose-600 shrink-0" />
+          <Info className="w-4 h-4 text-[var(--accent)] shrink-0" />
           <span>Şablonu takip ederek parmağınız veya farenizle karakteri çizin.</span>
         </div>
 
@@ -326,7 +326,7 @@ export const DrawingCanvasTab: React.FC<DrawingCanvasTabProps> = ({
           id="btn-confirm-drawing"
           disabled={!hasDrawn}
           onClick={handleConfirmDrawing}
-          className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:pointer-events-none text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all active:scale-95"
+          className="px-5 py-2.5 rounded-[16px] bg-[var(--accent)] hover:bg-[var(--accent)] disabled:opacity-40 disabled:pointer-events-none text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all active:scale-95"
         >
           <Check className="w-4 h-4 text-white" />
           <span>Çizdim, Tamamla!</span>

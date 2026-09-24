@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PenTool, CheckCircle, HelpCircle, Sparkles, Send } from 'lucide-react';
 import { WRITTEN_PROMPTS, type WrittenPromptItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 interface WrittenResponseActivityProps {
   onScoreUpdate?: (points: number) => void;
@@ -52,8 +53,8 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-5 rounded-2xl border border-[#EBE7E0]">
-        <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
+      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
+        <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
           Açık Uçlu Akıl Yürütme Pratiği
         </span>
         <h3 className="text-lg font-bold text-[#1F1E1B]">Yazılı Açık Uçlu Kavram Açıklaması</h3>
@@ -62,10 +63,10 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
         </p>
       </div>
 
-      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-[24px] p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex items-center justify-between text-xs text-[#8A8680]">
-          <span className="font-mono">SORU {currentIndex + 1} / {WRITTEN_PROMPTS.length}</span>
-          <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-bold">
+          <span className="">SORU {currentIndex + 1} / {WRITTEN_PROMPTS.length}</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-bold">
             Serbest Yazı
           </span>
         </div>
@@ -73,7 +74,7 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
         {/* Soru Metni */}
         <div className="space-y-2">
           <h2 className="text-lg font-bold text-[#1F1E1B] leading-snug">{item.question}</h2>
-          <p className="text-xs text-[#66635E] italic bg-[#FAF8F5] p-3 rounded-xl border border-[#EBE7E0]">
+          <p className="text-xs text-[#66635E] italic bg-[#FAF8F5] p-3 rounded-[16px] border border-[#EBE7E0]">
             İpucu Bağlamı: {item.context}
           </p>
         </div>
@@ -88,7 +89,7 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
               onChange={(e) => setUserText(e.target.value)}
               disabled={feedback?.evaluated}
               placeholder="Örn: f/1.8 daha geniştir, daha fazla ışık alarak arka planı bulanıklaştırır..."
-              className="w-full p-4 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 bg-[#FAF8F5]"
+              className="w-full p-4 rounded-[16px] border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-[var(--accent)] bg-[#FAF8F5]"
             />
           </div>
 
@@ -96,7 +97,7 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
             <button
               type="submit"
               disabled={!userText.trim()}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent)] text-white shadow-sm transition-all disabled:opacity-50"
             >
               <Send className="w-3.5 h-3.5" />
               Cevabı Değerlendir
@@ -105,7 +106,7 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
             <button
               type="button"
               onClick={handleNext}
-              className="px-6 py-3 rounded-xl font-bold text-xs bg-stone-900 hover:bg-black text-white transition-colors"
+              className="px-6 py-3 rounded-[16px] font-bold text-xs bg-stone-900 hover:bg-black text-white transition-colors"
             >
               Sonraki Soruya Geç →
             </button>
@@ -115,12 +116,11 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
         {/* Değerlendirme & Geri Bildirim */}
         {feedback && (
           <div className="space-y-4 pt-4 border-t border-[#F0ECE6]">
-            <div className="flex items-center justify-between bg-stone-50 p-3 rounded-xl border border-stone-200">
+            <div className="flex items-center justify-between bg-stone-50 p-3 rounded-[16px] border border-stone-200">
               <span className="text-xs font-bold text-[#1F1E1B]">Kavramsal Başarı Puanı:</span>
               <span
-                className={`text-sm font-extrabold ${
-                  feedback.score >= 60 ? 'text-emerald-600' : 'text-amber-600'
-                }`}
+                className="text-sm font-extrabold"
+                style={{ color: feedback.score >= 60 ? CORRECT.border : WRONG.border }}
               >
                 %{feedback.score}
               </span>
@@ -133,9 +133,10 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
                 {feedback.matchedKeywords.map((kw) => (
                   <span
                     key={kw}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium text-[11px]"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border font-medium text-[11px]"
+                    style={{ background: CORRECT.bg, color: CORRECT.fg, borderColor: CORRECT.border }}
                   >
-                    <CheckCircle className="w-3 h-3 text-emerald-600" /> {kw}
+                    <CheckCircle className="w-3 h-3" style={{ color: CORRECT.border }} /> {kw}
                   </span>
                 ))}
                 {feedback.missingKeywords.map((kw) => (
@@ -150,12 +151,12 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
             </div>
 
             {/* Model Cevap */}
-            <div className="p-4 rounded-xl bg-rose-50/70 border border-rose-200 text-xs space-y-1">
-              <span className="font-bold text-rose-900 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-rose-600" />
+            <div className="p-4 rounded-[16px] bg-[var(--accent-light)]/70 border border-[var(--accent)]/30 text-xs space-y-1">
+              <span className="font-bold text-[var(--accent)] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
                 Örnek Model Cevap:
               </span>
-              <p className="text-rose-950 leading-relaxed">{item.sampleModelAnswer}</p>
+              <p className="text-[var(--accent)] leading-relaxed">{item.sampleModelAnswer}</p>
             </div>
           </div>
         )}

@@ -17,6 +17,7 @@ import {
   Eye
 } from 'lucide-react';
 import { soundManager } from '../../../utils/sound';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 type QuizMode = 'kana_to_romaji' | 'romaji_to_kana' | 'audio_quiz' | 'words';
 
@@ -232,7 +233,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
     <div className="max-w-xl mx-auto space-y-5 animate-in fade-in duration-200">
       
       {/* Mode Selector Tabs */}
-      <div className="p-1.5 rounded-2xl bg-white border border-[#E8E3D8] shadow-2xs flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
+      <div className="p-1.5 rounded-[20px] bg-white border border-[#E8E3D8] shadow-2xs flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
         {[
           { id: 'kana_to_romaji' as const, label: 'Karakter ➔ Okunuş', icon: FileQuestion },
           { id: 'romaji_to_kana' as const, label: 'Okunuş ➔ Karakter', icon: FileQuestion },
@@ -248,7 +249,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                 setMode(m.id);
                 soundManager.playFlipSound();
               }}
-              className={`flex-1 min-w-[110px] py-2 px-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+              className={`flex-1 min-w-[110px] py-2 px-2.5 rounded-[16px] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                 mode === m.id
                   ? 'bg-[#1F1E1D] text-white shadow-xs'
                   : 'text-[#615C53] hover:bg-[#F5F2EC]'
@@ -263,8 +264,8 @@ export const QuizTab: React.FC<QuizTabProps> = ({
 
       {/* COMPLETED RESULTS SCREEN */}
       {isCompleted ? (
-        <div className="p-8 rounded-3xl bg-white border border-[#E8E3D8] shadow-md text-center space-y-5 animate-in zoom-in-95 duration-200">
-          <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center mx-auto shadow-xs">
+        <div className="p-8 rounded-[24px] bg-white border border-[#E8E3D8] shadow-md text-center space-y-5 animate-in zoom-in-95 duration-200">
+          <div className="w-16 h-16 rounded-[20px] bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30 flex items-center justify-center mx-auto shadow-xs">
             <Trophy className="w-8 h-8" />
           </div>
 
@@ -277,13 +278,13 @@ export const QuizTab: React.FC<QuizTabProps> = ({
 
           {/* Score Pills */}
           <div className="grid grid-cols-2 gap-3 max-w-xs mx-auto">
-            <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200">
-              <span className="text-[10px] font-bold text-emerald-800 uppercase">Doğru</span>
-              <div className="text-2xl font-black text-emerald-600">{score.correct}</div>
+            <div className="p-3 rounded-[20px] border" style={{ background: CORRECT.bg, borderColor: CORRECT.border }}>
+              <span className="text-[10px] font-bold uppercase" style={{ color: CORRECT.fg }}>Doğru</span>
+              <div className="text-2xl font-black" style={{ color: CORRECT.border }}>{score.correct}</div>
             </div>
-            <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200">
-              <span className="text-[10px] font-bold text-rose-800 uppercase">Yanlış</span>
-              <div className="text-2xl font-black text-rose-600">{score.incorrect}</div>
+            <div className="p-3 rounded-[20px] border" style={{ background: WRONG.bg, borderColor: WRONG.border }}>
+              <span className="text-[10px] font-bold uppercase" style={{ color: WRONG.fg }}>Yanlış</span>
+              <div className="text-2xl font-black" style={{ color: WRONG.border }}>{score.incorrect}</div>
             </div>
           </div>
 
@@ -295,7 +296,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
             <button
               id="btn-retry-quiz"
               onClick={() => generateQuestions(mode)}
-              className="w-full py-3 rounded-xl bg-[#1F1E1D] hover:bg-neutral-800 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs"
+              className="w-full py-3 rounded-[16px] bg-[#1F1E1D] hover:bg-neutral-800 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Yeni Test Başlat</span>
@@ -313,21 +314,21 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                 <span className="font-bold text-[#1F1E1D]">
                   Soru {currentIndex + 1} / {questions.length}
                 </span>
-                <span className="text-emerald-700 font-semibold">• {score.correct} Doğru</span>
-                <span className="text-rose-700 font-semibold">• {score.incorrect} Yanlış</span>
+                <span className="font-semibold" style={{ color: CORRECT.border }}>• {score.correct} Doğru</span>
+                <span className="font-semibold" style={{ color: WRONG.border }}>• {score.incorrect} Yanlış</span>
               </div>
 
               {/* Progress bar */}
               <div className="w-24 h-1.5 bg-[#EFECE6] rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-rose-600 transition-all duration-300"
+                  className="h-full bg-[var(--accent)] transition-all duration-300"
                   style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
                 />
               </div>
             </div>
 
             {/* Question Card Box */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E8E3D8] shadow-md text-center space-y-5">
+            <div className="p-6 sm:p-8 rounded-[24px] bg-white border border-[#E8E3D8] shadow-md text-center space-y-5">
               
               {/* Question Prompts depending on mode */}
               {mode === 'kana_to_romaji' && (
@@ -340,7 +341,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                   </div>
                   <button
                     onClick={() => soundManager.speak(currentQ.promptKana!)}
-                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] text-xs text-rose-700 font-semibold border border-[#E8E2D6] hover:bg-rose-50"
+                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] text-xs text-[var(--accent)] font-semibold border border-[#E8E2D6] hover:bg-[var(--accent-light)]"
                   >
                     <Volume2 className="w-3.5 h-3.5" />
                     <span>Telaffuzu Dinle</span>
@@ -353,7 +354,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                   <span className="text-[11px] font-semibold text-[#8C867B] uppercase tracking-wider block mb-2">
                     "{currentQ.promptRomaji}" sesinin {alphabet === 'hiragana' ? 'Hiragana' : 'Katakana'} karşılığı hangisidir?
                   </span>
-                  <div className="text-6xl sm:text-7xl font-mono font-black text-rose-600">
+                  <div className="text-6xl sm:text-7xl font-black text-[var(--accent)]">
                     {currentQ.promptRomaji}
                   </div>
                 </div>
@@ -367,10 +368,10 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                   <button
                     id="btn-replay-audio"
                     onClick={() => soundManager.speak(currentQ.promptAudio!)}
-                    className={`py-4 px-6 rounded-2xl border-2 transition-all mx-auto flex items-center justify-center gap-2.5 shadow-xs ${
+                    className={`py-4 px-6 rounded-[20px] border-2 transition-all mx-auto flex items-center justify-center gap-2.5 shadow-xs ${
                       isPlayingAudio 
-                        ? 'bg-rose-600 text-white border-rose-600 animate-pulse'
-                        : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                        ? 'bg-[var(--accent)] text-white border-[var(--accent)] animate-pulse'
+                        : 'bg-[var(--accent-light)] hover:bg-[var(--accent-light)] text-[var(--accent)] border-[var(--accent)]/30'
                     }`}
                   >
                     <Volume2 className="w-6 h-6" />
@@ -389,7 +390,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                   </div>
                   <button
                     onClick={() => soundManager.speak(currentQ.targetWord!.kana)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] text-xs text-rose-700 font-semibold border border-[#E8E2D6] hover:bg-rose-50"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] text-xs text-[var(--accent)] font-semibold border border-[#E8E2D6] hover:bg-[var(--accent-light)]"
                   >
                     <Volume2 className="w-3.5 h-3.5" />
                     <span>Kelime Telaffuzu</span>
@@ -400,15 +401,15 @@ export const QuizTab: React.FC<QuizTabProps> = ({
               {/* 4 Options Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                 {currentQ.options.map((option, idx) => {
-                  let buttonStyle = 'bg-[#FAF8F5] hover:bg-white text-[#1F1E1D] border-[#E8E3D8] hover:border-rose-300';
-                  
+                  let optionStyle: React.CSSProperties = { background: '#FAF8F5', color: '#1F1E1D', borderColor: '#E8E3D8' };
+
                   if (isAnswered) {
                     if (option === currentQ.correctAnswer) {
-                      buttonStyle = 'bg-emerald-500 text-white border-emerald-600 shadow-md font-bold';
+                      optionStyle = { background: CORRECT.border, color: '#FFFFFF', borderColor: CORRECT.border, fontWeight: 700 };
                     } else if (option === selectedOption) {
-                      buttonStyle = 'bg-rose-500 text-white border-rose-600 shadow-md font-bold';
+                      optionStyle = { background: WRONG.border, color: '#FFFFFF', borderColor: WRONG.border, fontWeight: 700 };
                     } else {
-                      buttonStyle = 'bg-gray-100 text-gray-400 border-gray-200 opacity-50';
+                      optionStyle = { background: '#F3F4F6', color: '#9CA3AF', borderColor: '#E5E7EB', opacity: 0.5 };
                     }
                   }
 
@@ -418,7 +419,8 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                       id={`quiz-option-${idx}`}
                       disabled={isAnswered}
                       onClick={() => handleSelectOption(option)}
-                      className={`py-3.5 px-4 rounded-xl border-2 text-center text-base sm:text-lg font-bold transition-all duration-150 flex items-center justify-center gap-2 ${buttonStyle}`}
+                      style={optionStyle}
+                      className="py-3.5 px-4 rounded-[16px] border-2 text-center text-base sm:text-lg font-bold transition-all duration-150 flex items-center justify-center gap-2 hover:bg-white hover:border-[var(--accent)]"
                     >
                       <span className="font-japanese">{option}</span>
                       {isAnswered && option === currentQ.correctAnswer && (
@@ -447,12 +449,12 @@ export const QuizTab: React.FC<QuizTabProps> = ({
 
               {/* Feedback Explanation & Next Button */}
               {isAnswered && (
-                <div className="p-4 rounded-2xl bg-[#F6F3EC] border border-[#E4DED4] text-left space-y-3 animate-in fade-in duration-200">
+                <div className="p-4 rounded-[20px] bg-[#F6F3EC] border border-[#E4DED4] text-left space-y-3 animate-in fade-in duration-200">
                   <div className="flex items-start gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <Sparkles className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
                     <div>
                       <div className="text-xs font-bold text-[#1F1E1D]">
-                        Doğru Cevap: <span className="text-emerald-700">{currentQ.correctAnswer}</span>
+                        Doğru Cevap: <span style={{ color: CORRECT.border }}>{currentQ.correctAnswer}</span>
                       </div>
                       <p className="text-xs text-[#47433B] mt-0.5 leading-relaxed">
                         {currentQ.explanation}
@@ -464,7 +466,7 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                     <button
                       id="btn-quiz-next"
                       onClick={handleNext}
-                      className="px-5 py-2.5 rounded-xl bg-[#1F1E1D] hover:bg-neutral-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-xs"
+                      className="px-5 py-2.5 rounded-[16px] bg-[#1F1E1D] hover:bg-neutral-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-xs"
                     >
                       <span>{currentIndex < questions.length - 1 ? 'Sıradaki Soru' : 'Sonuçları Gör'}</span>
                       <ArrowRight className="w-4 h-4" />

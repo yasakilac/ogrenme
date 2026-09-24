@@ -16,10 +16,6 @@ import {
   Network,
   ArrowLeft,
   Home,
-  Aperture,
-  Timer,
-  Sparkles,
-  Camera,
   ArrowRight,
   BookOpen,
 } from 'lucide-react';
@@ -59,15 +55,18 @@ interface ActivitiesHubTabProps {
   onScoreEarned: (points: number) => void;
   onGoToHome?: () => void;
   onGoToTopic?: (topicId: string) => void;
+  /** ModuleIntroScreen'in egzersiz karosundan direkt açılacak etkinlik (bkz. exerciseTiles). */
+  initialActivityId?: ActivityTypeId;
 }
 
 export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
   onScoreEarned,
   onGoToHome,
   onGoToTopic,
+  initialActivityId,
 }) => {
-  // Varsayılan: Katalog ekranı (tek sayfada her şey yığılmaz, tıklanınca açılır)
-  const [selectedActivityId, setSelectedActivityId] = useState<ActivityTypeId | null>(null);
+  // Karo'dan gelindiyse doğrudan o etkinlikle açılır; yoksa katalog ekranı gösterilir.
+  const [selectedActivityId, setSelectedActivityId] = useState<ActivityTypeId | null>(initialActivityId ?? null);
   const [filterCategory, setFilterCategory] = useState<'all' | 'cards' | 'media' | 'logic'>('all');
 
   const activityCatalog = [
@@ -237,80 +236,29 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
     const ActiveIcon = currentActivityMeta?.icon || BookOpen;
 
     return (
-      <div className="space-y-6">
-        {/* ÜÇLÜ NAVİGASYON ÇUBUĞU (Geri Dön + Üst Konulara Geç + Ana Sayfaya Dön) */}
-        <div className="bg-white border-2 border-[#EBE7E0] rounded-3xl p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-3">
-          {/* Sol: Etkinlik Kataloğuna Geri Dön Butonu */}
-          <button
-            onClick={handleBackToCatalog}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-900 text-xs font-bold transition-colors cursor-pointer border border-stone-200"
-            title="Kavram Kataloğuna Geri Dön"
+      <div className="space-y-4">
+        {/* Üst bar zaten App kabuğunda (ModuleTopBar: geri = modül girişi, ev = hub); burada sadece
+            aktif etkinliğin rozeti ve (kataloktan gelindiyse) kataloğa dön linki kalır. */}
+        <div className="flex items-center justify-between gap-3">
+          <div
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+            style={{ background: 'var(--accent-light)' }}
           >
-            <ArrowLeft className="w-4 h-4 text-stone-700" />
-            <span>Etkinlik Kataloğuna Dön</span>
-          </button>
-
-          {/* Orta / Başlık: Aktif Etkinlik Bilgisi */}
-          <div className="flex items-center gap-2.5 px-3 py-1 bg-stone-50 rounded-xl border border-stone-200">
-            <ActiveIcon className="w-4 h-4 text-rose-600" />
-            <span className="text-xs font-black text-stone-900">{currentActivityMeta?.title}</span>
+            <ActiveIcon className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+            <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>
+              {currentActivityMeta?.title}
+            </span>
           </div>
-
-          {/* Sağ Eylemler: Üst Konulara Hızlı Geçiş & Ana Sayfa Butonu */}
-          <div className="flex items-center gap-2">
-            {/* Üst Konular Buton Grubu */}
-            {onGoToTopic && (
-              <div className="hidden md:flex items-center gap-1 bg-[#FAF8F5] p-1 rounded-xl border border-[#EBE7E0]">
-                <span className="text-[10px] font-bold text-stone-500 uppercase px-1.5 font-mono">
-                  Üst Konu:
-                </span>
-                <button
-                  onClick={() => onGoToTopic('aperture')}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold text-stone-700 hover:bg-amber-100 hover:text-amber-900 transition-colors cursor-pointer"
-                  title="Diyafram Konusunu İncele"
-                >
-                  <Aperture className="w-3 h-3 text-amber-600" />
-                  <span>Diyafram</span>
-                </button>
-                <button
-                  onClick={() => onGoToTopic('shutter')}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold text-stone-700 hover:bg-blue-100 hover:text-blue-900 transition-colors cursor-pointer"
-                  title="Enstantane Konusunu İncele"
-                >
-                  <Timer className="w-3 h-3 text-blue-600" />
-                  <span>Enstantane</span>
-                </button>
-                <button
-                  onClick={() => onGoToTopic('iso')}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold text-stone-700 hover:bg-purple-100 hover:text-purple-900 transition-colors cursor-pointer"
-                  title="ISO Konusunu İncele"
-                >
-                  <Sparkles className="w-3 h-3 text-purple-600" />
-                  <span>ISO</span>
-                </button>
-                <button
-                  onClick={() => onGoToTopic('simulator')}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold text-stone-700 hover:bg-rose-100 hover:text-rose-900 transition-colors cursor-pointer"
-                  title="DSLR Simülatörüne Geç"
-                >
-                  <Camera className="w-3 h-3 text-rose-600" />
-                  <span>Simülatör</span>
-                </button>
-              </div>
-            )}
-
-            {/* Ana Menüye Dön Butonu */}
-            {onGoToHome && (
-              <button
-                onClick={onGoToHome}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-black text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-                title="Ana Sayfaya Dön"
-              >
-                <Home className="w-3.5 h-3.5 text-rose-400" />
-                <span>Ana Sayfa</span>
-              </button>
-            )}
-          </div>
+          {initialActivityId === undefined && (
+            <button
+              onClick={handleBackToCatalog}
+              className="flex items-center gap-1.5 text-xs font-bold"
+              style={{ color: '#6B665E' }}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Kataloğa dön</span>
+            </button>
+          )}
         </div>
 
         {/* Seçilen Etkinliğin Tek Başına İlerlemeli Olarak Render Edilmesi */}
@@ -338,18 +286,18 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Katalog Başlık Kartı & Sade Filtreler (Pedagojik jargonlar kaldırıldı) */}
-      <div className="bg-white border-2 border-[#EBE7E0] rounded-3xl p-6 sm:p-7 shadow-xs space-y-4">
+      <div className="bg-white border-2 border-[#EBE7E0] rounded-[24px] p-6 sm:p-7 shadow-xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#F0ECE6] pb-5">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
+            <div className="w-14 h-14 rounded-[20px] bg-[var(--accent-light)] border border-[var(--accent)]/30 text-[var(--accent)] flex items-center justify-center shrink-0">
               <Layers className="w-7 h-7" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md font-mono">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent-light)]/70 px-2 py-0.5 rounded-md ">
                   Etkinlik Kataloğu
                 </span>
-                <span className="text-xs text-stone-500 font-mono">14 İnteraktif Pratik</span>
+                <span className="text-xs text-stone-500 ">14 İnteraktif Pratik</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-stone-900 mt-0.5">
                 Kavram Ezberleme & Pratik Kataloğu
@@ -364,7 +312,7 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
           {onGoToHome && (
             <button
               onClick={onGoToHome}
-              className="self-start md:self-center flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold transition-colors cursor-pointer border border-stone-200"
+              className="self-start md:self-center flex items-center gap-1.5 px-3.5 py-2 rounded-[16px] bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold transition-colors cursor-pointer border border-stone-200"
               title="Ana Sayfaya Dön"
             >
               <Home className="w-4 h-4 text-stone-700" />
@@ -377,7 +325,7 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
           <button
             onClick={() => setFilterCategory('all')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-[16px] text-xs font-bold transition-all cursor-pointer ${
               filterCategory === 'all'
                 ? 'bg-stone-900 text-white shadow-xs'
                 : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
@@ -387,7 +335,7 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
           </button>
           <button
             onClick={() => setFilterCategory('cards')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-[16px] text-xs font-bold transition-all cursor-pointer ${
               filterCategory === 'cards'
                 ? 'bg-stone-900 text-white shadow-xs'
                 : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
@@ -397,7 +345,7 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
           </button>
           <button
             onClick={() => setFilterCategory('media')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-[16px] text-xs font-bold transition-all cursor-pointer ${
               filterCategory === 'media'
                 ? 'bg-stone-900 text-white shadow-xs'
                 : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
@@ -407,7 +355,7 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
           </button>
           <button
             onClick={() => setFilterCategory('logic')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-[16px] text-xs font-bold transition-all cursor-pointer ${
               filterCategory === 'logic'
                 ? 'bg-stone-900 text-white shadow-xs'
                 : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
@@ -427,23 +375,23 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
             <div
               key={act.id}
               onClick={() => handleOpenActivity(act.id)}
-              className="group bg-white border-2 border-[#EBE7E0] hover:border-emerald-500 hover:shadow-md rounded-3xl p-5 sm:p-6 transition-all duration-200 flex flex-col justify-between gap-4 cursor-pointer"
+              className="group bg-white border-2 border-[#EBE7E0] hover:border-[var(--accent)] hover:shadow-md rounded-[24px] p-5 sm:p-6 transition-all duration-200 flex flex-col justify-between gap-4 cursor-pointer"
             >
               <div className="space-y-3">
                 {/* Üst: İkon + Rozet */}
                 <div className="flex items-center justify-between">
                   <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${
+                    className={`w-12 h-12 rounded-[20px] flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${
                       act.color === 'rose'
-                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        ? 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
                         : act.color === 'emerald'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        ? 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
                         : act.color === 'blue'
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                        ? 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
                         : act.color === 'purple'
-                        ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                        ? 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
                         : act.color === 'amber'
-                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                        ? 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
                         : 'bg-stone-100 text-stone-700 border border-stone-200'
                     }`}
                   >
@@ -451,7 +399,7 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-md font-mono">
+                    <span className="text-[11px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-md ">
                       {act.countText}
                     </span>
                   </div>
@@ -459,10 +407,10 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
 
                 {/* Başlık ve Açıklama */}
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 font-mono">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent)] ">
                     {act.badgeText}
                   </span>
-                  <h3 className="text-base sm:text-lg font-black text-stone-900 group-hover:text-emerald-700 transition-colors mt-0.5">
+                  <h3 className="text-base sm:text-lg font-black text-stone-900 group-hover:text-[var(--accent)] transition-colors mt-0.5">
                     {act.title}
                   </h3>
                   <p className="text-xs text-stone-500 mt-1 leading-relaxed">
@@ -473,10 +421,10 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
 
               {/* Alt Eylem: Başlat Butonu */}
               <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs font-bold">
-                <span className="text-stone-400 group-hover:text-emerald-700 transition-colors">
+                <span className="text-stone-400 group-hover:text-[var(--accent)] transition-colors">
                   İlerlemeli Pratik
                 </span>
-                <div className="flex items-center gap-1.5 text-stone-800 group-hover:text-emerald-700 transition-colors">
+                <div className="flex items-center gap-1.5 text-stone-800 group-hover:text-[var(--accent)] transition-colors">
                   <span>Etkinliği Başlat</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>

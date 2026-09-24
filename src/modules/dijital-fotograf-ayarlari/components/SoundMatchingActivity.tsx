@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Volume2, Play, CheckCircle2, XCircle, RotateCcw, Award } from 'lucide-react';
 import { SOUND_MATCH_ITEMS, type SoundMatchItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 interface SoundMatchingActivityProps {
   onScoreUpdate?: (points: number) => void;
@@ -51,10 +52,10 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-5 rounded-2xl border border-[#EBE7E0]">
+      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
+            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
               İşitsel Perde Hızı Pratiği
             </span>
             <h3 className="text-lg font-bold text-[#1F1E1B]">Deklanşör Sesi ile Enstantane Eşleştirme</h3>
@@ -62,8 +63,8 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
               Mekanik deklanşör sesini dinleyin ve perdenin açık kalma süresini doğru tahmin edin.
             </p>
           </div>
-          <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200">
-            <Award className="w-4 h-4 text-rose-600" />
+          <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-[16px] border border-stone-200">
+            <Award className="w-4 h-4 text-[var(--accent)]" />
             <span className="text-xs font-bold text-stone-800">
               Skor: {totalCorrect} / {SOUND_MATCH_ITEMS.length}
             </span>
@@ -71,23 +72,23 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
         </div>
       </div>
 
-      <div className="max-w-xl mx-auto bg-white border border-[#EBE7E0] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+      <div className="max-w-xl mx-auto bg-white border border-[#EBE7E0] rounded-[24px] p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex items-center justify-between border-b border-[#F0ECE6] pb-3">
           <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
             Ses Testi {currentIndex + 1} / {SOUND_MATCH_ITEMS.length}
           </span>
-          <span className="text-xs text-rose-600 font-semibold">{currentItem.situation}</span>
+          <span className="text-xs text-[var(--accent)] font-semibold">{currentItem.situation}</span>
         </div>
 
         {/* Ses Çalma Butonu */}
-        <div className="flex flex-col items-center justify-center py-6 space-y-3 bg-[#FAF8F5] rounded-2xl border border-[#EBE7E0]">
+        <div className="flex flex-col items-center justify-center py-6 space-y-3 bg-[#FAF8F5] rounded-[20px] border border-[#EBE7E0]">
           <button
             onClick={handlePlaySound}
             disabled={isPlaying}
             className={`w-20 h-20 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 ${
               isPlaying
-                ? 'bg-rose-500 text-white scale-105 animate-pulse'
-                : 'bg-rose-600 hover:bg-rose-700 text-white ring-4 ring-rose-500/20'
+                ? 'bg-[var(--accent)] text-white scale-105 animate-pulse'
+                : 'bg-[var(--accent)] hover:bg-[var(--accent)] text-white ring-4 ring-[var(--accent)]/20'
             }`}
           >
             {isPlaying ? <Volume2 className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
@@ -95,7 +96,7 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
           <span className="text-xs font-bold text-stone-700">
             {isPlaying ? 'Deklanşör çalışıyor...' : 'Sesi Dinlemek İçin Dokunun'}
           </span>
-          <span className="text-[11px] text-stone-500 font-mono">
+          <span className="text-[11px] text-stone-500 ">
             {currentItem.shutterSpeed >= 1
               ? `${currentItem.shutterSpeed} saniyelik çift vuruş aralığı`
               : 'Milisaniyelik mekanik perde sesi'}
@@ -112,14 +113,14 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
               const isSelected = userResult?.selected === opt;
               const isCorrect = opt === currentItem.correctOption;
 
-              let btnStyle = 'bg-stone-50 border-stone-200 text-stone-800 hover:bg-stone-100';
+              let btnStyle: React.CSSProperties = { background: '#FAFAF9', borderColor: '#E7E5E4', color: '#292524' };
               if (userResult) {
                 if (isCorrect) {
-                  btnStyle = 'bg-emerald-50 border-emerald-400 text-emerald-950 font-bold';
+                  btnStyle = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, fontWeight: 700 };
                 } else if (isSelected) {
-                  btnStyle = 'bg-rose-50 border-rose-400 text-rose-950';
+                  btnStyle = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg };
                 } else {
-                  btnStyle = 'opacity-50 bg-stone-50 border-stone-200';
+                  btnStyle = { background: '#FAFAF9', borderColor: '#E7E5E4', opacity: 0.5 };
                 }
               }
 
@@ -128,11 +129,12 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
                   key={opt}
                   onClick={() => handleSelectOption(opt)}
                   disabled={Boolean(userResult)}
-                  className={`w-full p-4 rounded-xl border text-left text-sm font-semibold transition-all flex items-center justify-between ${btnStyle}`}
+                  style={btnStyle}
+                  className="w-full p-4 rounded-[16px] border text-left text-sm font-semibold transition-all flex items-center justify-between"
                 >
                   <span>{opt}</span>
-                  {userResult && isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
-                  {userResult && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-rose-600" />}
+                  {userResult && isCorrect && <CheckCircle2 className="w-5 h-5" style={{ color: CORRECT.border }} />}
+                  {userResult && isSelected && !isCorrect && <XCircle className="w-5 h-5" style={{ color: WRONG.border }} />}
                 </button>
               );
             })}
@@ -142,11 +144,12 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
         {/* Sonuç & Açıklama */}
         {userResult && (
           <div
-            className={`p-4 rounded-xl border text-xs leading-relaxed space-y-1 ${
-              userResult.isCorrect
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
-                : 'bg-amber-50 border-amber-200 text-amber-950'
-            }`}
+            className="p-4 rounded-[16px] border text-xs leading-relaxed space-y-1"
+            style={{
+              background: userResult.isCorrect ? CORRECT.bg : WRONG.bg,
+              borderColor: userResult.isCorrect ? CORRECT.border : WRONG.border,
+              color: userResult.isCorrect ? CORRECT.fg : WRONG.fg
+            }}
           >
             <strong className="block font-bold">
               {userResult.isCorrect ? '✅ Doğru Tespit!' : '❌ Tekrar Dinleyin:'}
@@ -160,7 +163,7 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
           <div className="flex justify-end pt-2">
             <button
               onClick={handleNext}
-              className="px-5 py-2.5 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-colors"
+              className="px-5 py-2.5 rounded-[16px] font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent)] text-white transition-colors"
             >
               Sonraki Ses Testi →
             </button>

@@ -6,12 +6,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AlphabetType, UserProgressData } from './types';
 import { MODULE_REGISTRY, getModule } from './modules/registry';
-import { Header } from './components/Header';
 import { LearningHubView } from './components/LearningHubView';
+import { ModuleIntroScreen } from './components/ModuleIntroScreen';
+import { ModuleTopBar } from './components/ModuleTopBar';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { UserRegisterModal } from './components/UserRegisterModal';
 import { SettingsModal } from './components/SettingsModal';
-import { MobileBottomNav } from './components/MobileBottomNav';
 import { loadProgress, saveProgress, getActiveUserId } from './utils/storage';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
 
@@ -21,7 +21,12 @@ export default function App() {
   // Navigation: hangi modüldeyiz + modülün hangi sekmesi (App sekme değerini yorumlamaz)
   const [currentModuleId, setCurrentModuleId] = useState<string>(firstActiveModule.meta.id);
   const [isHub, setIsHub] = useState(true);
+  // Modüle girince önce ortak "Öğrenme Alanı" giriş ekranı (design/ref: 02) gösterilir;
+  // bir konu/egzersiz seçilince false olur ve modülün kendi ekranı (ModuleView) render edilir.
+  const [isModuleIntro, setIsModuleIntro] = useState(true);
   const [activeTab, setActiveTab] = useState<string>(firstActiveModule.meta.navTabs?.[0]?.id ?? '');
+  // ModuleIntroScreen'in egzersiz karosundan gelen alt-etkinlik id'si (bkz. ModuleExerciseTile.activityId).
+  const [initialActivityId, setInitialActivityId] = useState<string | undefined>(undefined);
 
   // ponytail: alphabet + progress tek aktif modülün şeması; ikinci modül kendi
   // şemasını getirdiğinde modül state'ine indirilir (şimdi değil).
@@ -67,53 +72,63 @@ export default function App() {
     setCurrentModuleId(moduleId);
     setActiveTab(target.meta.navTabs?.[0]?.id ?? '');
     setIsHub(false);
+    setIsModuleIntro(true);
   };
 
-  const openTab = (tab: string) => {
+  const openTab = (tab: string, activityId?: string) => {
     setActiveTab(tab);
+    setInitialActivityId(activityId);
     setIsHub(false);
+    setIsModuleIntro(false);
   };
+
+  const accentColor = currentModule.meta.accent?.color ?? '#1C1B19';
+  const accentLight = currentModule.meta.accent?.light ?? '#EFEBE4';
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#1F1E1B] flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900">
+    <div className="min-h-screen max-w-[480px] mx-auto font-sans selection:bg-rose-100 selection:text-rose-900" style={{ background: '#F7F4EE', color: '#1C1B19' }}>
 
-      {/* Top Navigation & App Bar with Top-Level Learning Module Switcher */}
-      <Header
-        tabs={currentModule.meta.navTabs ?? []}
-        activeTab={activeTab}
-        setActiveTab={openTab}
-        isHub={isHub}
-        currentModuleId={currentModuleId}
-        alphabet={alphabet}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onSelectModule={(id) => (id === 'hub' ? setIsHub(true) : openModule(id))}
-      />
-
-      {/* Main Content Area: Öğrenme Merkezi veya aktif modülün ekranları */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-7">
-        {isHub || !ModuleView ? (
-          <LearningHubView progress={progress} onSelectModule={openModule} />
-        ) : (
-          <ModuleView
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
+      {isHub || !ModuleView ? (
+        <main className="px-4 pt-1 pb-8">
+          <LearningHubView
             progress={progress}
-            setProgress={setProgress}
-            alphabet={alphabet}
-            setAlphabet={setAlphabet}
+            onSelectModule={openModule}
+            onOpenSettings={() => setIsSettingsOpen(true)}
           />
-        )}
-      </main>
-
-      {/* Mobile-First Bottom Navigation Bar (Alanlar + aktif modülün sekmeleri) */}
-      {!isHub && (
-      <MobileBottomNav
-        tabs={currentModule.meta.navTabs ?? []}
-        activeTab={activeTab}
-        setActiveTab={openTab}
-        isHub={isHub}
-        onSelectHub={() => setIsHub(true)}
-      />
+        </main>
+      ) : isModuleIntro ? (
+        <ModuleIntroScreen
+          module={currentModule}
+          progress={progress}
+          onOpenTab={openTab}
+          onExitToHub={() => setIsHub(true)}
+        />
+      ) : (
+        // --accent/--accent-light: modül içi tüm etkinlik component'leri bu CSS değişkenlerini
+        // (bg-[var(--accent)] gibi arbitrary Tailwind class'larla) kullanarak tek bir modül rengine bağlanır.
+        <div style={{ ['--accent' as string]: accentColor, ['--accent-light' as string]: accentLight }}>
+          <ModuleTopBar
+            onBack={() => setIsModuleIntro(true)}
+            onHome={() => setIsHub(true)}
+            accentColor={accentColor}
+            accentLight={accentLight}
+            progressPercent={currentModule.getProgressPercent?.(progress)}
+            showModuleBadge
+            ModuleIcon={currentModule.meta.icon}
+            moduleGlyph={currentModule.meta.glyph}
+          />
+          <main className="px-4 pb-16">
+            <ModuleView
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              progress={progress}
+              setProgress={setProgress}
+              alphabet={alphabet}
+              setAlphabet={setAlphabet}
+              initialActivityId={initialActivityId}
+            />
+          </main>
+        </div>
       )}
 
       {/* Settings Modal (Alfabe seçimi, ses testi, profil ve admin erişimi) */}

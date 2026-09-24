@@ -99,30 +99,30 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
     <div className="space-y-6 animate-in fade-in duration-200">
       
       {/* 🎯 SPOTLIGHT BANNER: "SIRADAKİ ÇALIŞMAN GEREKEN HARF" */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E8E4DC] shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="p-5 sm:p-6 rounded-[24px] bg-white border border-[#E8E4DC] shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5">
         
         <div className="flex items-center gap-4">
           {/* Big Interactive Next Kana Tile */}
           <button
             id="spotlight-next-char"
             onClick={() => onSelectCharacter(nextChar)}
-            className="group relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-[#FAF8F5] border border-[#E2DDD4] hover:border-rose-400 flex flex-col items-center justify-center shadow-2xs hover:scale-102 active:scale-95 transition-all"
+            className="group relative w-18 h-18 sm:w-20 sm:h-20 rounded-[20px] bg-[#FAF8F5] border border-[#E2DDD4] hover:border-[var(--accent)] flex flex-col items-center justify-center shadow-2xs hover:scale-102 active:scale-95 transition-all"
             title="Detaylar ve telaffuz için tıkla"
           >
-            <span className="text-3xl sm:text-4xl font-black text-[#1F1E1D] group-hover:text-rose-600 font-japanese leading-none">
+            <span className="text-3xl sm:text-4xl font-black text-[#1F1E1D] group-hover:text-[var(--accent)] font-japanese leading-none">
               {nextCharKana}
             </span>
-            <span className="text-xs font-mono font-bold text-rose-700 mt-1">
+            <span className="text-xs font-bold text-[var(--accent)] mt-1">
               {nextChar.romaji}
             </span>
-            <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[9px] font-bold shadow-2xs">
+            <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white text-[9px] font-bold shadow-2xs">
               Sıradaki
             </div>
           </button>
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[11px] font-bold uppercase tracking-wider">
+              <span className="px-2.5 py-0.5 rounded-full bg-[var(--accent-light)] text-[var(--accent)] text-[11px] font-bold uppercase tracking-wider">
                 Yolculuğundaki Sıradaki Harf
               </span>
               <span className="text-xs text-[#7A756D] font-medium hidden sm:inline">
@@ -142,7 +142,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
               <button
                 id="btn-spotlight-audio"
                 onClick={(e) => handleAudioPlay(e, nextChar)}
-                className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold flex items-center gap-1.5 border border-rose-200 transition-colors"
+                className="px-3 py-1.5 rounded-[16px] bg-[var(--accent-light)] hover:bg-[var(--accent-light)] text-[var(--accent)] text-xs font-semibold flex items-center gap-1.5 border border-[var(--accent)]/30 transition-colors"
               >
                 <Volume2 className="w-3.5 h-3.5" />
                 <span>Sesini Dinle</span>
@@ -152,9 +152,9 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
                 <button
                   id="btn-spotlight-draw"
                   onClick={() => onOpenDrawing(nextChar)}
-                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-[#F5F2EC] text-[#47433B] text-xs font-semibold flex items-center gap-1.5 border border-[#DDD6CB] transition-colors"
+                  className="px-3 py-1.5 rounded-[16px] bg-white hover:bg-[#F5F2EC] text-[#47433B] text-xs font-semibold flex items-center gap-1.5 border border-[#DDD6CB] transition-colors"
                 >
-                  <PenTool className="w-3.5 h-3.5 text-rose-600" />
+                  <PenTool className="w-3.5 h-3.5 text-[var(--accent)]" />
                   <span>Çizerek Pratik Yap</span>
                 </button>
               )}
@@ -171,7 +171,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
 
           <div className="w-full h-2.5 bg-[#EDE8DF] rounded-full overflow-hidden">
             <div 
-              className="h-full bg-rose-600 rounded-full transition-all duration-500"
+              className="h-full bg-[var(--accent)] rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -186,7 +186,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
       </div>
 
       {/* FILTER & VIEW SWITCHER BAR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 rounded-2xl bg-white border border-[#E8E3D8] shadow-2xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 rounded-[20px] bg-white border border-[#E8E3D8] shadow-2xs">
         
         {/* Category Selector Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
@@ -204,7 +204,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
                 setCategory(tab.id);
                 soundManager.playFlipSound();
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`px-3 py-1.5 rounded-[16px] text-xs font-semibold whitespace-nowrap transition-all ${
                 category === tab.id
                   ? 'bg-[#1F1E1D] text-white shadow-xs'
                   : 'bg-[#F5F2EC] text-[#555047] hover:bg-[#EBE6DC]'
@@ -227,7 +227,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
               placeholder="Harf veya okunuş ara..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#F5F2EC] border border-transparent focus:border-rose-400 focus:bg-white text-xs text-[#1F1E1D] outline-hidden transition-all"
+              className="w-full pl-8 pr-3 py-1.5 rounded-[16px] bg-[#F5F2EC] border border-transparent focus:border-[var(--accent)] focus:bg-white text-xs text-[#1F1E1D] outline-hidden transition-all"
             />
           </div>
 
@@ -235,7 +235,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
           <button
             id="btn-toggle-view-mode"
             onClick={() => setViewMode(viewMode === 'by_row' ? 'compact_grid' : 'by_row')}
-            className="px-2.5 py-1.5 rounded-xl bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] text-xs font-semibold transition-colors whitespace-nowrap"
+            className="px-2.5 py-1.5 rounded-[16px] bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] text-xs font-semibold transition-colors whitespace-nowrap"
             title="Görünümü Değiştir"
           >
             {viewMode === 'by_row' ? 'Izgara Görünümü' : 'Satır Satır Düzen'}
@@ -247,7 +247,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
       {/* QUICK INSTRUCTION HINT */}
       <div className="flex items-center justify-between px-3 py-2 text-xs text-[#7A756D]">
         <span className="flex items-center gap-1.5">
-          <Info className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+          <Info className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
           <span>Her harfin altında <strong>Romaji</strong> ve <strong>Türkçe okunuşu</strong> yazılıdır. Harfe tıklayarak detay ve yazım pratiğini açabilirsin.</span>
         </span>
         <span className="hidden sm:inline text-[#8C867B]">
@@ -257,7 +257,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
 
       {/* MAIN TABLE CONTENT */}
       {filteredKana.length === 0 ? (
-        <div className="p-12 text-center bg-white rounded-3xl border border-[#E8E3D8] shadow-xs">
+        <div className="p-12 text-center bg-white rounded-[24px] border border-[#E8E3D8] shadow-xs">
           <p className="text-sm font-semibold text-[#1F1E1D]">Aramanıza uygun karakter bulunamadı.</p>
           <p className="text-xs text-[#7A756D] mt-1">Lütfen farklı bir arama terimi deneyin.</p>
         </div>
@@ -280,7 +280,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
             return (
               <div 
                 key={rowInfo.row}
-                className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E8E3D8] shadow-2xs space-y-3"
+                className="p-4 sm:p-5 rounded-[20px] bg-white border border-[#E8E3D8] shadow-2xs space-y-3"
               >
                 {/* Row Header */}
                 <div className="flex items-center justify-between pb-2 border-b border-[#F0ECE4]">
@@ -295,7 +295,7 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
 
                   <div className="flex items-center gap-2">
                     {isRowCompleted ? (
-                      <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      <span className="flex items-center gap-1 text-[11px] font-bold text-[var(--accent)] bg-[var(--accent-light)] px-2 py-0.5 rounded-full border border-[var(--accent)]/30">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         Tamamlandı
                       </span>
@@ -321,22 +321,22 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
                         key={char.id}
                         id={`kana-card-${char.id}`}
                         onClick={() => onSelectCharacter(char)}
-                        className={`group relative p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                        className={`group relative p-3 sm:p-4 rounded-[16px] border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                           isNext 
-                            ? 'bg-rose-50/50 border-rose-400 shadow-sm ring-2 ring-rose-200' 
-                            : 'bg-white hover:bg-[#FAF8F5] border-[#E8E3D8] hover:border-rose-300 shadow-2xs hover:shadow-xs'
+                            ? 'bg-[var(--accent-light)]/50 border-[var(--accent)] shadow-sm ring-2 ring-[var(--accent)]' 
+                            : 'bg-white hover:bg-[#FAF8F5] border-[#E8E3D8] hover:border-[var(--accent)] shadow-2xs hover:shadow-xs'
                         }`}
                       >
                         {/* Status Badges */}
                         <div className="flex items-center justify-between mb-1">
                           {isNext ? (
-                            <span className="px-1.5 py-0.5 rounded-md bg-rose-600 text-white text-[9px] font-bold">
+                            <span className="px-1.5 py-0.5 rounded-md bg-[var(--accent)] text-white text-[9px] font-bold">
                               🎯 Sıradaki
                             </span>
                           ) : mastery >= 2 ? (
-                            <span className="w-2 h-2 rounded-full bg-emerald-500" title="Öğrenildi" />
+                            <span className="w-2 h-2 rounded-full bg-[var(--accent)]" title="Öğrenildi" />
                           ) : mastery === 1 ? (
-                            <span className="w-2 h-2 rounded-full bg-amber-400" title="Çalışılıyor" />
+                            <span className="w-2 h-2 rounded-full bg-[var(--accent)]" title="Çalışılıyor" />
                           ) : (
                             <span className="w-2 h-2 rounded-full bg-neutral-200" title="Yeni" />
                           )}
@@ -347,8 +347,8 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
                             title="Telaffuzu Dinle"
                             className={`p-1 rounded-lg transition-colors ${
                               isPlaying 
-                                ? 'bg-rose-600 text-white animate-pulse' 
-                                : 'text-[#8C867B] hover:text-rose-600 hover:bg-rose-50'
+                                ? 'bg-[var(--accent)] text-white animate-pulse' 
+                                : 'text-[#8C867B] hover:text-[var(--accent)] hover:bg-[var(--accent-light)]'
                             }`}
                           >
                             <Volume2 className="w-3.5 h-3.5" />
@@ -357,10 +357,10 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
 
                         {/* Large Character */}
                         <div className="text-center py-1">
-                          <div className="text-4xl sm:text-5xl font-bold text-[#1F1E1D] group-hover:text-rose-600 font-japanese transition-colors">
+                          <div className="text-4xl sm:text-5xl font-bold text-[#1F1E1D] group-hover:text-[var(--accent)] font-japanese transition-colors">
                             {currentKana}
                           </div>
-                          <div className="text-sm font-bold font-mono text-rose-700 mt-1">
+                          <div className="text-sm font-bold text-[var(--accent)] mt-1">
                             {char.romaji}
                           </div>
                         </div>
@@ -397,22 +397,22 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
                 key={char.id}
                 id={`grid-kana-${char.id}`}
                 onClick={() => onSelectCharacter(char)}
-                className={`group relative p-3 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                className={`group relative p-3 sm:p-4 rounded-[20px] border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                   isNext 
-                    ? 'bg-rose-50/60 border-rose-400 shadow-sm ring-2 ring-rose-200' 
-                    : 'bg-white hover:bg-[#FAF8F5] border-[#E8E3D8] hover:border-rose-300 shadow-2xs hover:shadow-xs'
+                    ? 'bg-[var(--accent-light)]/60 border-[var(--accent)] shadow-sm ring-2 ring-[var(--accent)]' 
+                    : 'bg-white hover:bg-[#FAF8F5] border-[#E8E3D8] hover:border-[var(--accent)] shadow-2xs hover:shadow-xs'
                 }`}
               >
                 {/* Header inside card */}
                 <div className="flex items-center justify-between mb-1">
                   {isNext ? (
-                    <span className="px-1.5 py-0.5 rounded-md bg-rose-600 text-white text-[9px] font-bold">
+                    <span className="px-1.5 py-0.5 rounded-md bg-[var(--accent)] text-white text-[9px] font-bold">
                       🎯 Sıradaki
                     </span>
                   ) : mastery >= 2 ? (
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" title="Ustalaşıldı" />
+                    <span className="w-2 h-2 rounded-full bg-[var(--accent)]" title="Ustalaşıldı" />
                   ) : mastery === 1 ? (
-                    <span className="w-2 h-2 rounded-full bg-amber-400" title="Öğreniliyor" />
+                    <span className="w-2 h-2 rounded-full bg-[var(--accent)]" title="Öğreniliyor" />
                   ) : (
                     <span className="w-2 h-2 rounded-full bg-neutral-200" title="Yeni" />
                   )}
@@ -422,8 +422,8 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
                     title="Telaffuzu Dinle"
                     className={`p-1 rounded-lg transition-colors ${
                       isPlaying 
-                        ? 'bg-rose-600 text-white animate-pulse' 
-                        : 'text-[#8C867B] hover:text-rose-600 hover:bg-rose-50'
+                        ? 'bg-[var(--accent)] text-white animate-pulse' 
+                        : 'text-[#8C867B] hover:text-[var(--accent)] hover:bg-[var(--accent-light)]'
                     }`}
                   >
                     <Volume2 className="w-3.5 h-3.5" />
@@ -432,10 +432,10 @@ export const KanaTableTab: React.FC<KanaTableTabProps> = ({
 
                 {/* Kana and Romaji */}
                 <div className="text-center py-2">
-                  <div className="text-4xl sm:text-5xl font-bold text-[#1F1E1D] group-hover:text-rose-600 font-japanese transition-colors">
+                  <div className="text-4xl sm:text-5xl font-bold text-[#1F1E1D] group-hover:text-[var(--accent)] font-japanese transition-colors">
                     {currentKana}
                   </div>
-                  <div className="text-sm font-bold font-mono text-rose-700 mt-1">
+                  <div className="text-sm font-bold text-[var(--accent)] mt-1">
                     {char.romaji}
                   </div>
                 </div>

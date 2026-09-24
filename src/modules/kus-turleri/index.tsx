@@ -11,7 +11,8 @@ import {
   BookOpen,
   GraduationCap,
   Trophy,
-  Award
+  Award,
+  Bird
 } from 'lucide-react';
 import { LearningModule, LearningModuleProps } from '../types';
 import { TURKEY_BIRDS, BirdSpecies } from './data/birds';
@@ -72,19 +73,19 @@ const KusTurleriModuleComponent: React.FC<LearningModuleProps> = ({
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-5 sm:py-6 space-y-6">
       {/* Pedagojik Akış Bilgi Çubuğu: Önce Öğrenme, Sonra Test */}
-      <div className="bg-white rounded-2xl border border-stone-200/80 px-4 py-3 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+      <div className="bg-white rounded-[20px] border border-stone-200/80 px-4 py-3 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <span className={`px-2.5 py-1 rounded-xl font-bold flex items-center gap-1.5 ${
-            isLearningPhase ? 'bg-amber-100 text-amber-900' : 'bg-rose-100 text-rose-900'
+          <span className={`px-2.5 py-1 rounded-[16px] font-bold flex items-center gap-1.5 ${
+            isLearningPhase ? 'bg-[var(--accent-light)] text-[var(--accent)]' : 'bg-[var(--accent-light)] text-[var(--accent)]'
           }`}>
             {isLearningPhase ? (
               <>
-                <BookOpen className="w-3.5 h-3.5 text-amber-700" />
+                <BookOpen className="w-3.5 h-3.5 text-[var(--accent)]" />
                 <span>1. Öğrenme Aşaması</span>
               </>
             ) : (
               <>
-                <GraduationCap className="w-3.5 h-3.5 text-rose-700" />
+                <GraduationCap className="w-3.5 h-3.5 text-[var(--accent)]" />
                 <span>2. Test & Değerlendirme</span>
               </>
             )}
@@ -100,7 +101,7 @@ const KusTurleriModuleComponent: React.FC<LearningModuleProps> = ({
         {isLearningPhase ? (
           <button
             onClick={() => setActiveTab('audio-match')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-colors shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-[16px] bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-colors shrink-0"
           >
             <span>Test Bölümüne Geç</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -108,7 +109,7 @@ const KusTurleriModuleComponent: React.FC<LearningModuleProps> = ({
         ) : (
           <button
             onClick={() => setActiveTab('flashcard')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 text-stone-700 font-semibold hover:bg-stone-200 transition-colors shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-[16px] bg-stone-100 text-stone-700 font-semibold hover:bg-stone-200 transition-colors shrink-0"
           >
             <span>Öğrenme Bölümüne Dön</span>
           </button>
@@ -186,21 +187,26 @@ export const kusTurleriModule: LearningModule = {
     colorTheme: 'emerald',
     shortTitle: 'Kuşlar',
     glyph: '🐦',
+    accent: { color: '#0F766E', light: '#E3F2EF' },
+    icon: Bird,
     difficulty: 'orta',
     estimatedMinutes: 35,
     navTabs: [
-      // ÖĞRENME ETKİNLİKLERİ
-      { id: 'flashcard', label: 'Kuşları Tanı', shortLabel: 'Türler', icon: Layers },
-      { id: 'hotspots', label: 'Kuş Haritası', shortLabel: 'Harita', icon: MapPin },
-      { id: 'drag-drop', label: 'Sürükle & Bırak', shortLabel: 'Eşle', icon: Move },
-      { id: 'compare', label: 'Karşılaştır', shortLabel: 'Kıyas', icon: GitCompare },
-      // TEST ETKİNLİKLERİ
-      { id: 'audio-match', label: 'Ses Teşhisi', shortLabel: 'Ses Testi', icon: Volume2 },
-      { id: 'quiz', label: 'Kavram Testi', shortLabel: 'Test', icon: ListChecks },
-      { id: 'comprehensive-exam', label: 'Büyük Sınav (Havuz)', shortLabel: 'Büyük Sınav', icon: Trophy }
+      // Stepper'daki tek "konu": tür tanıma galerisi. Geri kalanı egzersiz ızgarasında.
+      { id: 'flashcard', label: 'Kuşları Tanı', shortLabel: 'Türler', icon: Layers, kind: 'topic' },
+      { id: 'hotspots', label: 'Kuş Haritası', shortLabel: 'Harita', icon: MapPin, kind: 'exercise' },
+      { id: 'compare', label: 'Karşılaştır', shortLabel: 'Kıyas', icon: GitCompare, kind: 'exercise' },
+      { id: 'drag-drop', label: 'Sürükle & Bırak', shortLabel: 'Eşle', icon: Move, kind: 'exercise' },
+      { id: 'audio-match', label: 'Ses Teşhisi', shortLabel: 'Ses Testi', icon: Volume2, kind: 'exercise' },
+      { id: 'quiz', label: 'Kavram Testi', shortLabel: 'Test', icon: ListChecks, kind: 'exercise' },
+      { id: 'comprehensive-exam', label: 'Büyük Sınav (Havuz)', shortLabel: 'Büyük Sınav', icon: Trophy, kind: 'exercise' }
     ]
   },
   component: KusTurleriModuleComponent,
+  getProgressPercent: () => {
+    const saved = getStorageItem<SavedModuleProgress>(STORAGE_KEY, { learnedBirds: [], audioScore: 0 });
+    return Math.min(100, Math.round((saved.learnedBirds.length / TURKEY_BIRDS.length) * 100));
+  },
   finalTest: COMPREHENSIVE_QUESTION_POOL.map((q) => ({
     id: String(q.id),
     question: q.question,

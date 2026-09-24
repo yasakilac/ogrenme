@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Home, Grid3X3, Sparkles, PenTool } from 'lucide-react';
+import { Home, Grid3X3, Sparkles, PenTool, Layers, Image as ImageIcon, ListChecks } from 'lucide-react';
 import { AlphabetType, KanaCharacter, UserProgressData } from '../../types';
-import { LearningModule, LearningModuleProps } from '../types';
+import { LearningModule, LearningModuleProps, ModuleExerciseTile } from '../types';
 import { HomeCurriculumTab } from './components/HomeCurriculumTab';
 import { KanaTableTab } from './components/KanaTableTab';
 import { PracticeHubTab, PracticeSubTab } from './components/PracticeHubTab';
@@ -24,9 +24,12 @@ const JapaneseModule: React.FC<LearningModuleProps> = ({
   progress,
   setProgress,
   alphabet,
-  setAlphabet
+  setAlphabet,
+  initialActivityId
 }) => {
-  const [practiceSubTab, setPracticeSubTab] = useState<PracticeSubTab>('flashcards');
+  const [practiceSubTab, setPracticeSubTab] = useState<PracticeSubTab>(
+    (initialActivityId as PracticeSubTab) ?? 'flashcards'
+  );
   const [selectedModalChar, setSelectedModalChar] = useState<KanaCharacter | null>(null);
   const [drawingChar, setDrawingChar] = useState<KanaCharacter | null>(null);
 
@@ -153,12 +156,21 @@ export const japaneseModule: LearningModule = {
     colorTheme: 'rose',
     shortTitle: 'Japonca',
     glyph: '日',
+    accent: { color: '#B4233C', light: '#FBE9EC' },
+    // Japonca'nın ikonu her zaman '日' glifi (bkz. glyph) — çizgi ikon tanımlı değil.
     navTabs: [
       { id: 'home', label: 'Ana Sayfa', shortLabel: 'Japonca', icon: Home },
-      { id: 'table', label: 'Harf Tablosu', shortLabel: 'Tablo', icon: Grid3X3 },
-      { id: 'practice', label: 'Alıştırmalar', shortLabel: 'Alıştırma', icon: Sparkles },
-      { id: 'drawing', label: 'Çizim', shortLabel: 'Çizim', icon: PenTool }
+      { id: 'table', label: 'Harf Tablosu', shortLabel: 'Tablo', icon: Grid3X3, kind: 'topic' },
+      { id: 'practice', label: 'Alıştırmalar', shortLabel: 'Alıştırma', icon: Sparkles, kind: 'exercise' },
+      { id: 'drawing', label: 'Çizim', shortLabel: 'Çizim', icon: PenTool, kind: 'exercise' }
     ],
+    // Alıştırmalar sekmesinin 3 alt-etkinliği + Çizim, tek tek karo olarak açılır.
+    exerciseTiles: [
+      { id: 'flashcards', label: 'Kartlar', icon: Layers, tabId: 'practice', activityId: 'flashcards' },
+      { id: 'visual_words', label: 'Görsel Kelimeler', icon: ImageIcon, tabId: 'practice', activityId: 'visual_words' },
+      { id: 'quiz', label: 'Test', icon: ListChecks, tabId: 'practice', activityId: 'quiz' },
+      { id: 'drawing', label: 'Çizim', icon: PenTool, tabId: 'drawing' }
+    ] satisfies ModuleExerciseTile[],
     labels: {
       cta: 'Japonca Öğrenmeye Başla / Devam Et',
       progress: 'Japonca Öğrenme İlerlemeniz',

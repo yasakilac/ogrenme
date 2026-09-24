@@ -17,6 +17,7 @@ import {
 import { TURKEY_BIRDS, BirdSpecies } from '../data/birds';
 import { BirdPhoto } from './BirdPhoto';
 import { birdAudioSynth } from '../utils/audioSynth';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 export interface PoolQuestion {
   id: number;
@@ -442,8 +443,8 @@ export const ComprehensiveExamActivity: React.FC = () => {
 
   if (activeQuestions.length === 0 || !currentQuestion) {
     return (
-      <div className="p-8 text-center bg-white rounded-3xl border border-stone-200">
-        <Sparkles className="w-8 h-8 text-rose-600 animate-spin mx-auto mb-2" />
+      <div className="p-8 text-center bg-white rounded-[24px] border border-stone-200">
+        <Sparkles className="w-8 h-8 text-[var(--accent)] animate-spin mx-auto mb-2" />
         <p className="text-sm font-semibold text-stone-700">Soru havuzundan yeni sınav hazırlanıyor...</p>
       </div>
     );
@@ -452,28 +453,28 @@ export const ComprehensiveExamActivity: React.FC = () => {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in">
       {/* Üst Bilgi Kartı */}
-      <div className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-[24px] border border-stone-200/80 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-rose-500/10 text-rose-700">
+            <span className="p-2 rounded-[16px] bg-[var(--accent)]/10 text-[var(--accent)]">
               <Trophy className="w-5 h-5" />
             </span>
-            <h2 className="font-serif text-lg sm:text-xl font-bold text-stone-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-stone-900">
               Kapsamlı Kuş Uzmanlığı Sınavı
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-stone-600">
-            Görsel, ses ve ekolojik bilgi soruları. Soru havuzundan rastgele 10 soru gelir; en az <strong className="text-rose-700 font-bold">8 tanesini</strong> bilerek etkinliği tamamlayın.
+            Görsel, ses ve ekolojik bilgi soruları. Soru havuzundan rastgele 10 soru gelir; en az <strong className="text-[var(--accent)] font-bold">8 tanesini</strong> bilerek etkinliği tamamlayın.
           </p>
         </div>
 
         {/* İlerleme ve Hedef Rozeti */}
         <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
-          <div className="px-3 py-1.5 rounded-xl bg-stone-100 border border-stone-200 text-xs font-bold text-stone-700">
+          <div className="px-3 py-1.5 rounded-[16px] bg-stone-100 border border-stone-200 text-xs font-bold text-stone-700">
             Soru {currentIndex + 1} / {activeQuestions.length}
           </div>
-          <div className="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-bold text-amber-900 flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+          <div className="px-3 py-1.5 rounded-[16px] bg-[var(--accent-light)] border border-[var(--accent)]/30 text-xs font-bold text-[var(--accent)] flex items-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent)]" />
             <span>Hedef: En Az 8 Doğru</span>
           </div>
         </div>
@@ -482,23 +483,24 @@ export const ComprehensiveExamActivity: React.FC = () => {
       {/* İlerleme Çubuğu */}
       <div className="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
         <div
-          className="bg-rose-600 h-full transition-all duration-300 rounded-full"
+          className="bg-[var(--accent)] h-full transition-all duration-300 rounded-full"
           style={{ width: `${((currentIndex + 1) / activeQuestions.length) * 100}%` }}
         />
       </div>
 
       {/* ===================== TEST SONUÇ EKRANI ===================== */}
       {isExamFinished ? (
-        <div className="bg-white rounded-3xl border border-stone-200/80 p-6 sm:p-8 shadow-xs space-y-6 text-center animate-fade-in">
+        <div className="bg-white rounded-[24px] border border-stone-200/80 p-6 sm:p-8 shadow-xs space-y-6 text-center animate-fade-in">
           {/* Başarı veya Tekrar İkonu */}
-          <div className={`w-20 h-20 rounded-3xl mx-auto flex items-center justify-center shadow-lg ${
-            isPassed ? 'bg-emerald-500 text-white ring-8 ring-emerald-100' : 'bg-amber-500 text-white ring-8 ring-amber-100'
-          }`}>
+          <div
+            className="w-20 h-20 rounded-[24px] mx-auto flex items-center justify-center shadow-lg text-white"
+            style={{ background: isPassed ? CORRECT.border : WRONG.border, boxShadow: `0 0 0 8px ${isPassed ? CORRECT.bg : WRONG.bg}` }}
+          >
             {isPassed ? <Award className="w-10 h-10" /> : <AlertCircle className="w-10 h-10" />}
           </div>
 
           <div className="space-y-2 max-w-lg mx-auto">
-            <h3 className="font-serif text-2xl font-bold text-stone-900">
+            <h3 className="font-display text-2xl font-bold text-stone-900">
               {isPassed ? 'Tebrikler! Etkinliği Başarıyla Tamamladınız! 🎉' : 'Gelişmeye Devam! Tekrar Deneyin'}
             </h3>
             <p className="text-sm text-stone-600">
@@ -509,7 +511,7 @@ export const ComprehensiveExamActivity: React.FC = () => {
           </div>
 
           {/* Skor Kartı */}
-          <div className="inline-flex items-center gap-6 p-4 rounded-2xl bg-stone-50 border border-stone-200 text-stone-800">
+          <div className="inline-flex items-center gap-6 p-4 rounded-[20px] bg-stone-50 border border-stone-200 text-stone-800">
             <div>
               <span className="text-2xl font-extrabold text-stone-900">{correctAnswersCount}</span>
               <span className="text-xs text-stone-400 block">Doğru</span>
@@ -521,7 +523,7 @@ export const ComprehensiveExamActivity: React.FC = () => {
             </div>
             <div className="w-px h-8 bg-stone-200"></div>
             <div>
-              <span className="text-2xl font-extrabold text-rose-600">%{correctAnswersCount * 10}</span>
+              <span className="text-2xl font-extrabold text-[var(--accent)]">%{correctAnswersCount * 10}</span>
               <span className="text-xs text-stone-400 block">Başarı</span>
             </div>
           </div>
@@ -531,7 +533,7 @@ export const ComprehensiveExamActivity: React.FC = () => {
             <button
               id="restart-pool-exam-btn"
               onClick={handleRestartExam}
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95"
+              className="flex items-center gap-2 px-6 py-3 rounded-[20px] bg-[var(--accent)] hover:bg-[var(--accent)] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Yeni Sorularla Testi Tekrarla</span>
@@ -552,20 +554,22 @@ export const ComprehensiveExamActivity: React.FC = () => {
                 return (
                   <div
                     key={idx}
-                    className={`p-3.5 rounded-2xl border text-xs space-y-1.5 ${
-                      isCorrect ? 'bg-emerald-50/60 border-emerald-200' : 'bg-rose-50/60 border-rose-200'
-                    }`}
+                    className="p-3.5 rounded-[20px] border text-xs space-y-1.5"
+                    style={{
+                      background: `${isCorrect ? CORRECT.bg : WRONG.bg}99`,
+                      borderColor: `${isCorrect ? CORRECT.border : WRONG.border}4D`
+                    }}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-stone-800">
                         {idx + 1}. {bird?.name}
                       </span>
                       {isCorrect ? (
-                        <span className="text-emerald-700 font-bold flex items-center gap-1 text-[11px]">
+                        <span className="font-bold flex items-center gap-1 text-[11px]" style={{ color: CORRECT.border }}>
                           <CheckCircle2 className="w-3.5 h-3.5" /> Doğru
                         </span>
                       ) : (
-                        <span className="text-rose-700 font-bold flex items-center gap-1 text-[11px]">
+                        <span className="font-bold flex items-center gap-1 text-[11px]" style={{ color: WRONG.border }}>
                           <XCircle className="w-3.5 h-3.5" /> Yanlış
                         </span>
                       )}
@@ -583,7 +587,7 @@ export const ComprehensiveExamActivity: React.FC = () => {
       ) : (
         /* ===================== AKTİF SORU GÖRÜNÜMÜ ===================== */
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl border border-stone-200/80 overflow-hidden shadow-xs">
+          <div className="bg-white rounded-[24px] border border-stone-200/80 overflow-hidden shadow-xs">
             {/* Soru Üst Paneli: Görsel + Ses Dinleme Butonu */}
             <div className="grid grid-cols-1 md:grid-cols-12 border-b border-stone-100">
               {/* Sol: Gerçek Fotoğraf */}
@@ -598,7 +602,7 @@ export const ComprehensiveExamActivity: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 )}
-                <div className="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-xl text-[10px] font-bold">
+                <div className="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-[16px] text-[10px] font-bold">
                   {currentQuestion.category}
                 </div>
               </div>
@@ -625,13 +629,13 @@ export const ComprehensiveExamActivity: React.FC = () => {
                   <button
                     id="play-exam-question-audio-btn"
                     onClick={() => handlePlaySound()}
-                    className={`w-full py-2.5 px-4 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs ${
+                    className={`w-full py-2.5 px-4 rounded-[20px] text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs ${
                       isPlayingAudio
-                        ? 'bg-rose-600 text-white ring-4 ring-rose-100 shadow-rose-200 animate-pulse'
+                        ? 'bg-[var(--accent)] text-white ring-4 ring-[var(--accent)] shadow-[var(--accent-light)] animate-pulse'
                         : 'bg-white hover:bg-stone-50 text-stone-800 border border-stone-200'
                     }`}
                   >
-                    <Volume2 className={`w-4 h-4 text-rose-600 ${isPlayingAudio ? 'animate-bounce text-white' : ''}`} />
+                    <Volume2 className={`w-4 h-4 text-[var(--accent)] ${isPlayingAudio ? 'animate-bounce text-white' : ''}`} />
                     <span>{isPlayingAudio ? 'Kuşun Sesi Çalıyor...' : 'Kuşun Sesini Dinle (🔊)'}</span>
                   </button>
                 </div>
@@ -640,7 +644,7 @@ export const ComprehensiveExamActivity: React.FC = () => {
 
             {/* Soru Metni */}
             <div className="p-6 space-y-4">
-              <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900 leading-snug">
+              <h3 className="font-display text-base sm:text-lg font-bold text-stone-900 leading-snug">
                 {currentQuestion.question}
               </h3>
 
@@ -651,15 +655,18 @@ export const ComprehensiveExamActivity: React.FC = () => {
                   const hasAnswered = userAnswers[currentIndex] !== undefined;
                   const isCorrect = optIdx === currentQuestion.correctIndex;
 
-                  let cardStyle = 'bg-stone-50/70 border-stone-200 hover:border-stone-400 hover:bg-stone-100 text-stone-800';
+                  let cardStyle: React.CSSProperties = { background: '#FAFAF9B3', borderColor: '#E7E5E4', color: '#292524' };
+                  let badgeStyle: React.CSSProperties = { background: '#FFFFFF', borderColor: '#D6D3D1', color: '#57534E', border: '1px solid #D6D3D1' };
 
                   if (hasAnswered) {
                     if (isCorrect) {
-                      cardStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 font-bold ring-2 ring-emerald-200';
+                      cardStyle = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, fontWeight: 700, boxShadow: `0 0 0 2px ${CORRECT.border}` };
+                      badgeStyle = { background: CORRECT.border, color: '#FFFFFF' };
                     } else if (isSelected) {
-                      cardStyle = 'bg-rose-50 border-rose-500 text-rose-950 font-bold ring-2 ring-rose-200';
+                      cardStyle = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg, fontWeight: 700, boxShadow: `0 0 0 2px ${WRONG.border}` };
+                      badgeStyle = { background: WRONG.border, color: '#FFFFFF' };
                     } else {
-                      cardStyle = 'bg-stone-50/50 border-stone-200 text-stone-400 opacity-60';
+                      cardStyle = { background: '#FAFAF980', borderColor: '#E7E5E4', color: '#A8A29E', opacity: 0.6 };
                     }
                   }
 
@@ -669,15 +676,13 @@ export const ComprehensiveExamActivity: React.FC = () => {
                       id={`exam-opt-${optIdx}`}
                       onClick={() => handleSelectOption(optIdx)}
                       disabled={hasAnswered}
-                      className={`p-4 rounded-2xl border text-left text-xs sm:text-sm transition-all flex items-start gap-3 ${cardStyle}`}
+                      style={cardStyle}
+                      className="p-4 rounded-[20px] border text-left text-xs sm:text-sm transition-all flex items-start gap-3 hover:border-stone-400 hover:bg-stone-100"
                     >
-                      <span className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold text-xs ${
-                        hasAnswered && isCorrect
-                          ? 'bg-emerald-600 text-white'
-                          : hasAnswered && isSelected
-                          ? 'bg-rose-600 text-white'
-                          : 'bg-white border border-stone-300 text-stone-600'
-                      }`}>
+                      <span
+                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold text-xs"
+                        style={badgeStyle}
+                      >
                         {['A', 'B', 'C', 'D'][optIdx]}
                       </span>
                       <span className="leading-relaxed grow">{optionText}</span>
@@ -688,12 +693,12 @@ export const ComprehensiveExamActivity: React.FC = () => {
 
               {/* Cevap Sonrası Pedagojik Açıklama */}
               {showExplanation && (
-                <div className="mt-4 p-4 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-2 animate-fade-in">
-                  <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
-                    <BookOpen className="w-4 h-4 text-amber-700" />
+                <div className="mt-4 p-4 rounded-[20px] bg-[var(--accent-light)]/80 border border-[var(--accent)]/30 space-y-2 animate-fade-in">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[var(--accent)]">
+                    <BookOpen className="w-4 h-4 text-[var(--accent)]" />
                     <span>Ekolojik Bilgi & Çözüm Analizi</span>
                   </div>
-                  <p className="text-xs text-amber-950 leading-relaxed">
+                  <p className="text-xs text-[var(--accent)] leading-relaxed">
                     {currentQuestion.explanation}
                   </p>
                 </div>
@@ -705,7 +710,7 @@ export const ComprehensiveExamActivity: React.FC = () => {
                   <button
                     id="exam-next-question-btn"
                     onClick={handleNextQuestion}
-                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95"
+                    className="flex items-center gap-2 px-6 py-3 rounded-[20px] bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95"
                   >
                     <span>{currentIndex === activeQuestions.length - 1 ? 'Sınavı Tamamla & Sonucu Gör' : 'Sonraki Soru'}</span>
                     <ArrowRight className="w-4 h-4" />

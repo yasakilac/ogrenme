@@ -21,6 +21,7 @@ import {
   type PhotoPreset,
 } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 interface CapturedPhoto {
   id: string;
@@ -385,11 +386,11 @@ export const CameraSimulator: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Üst Başlık & Preset Seçici */}
-      <div className="bg-white border border-[#EBE7E0] rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div className="bg-white border border-[#EBE7E0] rounded-[20px] p-4 sm:p-5 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#F0ECE6]">
           <div>
             <h2 className="text-xl font-bold text-[#1F1E1B] flex items-center gap-2">
-              <Camera className="w-5 h-5 text-rose-600" />
+              <Camera className="w-5 h-5 text-[var(--accent)]" />
               İnteraktif Pozlama & Kamera Simülatörü
             </h2>
             <p className="text-sm text-[#66635E] mt-0.5">
@@ -401,7 +402,7 @@ export const CameraSimulator: React.FC = () => {
               onClick={toggleMute}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
                 isMuted
-                  ? 'bg-amber-50 text-amber-800 border-amber-200'
+                  ? 'bg-[var(--accent-light)] text-[var(--accent)] border-[var(--accent)]/30'
                   : 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200'
               }`}
               title={isMuted ? 'Sesi Aç' : 'Sesi Kapat'}
@@ -432,9 +433,9 @@ export const CameraSimulator: React.FC = () => {
                 <button
                   key={preset.id}
                   onClick={() => handleSelectPreset(preset)}
-                  className={`text-left p-2.5 rounded-xl border transition-all text-xs flex flex-col justify-between ${
+                  className={`text-left p-2.5 rounded-[16px] border transition-all text-xs flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-rose-50 border-rose-300 ring-2 ring-rose-500/20 text-rose-950 font-medium'
+                      ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)]/20 text-[var(--accent)] font-medium'
                       : 'bg-[#FAF8F5] border-[#EBE7E0] hover:bg-[#F3EFEA] text-[#333]'
                   }`}
                 >
@@ -451,28 +452,28 @@ export const CameraSimulator: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Sol Kolon: Vizör ve Gerçek Zamanlı Görsel Ekran (7 Kolon) */}
         <div className="lg:col-span-7 flex flex-col space-y-4">
-          <div className="relative bg-black rounded-2xl overflow-hidden shadow-xl border-4 border-stone-800">
+          <div className="relative bg-black rounded-[20px] overflow-hidden shadow-xl border-4 border-stone-800">
             {/* Vizör Üst Bilgi Barı */}
-            <div className="absolute top-0 left-0 right-0 z-20 px-4 py-2 flex items-center justify-between text-[11px] font-mono tracking-wider text-amber-400 bg-black/60 backdrop-blur-xs">
+            <div className="absolute top-0 left-0 right-0 z-20 px-4 py-2 flex items-center justify-between text-[11px] tracking-wider text-[var(--accent)] bg-black/60 backdrop-blur-xs">
               <div className="flex items-center gap-3">
                 <span className="inline-flex items-center gap-1 font-bold text-white">
-                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
                   CANLI VİZÖR
                 </span>
                 <span className="text-stone-300">RAW • L</span>
-                <span className="text-emerald-400 font-semibold">AF-S</span>
+                <span className="text-[var(--accent)] font-semibold">AF-S</span>
               </div>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setShowGrid(!showGrid)}
-                  className={`p-1 rounded transition-colors ${showGrid ? 'text-amber-400 bg-white/10' : 'text-stone-400'}`}
+                  className={`p-1 rounded transition-colors ${showGrid ? 'text-[var(--accent)] bg-white/10' : 'text-stone-400'}`}
                   title="Izgara Çizgileri"
                 >
                   <Grid className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setShowHistogram(!showHistogram)}
-                  className={`p-1 rounded transition-colors ${showHistogram ? 'text-amber-400 bg-white/10' : 'text-stone-400'}`}
+                  className={`p-1 rounded transition-colors ${showHistogram ? 'text-[var(--accent)] bg-white/10' : 'text-stone-400'}`}
                   title="Histogram"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
@@ -512,15 +513,15 @@ export const CameraSimulator: React.FC = () => {
 
               {/* Merkezi Netleme Retikülü */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                <div className="w-16 h-16 border border-emerald-400/80 rounded-sm flex items-center justify-center shadow-xs">
-                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
+                <div className="w-16 h-16 border border-[var(--accent)]/80 rounded-sm flex items-center justify-center shadow-xs">
+                  <div className="w-1.5 h-1.5 bg-[var(--accent)] rounded-full" />
                 </div>
               </div>
 
               {/* Canlı Histogram Mini Widget */}
               {showHistogram && (
                 <div className="absolute top-10 right-3 z-20 bg-black/70 border border-stone-700/80 rounded-md p-2 w-28 pointer-events-none">
-                  <span className="text-[9px] font-mono text-stone-400 block mb-1">HISTOGRAM</span>
+                  <span className="text-[9px] text-stone-400 block mb-1">HISTOGRAM</span>
                   <div className="h-10 w-full flex items-end gap-0.5">
                     {/* Basit dinamik luma çubukları */}
                     <div
@@ -528,11 +529,11 @@ export const CameraSimulator: React.FC = () => {
                       style={{ height: `${Math.max(10, Math.min(100, (1 - exposureBrightness * 0.5) * 100))}%` }}
                     />
                     <div
-                      className="flex-1 bg-emerald-400 rounded-t-xs"
+                      className="flex-1 bg-[var(--accent)] rounded-t-xs"
                       style={{ height: `${Math.max(20, Math.min(100, 100 - Math.abs(evDiff) * 25))}%` }}
                     />
                     <div
-                      className="flex-1 bg-amber-300 rounded-t-xs"
+                      className="flex-1 bg-[var(--accent)] rounded-t-xs"
                       style={{ height: `${Math.max(10, Math.min(100, exposureBrightness * 40))}%` }}
                     />
                   </div>
@@ -542,17 +543,17 @@ export const CameraSimulator: React.FC = () => {
               {/* Pozlama Durum Uyarısı Overlay */}
               <div className="absolute bottom-14 left-4 z-20 pointer-events-none">
                 {evDiff <= -2.0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-black/80 border border-red-500/70 text-red-400 text-xs font-semibold">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-black/80 border border-[var(--accent)]/70 text-[var(--accent)] text-xs font-semibold">
                     <AlertTriangle className="w-3.5 h-3.5" /> Çok Karanlık (-{Math.abs(evDiff)} EV)
                   </span>
                 )}
                 {evDiff >= 2.0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-black/80 border border-amber-500/70 text-amber-400 text-xs font-semibold">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-black/80 border border-[var(--accent)]/70 text-[var(--accent)] text-xs font-semibold">
                     <AlertTriangle className="w-3.5 h-3.5" /> Patlamış Beyazlar (+{evDiff} EV)
                   </span>
                 )}
                 {Math.abs(evDiff) < 1.0 && motionBlurPx < 8 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-black/80 border border-emerald-500/70 text-emerald-400 text-xs font-semibold">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-black/80 border border-[var(--accent)]/70 text-[var(--accent)] text-xs font-semibold">
                     <CheckCircle2 className="w-3.5 h-3.5" /> Mükemmel Pozlama Dengesi
                   </span>
                 )}
@@ -560,22 +561,22 @@ export const CameraSimulator: React.FC = () => {
             </div>
 
             {/* Vizör Alt Bilgi HUD'ı (Kamera Ekranı) */}
-            <div className="bg-stone-950 px-4 py-3 border-t border-stone-800 text-stone-200 flex flex-col gap-2 font-mono">
+            <div className="bg-stone-950 px-4 py-3 border-t border-stone-800 text-stone-200 flex flex-col gap-2 ">
               <div className="flex items-center justify-between">
                 {/* Enstantane */}
                 <div className="text-center">
                   <span className="text-[10px] text-stone-400 block">ENSTANTANE</span>
-                  <span className="text-base sm:text-lg font-bold text-amber-400">{currentShutter.label}</span>
+                  <span className="text-base sm:text-lg font-bold text-[var(--accent)]">{currentShutter.label}</span>
                 </div>
                 {/* Diyafram */}
                 <div className="text-center">
                   <span className="text-[10px] text-stone-400 block">DİYAFRAM</span>
-                  <span className="text-base sm:text-lg font-bold text-amber-400">f/{aperture}</span>
+                  <span className="text-base sm:text-lg font-bold text-[var(--accent)]">f/{aperture}</span>
                 </div>
                 {/* ISO */}
                 <div className="text-center">
                   <span className="text-[10px] text-stone-400 block">ISO</span>
-                  <span className="text-base sm:text-lg font-bold text-amber-400">{iso}</span>
+                  <span className="text-base sm:text-lg font-bold text-[var(--accent)]">{iso}</span>
                 </div>
               </div>
 
@@ -583,13 +584,13 @@ export const CameraSimulator: React.FC = () => {
               <div className="pt-1 border-t border-stone-800/80">
                 <div className="flex items-center justify-between text-[10px] text-stone-400 mb-1">
                   <span>-3 (Karanlık)</span>
-                  <span className="text-emerald-400 font-bold">0 (Dengeli)</span>
+                  <span className="text-[var(--accent)] font-bold">0 (Dengeli)</span>
                   <span>+3 (Patlak)</span>
                 </div>
                 {/* Gösterge Çubuğu */}
                 <div className="relative h-3 bg-stone-900 rounded-full border border-stone-700 overflow-hidden flex items-center px-1">
                   {/* Merkez çizgisi */}
-                  <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-emerald-500/60" />
+                  <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-[var(--accent)]/60" />
                   {/* Dinamik İbre */}
                   <div
                     className="absolute top-0.5 bottom-0.5 w-3.5 rounded-full transition-all duration-150 flex items-center justify-center text-[8px] font-bold text-black"
@@ -610,10 +611,10 @@ export const CameraSimulator: React.FC = () => {
             <button
               onClick={handleShutterRelease}
               disabled={isShooting}
-              className={`group relative flex items-center justify-center gap-3 w-full sm:w-80 py-4 px-6 rounded-2xl font-bold text-base shadow-lg transition-all active:scale-95 ${
+              className={`group relative flex items-center justify-center gap-3 w-full sm:w-80 py-4 px-6 rounded-[20px] font-bold text-base shadow-lg transition-all active:scale-95 ${
                 isShooting
                   ? 'bg-stone-400 text-stone-200 cursor-not-allowed'
-                  : 'bg-rose-600 hover:bg-rose-700 text-white ring-4 ring-rose-500/20 hover:shadow-rose-600/30'
+                  : 'bg-[var(--accent)] hover:bg-[var(--accent)] text-white ring-4 ring-[var(--accent)]/20 hover:shadow-[var(--accent)]/30'
               }`}
             >
               <span className="w-5 h-5 rounded-full border-2 border-white/80 flex items-center justify-center">
@@ -627,9 +628,9 @@ export const CameraSimulator: React.FC = () => {
         {/* Sağ Kolon: Pozlama Üçgeni Kadranları & Canlı Analiz (5 Kolon) */}
         <div className="lg:col-span-5 flex flex-col space-y-4">
           {/* Kontrol Paneli */}
-          <div className="bg-white border border-[#EBE7E0] rounded-2xl p-5 shadow-sm space-y-5">
+          <div className="bg-white border border-[#EBE7E0] rounded-[20px] p-5 shadow-sm space-y-5">
             <h3 className="font-bold text-[#1F1E1B] text-base flex items-center gap-2 border-b border-[#F0ECE6] pb-3">
-              <Sliders className="w-4 h-4 text-rose-600" />
+              <Sliders className="w-4 h-4 text-[var(--accent)]" />
               Manuel Pozlama Kadranları
             </h3>
 
@@ -637,10 +638,10 @@ export const CameraSimulator: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-[#1F1E1B] flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent)] inline-block" />
                   Diyafram Açıklığı (Aperture)
                 </span>
-                <span className="font-mono font-bold text-rose-600 text-sm">f/{aperture}</span>
+                <span className="font-bold text-[var(--accent)] text-sm">f/{aperture}</span>
               </div>
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                 {APERTURE_STOPS.map((stop) => {
@@ -652,9 +653,9 @@ export const CameraSimulator: React.FC = () => {
                         setAperture(stop);
                         cameraAudio.playDialTick();
                       }}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium border transition-colors shrink-0 ${
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 ${
                         active
-                          ? 'bg-rose-600 text-white border-rose-600 shadow-xs'
+                          ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-xs'
                           : 'bg-[#FAF8F5] text-[#333] border-[#E0DCD6] hover:bg-stone-200'
                       }`}
                     >
@@ -676,10 +677,10 @@ export const CameraSimulator: React.FC = () => {
             <div className="space-y-2 pt-2 border-t border-[#F0ECE6]">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-[#1F1E1B] flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent)] inline-block" />
                   Enstantane Hızı (Shutter Speed)
                 </span>
-                <span className="font-mono font-bold text-blue-600 text-sm">{currentShutter.label}</span>
+                <span className="font-bold text-[var(--accent)] text-sm">{currentShutter.label}</span>
               </div>
               <input
                 type="range"
@@ -690,9 +691,9 @@ export const CameraSimulator: React.FC = () => {
                   setShutterIndex(Number(e.target.value));
                   cameraAudio.playDialTick();
                 }}
-                className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[var(--accent)]"
               />
-              <div className="flex justify-between text-[10px] text-stone-500 font-mono">
+              <div className="flex justify-between text-[10px] text-stone-500 ">
                 <span>1/4000s (Hızlı)</span>
                 <span>1/60s (Elde sınır)</span>
                 <span>4s (Uzun)</span>
@@ -710,10 +711,10 @@ export const CameraSimulator: React.FC = () => {
             <div className="space-y-2 pt-2 border-t border-[#F0ECE6]">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-[#1F1E1B] flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent)] inline-block" />
                   ISO (Sensör Kazancı)
                 </span>
-                <span className="font-mono font-bold text-emerald-600 text-sm">ISO {iso}</span>
+                <span className="font-bold text-[var(--accent)] text-sm">ISO {iso}</span>
               </div>
               <div className="grid grid-cols-4 gap-1.5">
                 {ISO_STOPS.map((isoVal) => {
@@ -725,9 +726,9 @@ export const CameraSimulator: React.FC = () => {
                         setIso(isoVal);
                         cameraAudio.playDialTick();
                       }}
-                      className={`py-1 rounded-lg text-xs font-mono font-medium border transition-colors ${
+                      className={`py-1 rounded-lg text-xs font-medium border transition-colors ${
                         active
-                          ? 'bg-emerald-600 text-white border-emerald-600'
+                          ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
                           : 'bg-[#FAF8F5] text-[#333] border-[#E0DCD6] hover:bg-stone-200'
                       }`}
                     >
@@ -747,13 +748,13 @@ export const CameraSimulator: React.FC = () => {
           </div>
 
           {/* Canlı Pedagojik Fotoğraf Koçu / Durum Analizi */}
-          <div className="bg-[#FAF8F5] border border-[#EBE7E0] rounded-2xl p-4 space-y-3">
+          <div className="bg-[#FAF8F5] border border-[#EBE7E0] rounded-[20px] p-4 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#8A8680] flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-rose-600" />
+              <Info className="w-3.5 h-3.5 text-[var(--accent)]" />
               Canlı Pozlama Koçu
             </h4>
             <div className="space-y-2 text-xs">
-              <div className="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-[#EBE7E0]">
+              <div className="flex items-start gap-2 bg-white p-2.5 rounded-[16px] border border-[#EBE7E0]">
                 <span className="p-1 rounded-md bg-stone-100 text-stone-700 mt-0.5">
                   <Eye className="w-3.5 h-3.5" />
                 </span>
@@ -765,7 +766,7 @@ export const CameraSimulator: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-[#EBE7E0]">
+              <div className="flex items-start gap-2 bg-white p-2.5 rounded-[16px] border border-[#EBE7E0]">
                 <span className="p-1 rounded-md bg-stone-100 text-stone-700 mt-0.5">
                   <Zap className="w-3.5 h-3.5" />
                 </span>
@@ -785,10 +786,10 @@ export const CameraSimulator: React.FC = () => {
 
       {/* Son Çekilen Fotoğraflar Galerisi & EXIF İnceleme */}
       {recentShots.length > 0 && (
-        <div className="bg-white border border-[#EBE7E0] rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="bg-white border border-[#EBE7E0] rounded-[20px] p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-[#1F1E1B] text-base flex items-center gap-2">
-              <Camera className="w-4 h-4 text-rose-600" />
+              <Camera className="w-4 h-4 text-[var(--accent)]" />
               Çekilen Fotoğraflar & EXIF İnceleme ({recentShots.length})
             </h3>
             <span className="text-xs text-[#7A7670]">Tıklayarak detaylı geri bildirimi görün</span>
@@ -801,28 +802,27 @@ export const CameraSimulator: React.FC = () => {
                 <button
                   key={shot.id}
                   onClick={() => setSelectedShotForReview(shot)}
-                  className={`text-left rounded-xl p-2.5 border transition-all flex flex-col justify-between ${
+                  className={`text-left rounded-[16px] p-2.5 border transition-all flex flex-col justify-between ${
                     isSelected
-                      ? 'border-rose-500 bg-rose-50/50 ring-2 ring-rose-500/20'
+                      ? 'border-[var(--accent)] bg-[var(--accent-light)]/50 ring-2 ring-[var(--accent)]/20'
                       : 'border-[#EBE7E0] bg-[#FAF8F5] hover:bg-stone-100'
                   }`}
                 >
                   <div className="flex items-center justify-between text-[10px] text-[#7A7670] mb-1">
                     <span>{shot.timestamp}</span>
                     <span
-                      className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                      className="px-1.5 py-0.5 rounded text-[9px] font-bold"
+                      style={
                         shot.qualityTag === 'Mükemmel'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : shot.qualityTag === 'Bulanık'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
+                          ? { background: CORRECT.bg, color: CORRECT.fg }
+                          : { background: WRONG.bg, color: WRONG.fg }
+                      }
                     >
                       {shot.qualityTag}
                     </span>
                   </div>
                   <span className="font-bold text-xs text-[#1F1E1B] truncate">{shot.preset.name}</span>
-                  <div className="text-[11px] font-mono text-stone-600 mt-1">
+                  <div className="text-[11px] text-stone-600 mt-1">
                     f/{shot.aperture} • {shot.shutter.label} • ISO {shot.iso}
                   </div>
                 </button>
@@ -832,15 +832,15 @@ export const CameraSimulator: React.FC = () => {
 
           {/* Seçili Fotoğraf Değerlendirme Kartı */}
           {selectedShotForReview && (
-            <div className="bg-[#FAF8F5] border border-[#EBE7E0] rounded-xl p-4 mt-3 flex flex-col sm:flex-row items-start justify-between gap-3">
+            <div className="bg-[#FAF8F5] border border-[#EBE7E0] rounded-[16px] p-4 mt-3 flex flex-col sm:flex-row items-start justify-between gap-3">
               <div>
-                <span className="text-xs font-bold text-rose-700 block uppercase tracking-wide">
+                <span className="text-xs font-bold text-[var(--accent)] block uppercase tracking-wide">
                   Eğitmen Değerlendirmesi:
                 </span>
                 <p className="text-sm text-[#1F1E1B] mt-1 font-medium">{selectedShotForReview.comment}</p>
                 <div className="text-xs text-[#66635E] mt-1">
                   Pozometre Durumu:{' '}
-                  <span className="font-mono font-bold text-[#1F1E1B]">
+                  <span className="font-bold text-[#1F1E1B]">
                     {selectedShotForReview.evDiff > 0 ? `+${selectedShotForReview.evDiff}` : selectedShotForReview.evDiff} EV
                   </span>
                 </div>

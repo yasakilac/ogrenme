@@ -269,7 +269,7 @@ export const BirdIllustration: React.FC<BirdIllustrationProps> = ({
 
     default:
       return (
-        <div className={`${sizeClasses} ${className} flex items-center justify-center bg-stone-100 rounded-2xl text-3xl`}>
+        <div className={`${sizeClasses} ${className} flex items-center justify-center bg-stone-100 rounded-[20px] text-3xl`}>
           🐦
         </div>
       );

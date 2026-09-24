@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { PracticeWord, AlphabetType } from '../../../types';
 import { PRACTICE_WORDS } from '../data/wordsData';
+import { CORRECT, WRONG } from '../../../components/ui';
 import { loadCustomWords } from '../../../utils/storage';
 import { soundManager, splitKanaIntoMorae } from '../../../utils/sound';
 
@@ -131,12 +132,12 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
               key={`${mora}_${idx}`}
               className={`transition-all duration-150 inline-block px-0.5 rounded-lg ${
                 isCurrentlySpeaking
-                  ? 'scale-125 ring-2 ring-rose-400 bg-rose-100 shadow-sm'
+                  ? 'scale-125 ring-2 ring-[var(--accent)] bg-[var(--accent-light)] shadow-sm'
                   : ''
               }`}
             >
               {isTarget ? (
-                <span className="text-rose-600 font-black text-4xl sm:text-6xl drop-shadow-xs underline decoration-rose-400 decoration-wavy decoration-2">
+                <span className="text-[var(--accent)] font-black text-4xl sm:text-6xl drop-shadow-xs underline decoration-[var(--accent)] decoration-wavy decoration-2">
                   {mora}
                 </span>
               ) : (
@@ -153,18 +154,18 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
 
   // Helper to highlight Romaji
   const renderHighlightedRomaji = (romaji: string, targetRomaji: string) => {
-    if (!targetRomaji) return <span className="font-mono">{romaji}</span>;
+    if (!targetRomaji) return <span className="">{romaji}</span>;
     const idx = romaji.toLowerCase().indexOf(targetRomaji.toLowerCase());
-    if (idx === -1) return <span className="font-mono">{romaji}</span>;
+    if (idx === -1) return <span className="">{romaji}</span>;
 
     const before = romaji.slice(0, idx);
     const target = romaji.slice(idx, idx + targetRomaji.length);
     const after = romaji.slice(idx + targetRomaji.length);
 
     return (
-      <span className="font-mono text-base sm:text-lg">
+      <span className="text-base sm:text-lg">
         {before}
-        <strong className="text-rose-600 font-black px-0.5 underline decoration-rose-400">{target}</strong>
+        <strong className="text-[var(--accent)] font-black px-0.5 underline decoration-[var(--accent)]">{target}</strong>
         {after}
       </span>
     );
@@ -264,7 +265,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
       {!isSessionActive ? (
         <>
           {/* 1. BAŞLIK VE AÇIKLAMA */}
-          <div className="bg-white border border-[#E8E4DC] rounded-3xl p-5 sm:p-6 shadow-2xs space-y-6">
+          <div className="bg-white border border-[#E8E4DC] rounded-[24px] p-5 sm:p-6 shadow-2xs space-y-6">
             <div>
               <h1 className="text-xl sm:text-2xl font-black text-[#1F1E1B] tracking-tight">
                 Görsel Hafıza ile Harf & Kelime Öğrenimi
@@ -283,14 +284,14 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                   soundManager.stopAllAudio();
                   setSubMode('cards');
                 }}
-                className={`p-4 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
+                className={`p-4 rounded-[20px] border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
                   subMode === 'cards'
-                    ? 'bg-rose-50/70 border-rose-400 ring-2 ring-rose-200 text-rose-800 font-bold shadow-2xs'
-                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-rose-300 hover:text-[#1F1E1B]'
+                    ? 'bg-[var(--accent-light)]/70 border-[var(--accent)] ring-2 ring-[var(--accent)] text-[var(--accent)] font-bold shadow-2xs'
+                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-[var(--accent)] hover:text-[#1F1E1B]'
                 }`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                  subMode === 'cards' ? 'bg-rose-600 text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
+                <div className={`w-12 h-12 rounded-[20px] flex items-center justify-center ${
+                  subMode === 'cards' ? 'bg-[var(--accent)] text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
                 }`}>
                   <Layers className="w-6 h-6" />
                 </div>
@@ -304,14 +305,14 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                   soundManager.stopAllAudio();
                   setSubMode('quiz');
                 }}
-                className={`p-4 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
+                className={`p-4 rounded-[20px] border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
                   subMode === 'quiz'
-                    ? 'bg-rose-50/70 border-rose-400 ring-2 ring-rose-200 text-rose-800 font-bold shadow-2xs'
-                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-rose-300 hover:text-[#1F1E1B]'
+                    ? 'bg-[var(--accent-light)]/70 border-[var(--accent)] ring-2 ring-[var(--accent)] text-[var(--accent)] font-bold shadow-2xs'
+                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-[var(--accent)] hover:text-[#1F1E1B]'
                 }`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                  subMode === 'quiz' ? 'bg-rose-600 text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
+                <div className={`w-12 h-12 rounded-[20px] flex items-center justify-center ${
+                  subMode === 'quiz' ? 'bg-[var(--accent)] text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
                 }`}>
                   <HelpCircle className="w-6 h-6" />
                 </div>
@@ -325,14 +326,14 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                   soundManager.stopAllAudio();
                   setSubMode('gallery');
                 }}
-                className={`p-4 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
+                className={`p-4 rounded-[20px] border text-center transition-all flex flex-col items-center justify-center gap-2.5 ${
                   subMode === 'gallery'
-                    ? 'bg-rose-50/70 border-rose-400 ring-2 ring-rose-200 text-rose-800 font-bold shadow-2xs'
-                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-rose-300 hover:text-[#1F1E1B]'
+                    ? 'bg-[var(--accent-light)]/70 border-[var(--accent)] ring-2 ring-[var(--accent)] text-[var(--accent)] font-bold shadow-2xs'
+                    : 'bg-white border-[#E8E4DC] text-[#5C574F] hover:border-[var(--accent)] hover:text-[#1F1E1B]'
                 }`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                  subMode === 'gallery' ? 'bg-rose-600 text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
+                <div className={`w-12 h-12 rounded-[20px] flex items-center justify-center ${
+                  subMode === 'gallery' ? 'bg-[var(--accent)] text-white' : 'bg-[#F2EFEA] text-[#6C675E]'
                 }`}>
                   <BookOpen className="w-6 h-6" />
                 </div>
@@ -355,10 +356,10 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                       setSelectedCategory(cat.id);
                       setCurrentIndex(0);
                     }}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    className={`px-3.5 py-1.5 rounded-[16px] text-xs font-semibold transition-all ${
                       selectedCategory === cat.id
-                        ? 'bg-rose-700 text-white shadow-2xs'
-                        : 'bg-[#FAF8F5] text-[#5C574F] border border-[#E8E4DC] hover:bg-white hover:border-rose-300'
+                        ? 'bg-[var(--accent)] text-white shadow-2xs'
+                        : 'bg-[#FAF8F5] text-[#5C574F] border border-[#E8E4DC] hover:bg-white hover:border-[var(--accent)]'
                     }`}
                   >
                     {cat.label}
@@ -382,10 +383,10 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                       setSelectedAlphabet(alp.id);
                       setCurrentIndex(0);
                     }}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    className={`px-3.5 py-1.5 rounded-[16px] text-xs font-semibold transition-all ${
                       selectedAlphabet === alp.id
-                        ? 'bg-rose-700 text-white shadow-2xs'
-                        : 'bg-[#FAF8F5] text-[#5C574F] border border-[#E8E4DC] hover:bg-white hover:border-rose-300'
+                        ? 'bg-[var(--accent)] text-white shadow-2xs'
+                        : 'bg-[#FAF8F5] text-[#5C574F] border border-[#E8E4DC] hover:bg-white hover:border-[var(--accent)]'
                     }`}
                   >
                     {alp.label}
@@ -396,13 +397,13 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
           </div>
 
           {/* 5. KALDIĞIN YERDEN DEVAM ET */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E8E4DC] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-4 sm:p-5 rounded-[20px] bg-white border border-[#E8E4DC] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200/80 flex items-center justify-center text-center shrink-0 shadow-2xs">
-                <Bookmark className="w-6 h-6 text-rose-600" />
+              <div className="w-12 h-12 rounded-[20px] bg-[var(--accent-light)] border border-[var(--accent)]/80 flex items-center justify-center text-center shrink-0 shadow-2xs">
+                <Bookmark className="w-6 h-6 text-[var(--accent)]" />
               </div>
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700 block">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--accent)] block">
                   Kaldığın Yer
                 </span>
                 <h3 className="text-sm sm:text-base font-bold text-[#1F1E1B] mt-0.5">
@@ -419,7 +420,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                   soundManager.stopAllAudio();
                   setIsSessionActive(true);
                 }}
-                className="px-5 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-2xs active:scale-95"
+                className="px-5 py-2.5 rounded-[16px] bg-[var(--accent)] hover:bg-[var(--accent)] text-white text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-2xs active:scale-95"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
                 <span>Devam Et</span>
@@ -430,7 +431,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
       ) : (
         <>
           {/* Active Session Return Bar */}
-          <div className="bg-white border border-[#E8E4DC] rounded-2xl p-3 sm:p-4 shadow-2xs flex items-center justify-between gap-3">
+          <div className="bg-white border border-[#E8E4DC] rounded-[20px] p-3 sm:p-4 shadow-2xs flex items-center justify-between gap-3">
             <button
               type="button"
               id="back-to-setup-screen-btn"
@@ -438,14 +439,14 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                 soundManager.stopAllAudio();
                 setIsSessionActive(false);
               }}
-              className="px-3.5 py-2 rounded-xl bg-[#FAF8F5] border border-[#E8E4DC] hover:bg-white hover:border-rose-300 text-xs sm:text-sm font-bold text-[#1F1E1B] flex items-center gap-2 transition-all shadow-2xs active:scale-95"
+              className="px-3.5 py-2 rounded-[16px] bg-[#FAF8F5] border border-[#E8E4DC] hover:bg-white hover:border-[var(--accent)] text-xs sm:text-sm font-bold text-[#1F1E1B] flex items-center gap-2 transition-all shadow-2xs active:scale-95"
             >
-              <ArrowLeft className="w-4 h-4 text-rose-600" />
+              <ArrowLeft className="w-4 h-4 text-[var(--accent)]" />
               <span>Seçim Ekranına Dön</span>
             </button>
 
             <div className="text-xs text-[#5C574F] font-semibold flex items-center gap-1.5 sm:gap-2 flex-wrap">
-              <span className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 font-bold border border-rose-200">
+              <span className="px-2.5 py-1 rounded-lg bg-[var(--accent-light)] text-[var(--accent)] font-bold border border-[var(--accent)]/30">
                 {subMode === 'cards' ? 'Kartlar' : subMode === 'quiz' ? 'Harf Testi' : `Galeri (${filteredWords.length})`}
               </span>
               <span>•</span>
@@ -465,11 +466,11 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
               key={activeCardWord.id}
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white border border-[#E6E1D8] rounded-3xl overflow-hidden shadow-2xs hover:shadow-sm transition-all"
+              className="bg-white border border-[#E6E1D8] rounded-[24px] overflow-hidden shadow-2xs hover:shadow-sm transition-all"
             >
               {/* Card Image Container (More compact & elegant) */}
               <div className="p-3 sm:p-4 bg-[#FAF8F5] border-b border-[#E6E1D8]">
-                <div className="relative w-full max-w-md mx-auto h-44 sm:h-52 bg-[#F2EFE9] rounded-2xl overflow-hidden group border border-[#E6E1D8]/80 shadow-2xs">
+                <div className="relative w-full max-w-md mx-auto h-44 sm:h-52 bg-[#F2EFE9] rounded-[20px] overflow-hidden group border border-[#E6E1D8]/80 shadow-2xs">
                   <img
                     src={activeCardWord.imageUrl}
                     alt={activeCardWord.meaningTr}
@@ -483,15 +484,15 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                     <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-black/65 backdrop-blur-md text-white shadow-2xs">
                       {activeCardWord.category}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-white/90 backdrop-blur-md text-[#1F1E1B] border border-white/40 shadow-2xs">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/90 backdrop-blur-md text-[#1F1E1B] border border-white/40 shadow-2xs">
                       {currentIndex + 1} / {filteredWords.length}
                     </span>
                   </div>
 
                   {/* Target Letter Floating Badge on the image */}
-                  <div className="absolute bottom-2.5 right-2.5 bg-white/95 backdrop-blur-md border border-white/60 rounded-xl p-1.5 sm:p-2 shadow-md flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center shadow-inner">
-                      <span className="text-lg font-black text-rose-600">
+                  <div className="absolute bottom-2.5 right-2.5 bg-white/95 backdrop-blur-md border border-white/60 rounded-[16px] p-1.5 sm:p-2 shadow-md flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[var(--accent-light)] border border-[var(--accent)]/30 flex items-center justify-center shadow-inner">
+                      <span className="text-lg font-black text-[var(--accent)]">
                         {activeCardWord.targetKana || activeCardWord.kana.slice(0, 1)}
                       </span>
                     </div>
@@ -504,7 +505,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                     <button
                       type="button"
                       onClick={() => handlePlayLetter(activeCardWord.targetKana || activeCardWord.kana.slice(0, 1))}
-                      className="w-7 h-7 rounded-lg bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center transition-all active:scale-95 shadow-xs"
+                      className="w-7 h-7 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)] text-white flex items-center justify-center transition-all active:scale-95 shadow-xs"
                       title="Hedef harfin doğal insan sesini dinle"
                     >
                       <Volume2 className="w-3.5 h-3.5" />
@@ -528,15 +529,15 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                       type="button"
                       id="play-word-audio"
                       onClick={() => handlePlayWord(activeCardWord.kana)}
-                      className="w-11 h-11 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 flex items-center justify-center transition-all shadow-2xs active:scale-95 ml-2"
+                      className="w-11 h-11 rounded-[20px] bg-[var(--accent-light)] hover:bg-[var(--accent-light)] text-[var(--accent)] flex items-center justify-center transition-all shadow-2xs active:scale-95 ml-2"
                       title="Kelimeyi hece hece aynı doğal kişi sesinden dinle"
                     >
-                      <Volume2 className="w-5 h-5 text-amber-800" />
+                      <Volume2 className="w-5 h-5 text-[var(--accent)]" />
                     </button>
                   </div>
 
                   {activePlayingWord === activeCardWord.kana && (
-                    <span className="text-[11px] font-semibold text-rose-600 animate-pulse">
+                    <span className="text-[11px] font-semibold text-[var(--accent)] animate-pulse">
                       Doğal insan sesi çalınıyor...
                     </span>
                   )}
@@ -569,7 +570,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                         exit={{ opacity: 0, height: 0 }}
                         className="mt-2"
                       >
-                        <span className="text-2xl sm:text-3xl font-extrabold text-emerald-800 block">
+                        <span className="text-2xl sm:text-3xl font-extrabold text-[var(--accent)] block">
                           {activeCardWord.meaningTr}
                         </span>
                         {activeCardWord.hint && (
@@ -587,20 +588,20 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                   <button
                     type="button"
                     onClick={() => handlePlayLetter(activeCardWord.targetKana || activeCardWord.kana.slice(0, 1))}
-                    className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
+                    className="px-3.5 py-2 rounded-[16px] bg-[var(--accent-light)] hover:bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
                     title="Yalnızca hedef kırmızı harfi dinle"
                   >
-                    <Volume2 className="w-4 h-4 text-rose-600" />
+                    <Volume2 className="w-4 h-4 text-[var(--accent)]" />
                     <span>Kırmızı Harf ({activeCardWord.targetKana || activeCardWord.kana.slice(0, 1)})</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handlePlayWord(activeCardWord.kana)}
-                    className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
+                    className="px-3.5 py-2 rounded-[16px] bg-[var(--accent-light)] hover:bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
                     title="Tüm kelimeyi hece hece dinle"
                   >
-                    <Volume2 className="w-4 h-4 text-amber-700" />
+                    <Volume2 className="w-4 h-4 text-[var(--accent)]" />
                     <span>Kelime Okunuşu ({activeCardWord.kana})</span>
                   </button>
 
@@ -610,10 +611,10 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                       activeCardWord.targetKana || activeCardWord.kana.slice(0, 1),
                       activeCardWord.kana
                     )}
-                    className="px-3.5 py-2 rounded-xl bg-[#1F1E1B] hover:bg-black text-white text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs"
+                    className="px-3.5 py-2 rounded-[16px] bg-[#1F1E1B] hover:bg-black text-white text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs"
                     title="Önce harfi, ardından kelimeyi art arda dinle"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
                     <span>Harf + Kelime Sırayla</span>
                   </button>
                 </div>
@@ -625,7 +626,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                   type="button"
                   id="prev-word-card"
                   onClick={handlePrevCard}
-                  className="px-4 py-2 rounded-xl bg-white border border-[#E6E1D8] text-xs sm:text-sm font-bold text-[#1F1E1B] hover:bg-[#F2EFE9] flex items-center gap-1.5 transition-all shadow-2xs active:scale-95"
+                  className="px-4 py-2 rounded-[16px] bg-white border border-[#E6E1D8] text-xs sm:text-sm font-bold text-[#1F1E1B] hover:bg-[#F2EFE9] flex items-center gap-1.5 transition-all shadow-2xs active:scale-95"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Önceki</span>
@@ -634,7 +635,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                 <button
                   type="button"
                   onClick={handleShuffleCards}
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-[#5C574F] hover:text-[#1F1E1B] hover:bg-white transition-all flex items-center gap-1"
+                  className="px-3 py-2 rounded-[16px] text-xs font-semibold text-[#5C574F] hover:text-[#1F1E1B] hover:bg-white transition-all flex items-center gap-1"
                   title="Rastgele Karıştır"
                 >
                   <Shuffle className="w-4 h-4" />
@@ -645,7 +646,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                   type="button"
                   id="next-word-card"
                   onClick={handleNextCard}
-                  className="px-5 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 transition-all shadow-2xs active:scale-95"
+                  className="px-5 py-2 rounded-[16px] bg-[var(--accent)] hover:bg-[var(--accent)] text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 transition-all shadow-2xs active:scale-95"
                 >
                   <span>Sonraki</span>
                   <ChevronRight className="w-4 h-4" />
@@ -653,7 +654,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
               </div>
             </motion.div>
           ) : (
-            <div className="p-12 text-center bg-white border border-[#E6E1D8] rounded-2xl">
+            <div className="p-12 text-center bg-white border border-[#E6E1D8] rounded-[20px]">
               <p className="text-[#5C574F] text-sm">Seçilen filtrelere uygun kelime bulunamadı.</p>
             </div>
           )}
@@ -665,11 +666,11 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
       {/* ========================================================= */}
       {subMode === 'quiz' && (
         <div className="space-y-4">
-          <div className="bg-white border border-[#E6E1D8] rounded-3xl overflow-hidden shadow-2xs p-4 sm:p-6">
+          <div className="bg-white border border-[#E6E1D8] rounded-[24px] overflow-hidden shadow-2xs p-4 sm:p-6">
             {/* Quiz Top Score Bar */}
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#E6E1D8]">
               <div>
-                <span className="text-xs font-bold text-rose-700 uppercase tracking-wide">
+                <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wide">
                   Kırmızı Harfi Tamamlama
                 </span>
                 <h3 className="text-base sm:text-lg font-black text-[#1F1E1B]">
@@ -678,7 +679,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
               </div>
               <div className="text-right">
                 <span className="text-xs text-[#7A756D] block">Doğru / Toplam</span>
-                <span className="text-base font-black text-emerald-700">
+                <span className="text-base font-black" style={{ color: CORRECT.border }}>
                   {quizScore.correct} / {quizScore.total}
                 </span>
               </div>
@@ -686,7 +687,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
 
             {/* Quiz Image & Clue (More compact) */}
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className="w-full sm:w-44 h-32 sm:h-36 rounded-2xl overflow-hidden border border-[#E6E1D8] relative shrink-0 shadow-inner">
+              <div className="w-full sm:w-44 h-32 sm:h-36 rounded-[20px] overflow-hidden border border-[#E6E1D8] relative shrink-0 shadow-inner">
                 <img
                   src={currentQuizWord.imageUrl}
                   alt={currentQuizWord.meaningTr}
@@ -699,20 +700,20 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
               </div>
 
               <div className="flex-1 text-center sm:text-left space-y-2.5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-xs font-semibold">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30 text-xs font-semibold">
                   <span>Türkçe Anlamı:</span>
-                  <strong className="text-sm text-amber-950">{currentQuizWord.meaningTr}</strong>
+                  <strong className="text-sm text-[var(--accent)]">{currentQuizWord.meaningTr}</strong>
                 </div>
 
                 {/* Display Japanese word with missing red blank box */}
                 <div className="flex items-center justify-center sm:justify-start gap-2 pt-1">
-                  <div className="w-12 h-12 rounded-xl border-2 border-dashed border-rose-500 bg-rose-50 flex items-center justify-center shadow-inner">
+                  <div className="w-12 h-12 rounded-[16px] border-2 border-dashed border-[var(--accent)] bg-[var(--accent-light)] flex items-center justify-center shadow-inner">
                     {isAnswerChecked ? (
-                      <span className="text-3xl font-black text-rose-600">
+                      <span className="text-3xl font-black text-[var(--accent)]">
                         {currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1)}
                       </span>
                     ) : (
-                      <span className="text-xl font-bold text-rose-400">?</span>
+                      <span className="text-xl font-bold text-[var(--accent)]">?</span>
                     )}
                   </div>
                   <span className="text-3xl font-bold text-[#1F1E1B]">
@@ -721,7 +722,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                 </div>
 
                 <p className="text-xs text-[#7A756D]">
-                  Romaji İpucu: <strong className="font-mono text-sm text-[#1F1E1B]">{currentQuizWord.romaji}</strong>
+                  Romaji İpucu: <strong className="text-sm text-[#1F1E1B]">{currentQuizWord.romaji}</strong>
                 </p>
               </div>
             </div>
@@ -733,14 +734,14 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                 const isSelected = selectedAnswer === choice;
                 const isCorrect = choice === correctLetter;
 
-                let btnStyle = 'bg-white border-[#E6E1D8] hover:border-rose-300 text-[#1F1E1B]';
+                let btnStyle: React.CSSProperties = { background: '#FFFFFF', borderColor: '#E6E1D8', color: '#1F1E1B' };
                 if (isAnswerChecked) {
                   if (isCorrect) {
-                    btnStyle = 'bg-emerald-50 border-emerald-400 text-emerald-800 ring-2 ring-emerald-300';
+                    btnStyle = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, boxShadow: `0 0 0 2px ${CORRECT.border}` };
                   } else if (isSelected) {
-                    btnStyle = 'bg-rose-50 border-rose-400 text-rose-800 ring-2 ring-rose-300';
+                    btnStyle = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg, boxShadow: `0 0 0 2px ${WRONG.border}` };
                   } else {
-                    btnStyle = 'bg-gray-50 border-gray-200 text-gray-400 opacity-60';
+                    btnStyle = { background: '#FAFAFA', borderColor: '#E5E7EB', color: '#9CA3AF', opacity: 0.6 };
                   }
                 }
 
@@ -749,9 +750,10 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                     key={choice}
                     onClick={() => handleQuizAnswer(choice)}
                     disabled={isAnswerChecked}
-                    className={`p-3.5 rounded-2xl border-2 text-center transition-all shadow-2xs active:scale-95 ${btnStyle}`}
+                    style={btnStyle}
+                    className="p-3.5 rounded-[20px] border-2 text-center transition-all shadow-2xs active:scale-95 hover:border-[var(--accent)]"
                   >
-                    <span className="text-3xl sm:text-4xl font-black block mb-1 text-rose-600">
+                    <span className="text-3xl sm:text-4xl font-black block mb-1" style={{ color: isAnswerChecked ? btnStyle.color : 'var(--accent)' }}>
                       {choice}
                     </span>
                     <span className="text-[10px] text-[#7A756D] font-medium block">
@@ -767,20 +769,20 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-5 p-4 rounded-2xl bg-[#FAF8F5] border border-[#E6E1D8] flex flex-col sm:flex-row items-center justify-between gap-3"
+                className="mt-5 p-4 rounded-[20px] bg-[#FAF8F5] border border-[#E6E1D8] flex flex-col sm:flex-row items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-2">
                   {selectedAnswer === (currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1)) ? (
                     <>
-                      <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
-                      <span className="text-sm font-bold text-emerald-800">
+                      <CheckCircle className="w-5 h-5 shrink-0" style={{ color: CORRECT.border }} />
+                      <span className="text-sm font-bold" style={{ color: CORRECT.border }}>
                         Harika! Doğru harfi buldun: "{currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1)}"
                       </span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
-                      <span className="text-sm font-bold text-rose-800">
+                      <XCircle className="w-5 h-5 shrink-0" style={{ color: WRONG.border }} />
+                      <span className="text-sm font-bold" style={{ color: WRONG.border }}>
                         Doğru cevap: "{currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1)}" harfi olmalıydı.
                       </span>
                     </>
@@ -791,7 +793,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                   <button
                     type="button"
                     onClick={() => handlePlayWord(currentQuizWord.kana)}
-                    className="px-3.5 py-2 rounded-xl bg-amber-100 text-amber-900 text-xs font-bold flex items-center gap-1.5 hover:bg-amber-200 transition-all"
+                    className="px-3.5 py-2 rounded-[16px] bg-[var(--accent-light)] text-[var(--accent)] text-xs font-bold flex items-center gap-1.5 hover:bg-[var(--accent-light)] transition-all"
                   >
                     <Volume2 className="w-4 h-4" />
                     <span>Kelimeyi Dinle</span>
@@ -801,7 +803,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                     type="button"
                     id="quiz-next-question"
                     onClick={handleNextQuizQuestion}
-                    className="flex-1 sm:flex-initial px-5 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-2xs"
+                    className="flex-1 sm:flex-initial px-5 py-2 rounded-[16px] bg-[var(--accent)] hover:bg-[var(--accent)] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-2xs"
                   >
                     <span>Sıradaki Soru</span>
                     <ChevronRight className="w-4 h-4" />
@@ -826,7 +828,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Türkçe anlam veya Japonca kelime ara (örn: kedi, inu, neko)..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#E6E1D8] text-sm text-[#1F1E1B] placeholder-[#A09A8F] focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+              className="w-full pl-10 pr-4 py-2.5 rounded-[16px] bg-white border border-[#E6E1D8] text-sm text-[#1F1E1B] placeholder-[#A09A8F] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
             />
           </div>
 
@@ -834,7 +836,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
             {filteredWords.map((item) => (
               <div
                 key={item.id}
-                className="bg-white border border-[#E6E1D8] rounded-2xl overflow-hidden shadow-2xs hover:shadow-xs transition-all group flex flex-col"
+                className="bg-white border border-[#E6E1D8] rounded-[20px] overflow-hidden shadow-2xs hover:shadow-xs transition-all group flex flex-col"
               >
                 {/* Thumbnail Image (Compact) */}
                 <div className="relative h-24 sm:h-26 w-full bg-[#F2EFE9] overflow-hidden">
@@ -859,10 +861,10 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                         item.targetKana || item.kana.slice(0, 1)
                       )}
                     </div>
-                    <div className="text-xs text-[#7A756D] font-mono">
+                    <div className="text-xs text-[#7A756D] ">
                       {item.romaji}
                     </div>
-                    <div className="text-xs font-bold text-emerald-800 mt-1">
+                    <div className="text-xs font-bold text-[var(--accent)] mt-1">
                       {item.meaningTr}
                     </div>
                   </div>
@@ -872,7 +874,7 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
                     <button
                       type="button"
                       onClick={() => handlePlayLetter(item.targetKana || item.kana.slice(0, 1))}
-                      className="px-2 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                      className="px-2 py-1 rounded-md bg-[var(--accent-light)] hover:bg-[var(--accent-light)] text-[var(--accent)] text-[11px] font-bold flex items-center gap-1 transition-colors"
                       title="Kırmızı harfin doğal sesini dinle"
                     >
                       <Volume2 className="w-3 h-3" />

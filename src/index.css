@@ -1,8 +1,45 @@
 @import "tailwindcss";
 
+@theme {
+  --font-display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
+  --font-sans: 'Figtree', system-ui, -apple-system, sans-serif;
+  /* Tailwind preflight'ın body'ye uyguladığı gerçek varsayılan — tek satırda tüm uygulamayı Figtree'ye taşır. */
+  --default-font-family: 'Figtree', system-ui, -apple-system, sans-serif;
+
+  --color-app-bg: #F7F4EE;
+  --color-app-text: #1C1B19;
+  --color-app-muted: #6B665E;
+  --color-app-muted-2: #77716A;
+  --color-app-card: #FFFFFF;
+  --color-app-border: #E6E0D6;
+  --color-app-surface: #EFEBE4;
+
+  --color-jp: #B4233C;
+  --color-jp-light: #FBE9EC;
+  --color-birds: #0F766E;
+  --color-birds-light: #E3F2EF;
+  --color-photo: #B45309;
+  --color-photo-light: #FBEFE2;
+
+  --color-quiz-bg: #1F2A44;
+  --color-quiz-surface: #2E3D5F;
+  --color-quiz-accent: #FCD34D;
+}
+
+@layer base {
+  /* Eski Jakarta/mono başlıklar da dahil, tüm semantik başlıklar tasarım fontuna geçer. */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+}
+
 @layer utilities {
   .font-japanese {
     font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  .font-display {
+    font-family: var(--font-display);
   }
   .perspective-1000 {
     perspective: 1000px;

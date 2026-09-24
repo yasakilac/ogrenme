@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Layers, CheckCircle2, XCircle, Award, RotateCcw } from 'lucide-react';
 import { CATEGORIZE_ITEMS, type CategorizeItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
+import { CORRECT, WRONG, CheckBar } from '../../../components/ui';
 
 interface CategorizeActivityProps {
   onScoreUpdate?: (points: number) => void;
@@ -14,13 +14,9 @@ export const CategorizeActivity: React.FC<CategorizeActivityProps> = ({ onScoreU
   const item: CategorizeItem = CATEGORIZE_ITEMS[currentIndex];
   const userResult = userChoices[item.id];
 
-  const categories = [
-    'Diyafram (f/stop)',
-    'Enstantane (Süre)',
-    'ISO (Hassasiyet)',
-  ] as const;
+  const categories = ['Diyafram (f/stop)', 'Enstantane (Süre)', 'ISO (Hassasiyet)'] as const;
 
-  const handleSelectCategory = (cat: typeof categories[number]) => {
+  const handleSelectCategory = (cat: (typeof categories)[number]) => {
     if (userResult) return;
     const isCorrect = cat === item.correctCategory;
     setUserChoices((prev) => ({
@@ -43,106 +39,59 @@ export const CategorizeActivity: React.FC<CategorizeActivityProps> = ({ onScoreU
   const correctCount = Object.values(userChoices).filter((c) => c.isCorrect).length;
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-5 rounded-2xl border border-[#EBE7E0]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
-              Pozlama Bileşenleri Pratiği
-            </span>
-            <h3 className="text-lg font-bold text-[#1F1E1B]">Kategorize Etme & Gruplama</h3>
-            <p className="text-sm text-[#66635E] mt-0.5">
-              Verilen optik sonucun veya tekniğin hangi temel kamera ayarına ait olduğunu gruplayın.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200">
-            <Award className="w-4 h-4 text-rose-600" />
-            <span className="text-xs font-bold text-stone-800">
-              {correctCount} / {CATEGORIZE_ITEMS.length} Başarılı
-            </span>
-          </div>
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold" style={{ color: '#6B665E' }}>
+          Kart {currentIndex + 1} / {CATEGORIZE_ITEMS.length}
+        </span>
+        <span className="text-sm font-bold" style={{ color: 'var(--accent)' }}>
+          {correctCount} doğru
+        </span>
       </div>
 
-      <div className="max-w-xl mx-auto bg-white border border-[#EBE7E0] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex items-center justify-between text-xs text-[#8A8680]">
-          <span className="font-mono">KART {currentIndex + 1} / {CATEGORIZE_ITEMS.length}</span>
-          <span className="font-semibold text-rose-600">Gruplama Modu</span>
-        </div>
+      <div className="rounded-[24px] bg-white p-7 text-center space-y-2" style={{ border: '1px solid #E6E0D6' }}>
+        <span className="text-xs font-bold uppercase tracking-wider block" style={{ color: '#77716A' }}>
+          Fotoğrafik Etki / Teknik
+        </span>
+        <p className="text-lg font-bold leading-relaxed" style={{ color: '#1C1B19' }}>
+          "{item.text}"
+        </p>
+      </div>
 
-        {/* Gruplanacak Cümle */}
-        <div className="p-6 rounded-2xl bg-[#FAF8F5] border border-[#EBE7E0] text-center space-y-2">
-          <span className="text-xs font-bold text-[#8A8680] uppercase tracking-wider block">
-            FOTOĞRAFİK ETKİ / TEKNİK
-          </span>
-          <p className="text-base sm:text-lg font-bold text-[#1F1E1B] leading-relaxed">
-            "{item.text}"
-          </p>
-        </div>
+      <div className="grid grid-cols-1 gap-2.5">
+        {categories.map((cat) => {
+          const isSelected = userResult?.choice === cat;
+          const isCorrectCat = cat === item.correctCategory;
 
-        {/* Kategori Seçenekleri (3 Temel Sütun) */}
-        <div className="space-y-2.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-stone-600 block">
-            Bu etki doğrudan hangi ayara aittir?
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            {categories.map((cat) => {
-              const isSelected = userResult?.choice === cat;
-              const isCorrect = cat === item.correctCategory;
+          let style: { bg: string; border: string; fg: string } = { bg: '#FFFFFF', border: '#E6E0D6', fg: '#1C1B19' };
+          if (userResult) {
+            if (isCorrectCat) style = CORRECT;
+            else if (isSelected) style = WRONG;
+            else style = { bg: '#FAF8F5', border: '#E6E0D6', fg: '#A39C91' };
+          }
 
-              let style = 'bg-[#FAF8F5] border-[#E0DCD6] text-[#1F1E1B] hover:bg-stone-100';
-              if (userResult) {
-                if (isCorrect) {
-                  style = 'bg-emerald-50 border-emerald-400 text-emerald-950 font-bold';
-                } else if (isSelected) {
-                  style = 'bg-rose-50 border-rose-400 text-rose-950';
-                } else {
-                  style = 'opacity-40 bg-stone-50 border-stone-200';
-                }
-              }
-
-              return (
-                <button
-                  key={cat}
-                  onClick={() => handleSelectCategory(cat)}
-                  disabled={Boolean(userResult)}
-                  className={`p-3.5 rounded-xl border text-center text-xs font-semibold transition-all ${style}`}
-                >
-                  <span className="block truncate">{cat}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Açıklama */}
-        {userResult && (
-          <div
-            className={`p-4 rounded-xl border text-xs leading-relaxed space-y-1 ${
-              userResult.isCorrect
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
-                : 'bg-amber-50 border-amber-200 text-amber-950'
-            }`}
-          >
-            <strong className="block font-bold">
-              {userResult.isCorrect ? '✅ Doğru Kategori!' : 'Açıklama:'}
-            </strong>
-            <p>{item.explanation}</p>
-          </div>
-        )}
-
-        {/* İlerle */}
-        {userResult && (
-          <div className="flex justify-end pt-2">
+          return (
             <button
-              onClick={handleNext}
-              className="px-5 py-2.5 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-colors"
+              key={cat}
+              type="button"
+              onClick={() => handleSelectCategory(cat)}
+              disabled={Boolean(userResult)}
+              style={{ background: style.bg, border: `2px solid ${style.border}`, color: style.fg }}
+              className="h-14 rounded-[16px] text-sm font-bold transition-all"
             >
-              Sonraki Kategorize Kartı →
+              {cat}
             </button>
-          </div>
-        )}
+          );
+        })}
       </div>
+
+      {userResult && (
+        <CheckBar
+          correct={userResult.isCorrect}
+          message={`${userResult.isCorrect ? 'Doğru! ' : ''}${item.explanation}`}
+          onNext={handleNext}
+        />
+      )}
     </div>
   );
 };

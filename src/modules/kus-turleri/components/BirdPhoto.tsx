@@ -49,7 +49,7 @@ export const BirdPhoto: React.FC<BirdPhotoProps> = ({
 
   if (hasError) {
     return (
-      <div className={`relative overflow-hidden flex items-center justify-center bg-stone-100 rounded-2xl ${aspectClass} ${className}`}>
+      <div className={`relative overflow-hidden flex items-center justify-center bg-stone-100 rounded-[20px] ${aspectClass} ${className}`}>
         <BirdIllustration birdId={birdId} size="md" />
         <div className="absolute bottom-2 inset-x-2 text-center">
           <span className="px-2 py-0.5 rounded-md bg-black/40 text-white text-[10px] backdrop-blur-xs font-medium">
@@ -61,7 +61,7 @@ export const BirdPhoto: React.FC<BirdPhotoProps> = ({
   }
 
   return (
-    <div className={`relative overflow-hidden bg-stone-100 rounded-2xl ${aspectClass} ${className}`}>
+    <div className={`relative overflow-hidden bg-stone-100 rounded-[20px] ${aspectClass} ${className}`}>
       {isLoading && (
         <div className="absolute inset-0 bg-stone-200/80 animate-pulse flex items-center justify-center z-10">
           <span className="text-stone-400 text-xs font-medium">Fotoğraf yükleniyor...</span>

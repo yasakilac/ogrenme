@@ -1,298 +1,185 @@
 import React, { useState } from 'react';
-import {
-  Sparkles,
-  ArrowRight,
-  Search,
-  Clock,
-  GraduationCap
-} from 'lucide-react';
+import { Flame, Star, Play, Trophy, Lock, Layers, Settings, Code2, Globe2 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { UserProgressData } from '../types';
 import { MODULE_REGISTRY } from '../modules/registry';
-import { MockExam, EXAM_POOL, EXAM_SOURCE_MODULE_COUNT, getLastMockExamScore } from './MockExam';
+import { MockExam, EXAM_POOL } from './MockExam';
+import { getStars } from '../lib/rewards';
 
 interface LearningHubViewProps {
   progress: UserProgressData;
   onSelectModule: (moduleId: string) => void;
+  onOpenSettings: () => void;
 }
 
-/** Kart teması: opsiyonel `colorTheme` meta alanından, yoksa index'e göre döngüyle atanır.
- * Tailwind v4 dinamik class üretmediği için tam class string'leri burada sabitlenir. */
-const CARD_THEMES = {
-  rose: {
-    card: 'bg-rose-50 border-rose-200 hover:border-rose-300',
-    icon: 'bg-rose-100 border-rose-200 text-rose-700',
-    progressBox: 'bg-rose-100/70 border-rose-200/70',
-    progressText: 'text-rose-900',
-    progressTrack: 'bg-rose-200/70',
-    progressFill: 'bg-rose-600',
-    button: 'bg-rose-700 hover:bg-rose-800'
-  },
-  sky: {
-    card: 'bg-sky-50 border-sky-200 hover:border-sky-300',
-    icon: 'bg-sky-100 border-sky-200 text-sky-700',
-    progressBox: 'bg-sky-100/70 border-sky-200/70',
-    progressText: 'text-sky-900',
-    progressTrack: 'bg-sky-200/70',
-    progressFill: 'bg-sky-600',
-    button: 'bg-sky-700 hover:bg-sky-800'
-  },
-  emerald: {
-    card: 'bg-emerald-50 border-emerald-200 hover:border-emerald-300',
-    icon: 'bg-emerald-100 border-emerald-200 text-emerald-700',
-    progressBox: 'bg-emerald-100/70 border-emerald-200/70',
-    progressText: 'text-emerald-900',
-    progressTrack: 'bg-emerald-200/70',
-    progressFill: 'bg-emerald-600',
-    button: 'bg-emerald-700 hover:bg-emerald-800'
-  },
-  amber: {
-    card: 'bg-amber-50 border-amber-200 hover:border-amber-300',
-    icon: 'bg-amber-100 border-amber-200 text-amber-800',
-    progressBox: 'bg-amber-100/70 border-amber-200/70',
-    progressText: 'text-amber-900',
-    progressTrack: 'bg-amber-200/70',
-    progressFill: 'bg-amber-600',
-    button: 'bg-amber-800 hover:bg-amber-900'
-  },
-  violet: {
-    card: 'bg-violet-50 border-violet-200 hover:border-violet-300',
-    icon: 'bg-violet-100 border-violet-200 text-violet-700',
-    progressBox: 'bg-violet-100/70 border-violet-200/70',
-    progressText: 'text-violet-900',
-    progressTrack: 'bg-violet-200/70',
-    progressFill: 'bg-violet-600',
-    button: 'bg-violet-700 hover:bg-violet-800'
-  }
-} as const;
-
-const THEME_CYCLE: (keyof typeof CARD_THEMES)[] = ['rose', 'sky', 'emerald', 'amber', 'violet'];
-
-/** Planlanan (henüz açılmamış) modüller daha soluk/nötr kalır. */
-const NEUTRAL_THEME = {
-  card: 'bg-[#FAF8F5] border-[#E8E4DC] opacity-90 hover:opacity-100 hover:border-stone-300 hover:bg-white',
-  icon: 'bg-stone-100 border-stone-200 text-stone-400'
+/** Planlanan modüller için design/ref'teki "Yakında" ızgara glifleri (metin veya ikon). */
+const PLANNED_GLYPH: Record<string, { text?: string; icon?: LucideIcon }> = {
+  kanji: { text: '漢' },
+  korean: { text: '한' },
+  python: { icon: Code2 },
+  history_culture: { icon: Globe2 }
 };
 
-const getCardTheme = (colorTheme: string | undefined, registryIndex: number) => {
-  if (colorTheme && colorTheme in CARD_THEMES) return CARD_THEMES[colorTheme as keyof typeof CARD_THEMES];
-  return CARD_THEMES[THEME_CYCLE[registryIndex % THEME_CYCLE.length]];
-};
+const RING_R = 22;
+const RING_C = 2 * Math.PI * RING_R;
 
-export const LearningHubView: React.FC<LearningHubViewProps> = ({
-  progress,
-  onSelectModule
-}) => {
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'languages' | 'tech' | 'culture'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+const ProgressRing: React.FC<{ percent: number; color: string }> = ({ percent, color }) => (
+  <div className="relative w-[52px] h-[52px] shrink-0">
+    <svg width="52" height="52" viewBox="0 0 52 52" aria-hidden="true">
+      <circle cx="26" cy="26" r={RING_R} fill="none" stroke="#EFEBE4" strokeWidth="5" />
+      <circle
+        cx="26"
+        cy="26"
+        r={RING_R}
+        fill="none"
+        stroke={color}
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeDasharray={RING_C}
+        strokeDashoffset={RING_C * (1 - percent / 100)}
+        transform="rotate(-90 26 26)"
+      />
+    </svg>
+    <span className="absolute inset-0 flex items-center justify-center text-[13px] font-extrabold">
+      %{percent}
+    </span>
+  </div>
+);
+
+export const LearningHubView: React.FC<LearningHubViewProps> = ({ progress, onSelectModule, onOpenSettings }) => {
   const [showExam, setShowExam] = useState(false);
-
-  const filteredAreas = MODULE_REGISTRY.filter(({ meta }) => {
-    const matchesFilter =
-      selectedFilter === 'all' ||
-      (selectedFilter === 'languages' && meta.category === 'Dil') ||
-      (selectedFilter === 'tech' && meta.category === 'Teknoloji') ||
-      (selectedFilter === 'culture' && meta.category === 'Kültür & Sanat');
-
-    const matchesSearch =
-      meta.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      meta.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      meta.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesFilter && matchesSearch;
-  });
 
   if (showExam) {
     return <MockExam onExit={() => setShowExam(false)} />;
   }
 
-  const lastScore = getLastMockExamScore();
+  const activeModules = MODULE_REGISTRY.filter((m) => m.meta.status === 'active');
+  const plannedModules = MODULE_REGISTRY.filter((m) => m.meta.status === 'planned');
+  const streak = progress.stats.streakDays;
+  const stars = getStars();
 
   return (
-    <div className="space-y-6 pb-24 sm:pb-12 max-w-5xl mx-auto">
-
-      {/* 1. DENEME SINAVI GİRİŞ KARTI */}
-      <button
-        type="button"
-        id="hub-open-mock-exam"
-        onClick={() => setShowExam(true)}
-        disabled={EXAM_POOL.length === 0}
-        className="w-full text-left relative overflow-hidden bg-violet-50 border border-violet-200 hover:border-violet-300 rounded-3xl p-5 sm:p-6 shadow-2xs transition-all flex items-center justify-between gap-4 disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-violet-100 border border-violet-200 flex items-center justify-center shrink-0">
-            <GraduationCap className="w-6 h-6 text-violet-700" />
+    <div className="max-w-[480px] mx-auto pb-12">
+      <header className="h-16 px-1 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-9 h-9 rounded-[11px] flex items-center justify-center font-display font-extrabold text-xl"
+            style={{ background: '#1C1B19', color: '#F7F4EE' }}
+          >
+            ö
           </div>
-          <div>
-            <h2 className="text-base sm:text-lg font-black text-[#1F1E1B]">Deneme Sınavı</h2>
-            <p className="text-xs sm:text-sm text-[#5C574F] mt-0.5">
-              {EXAM_SOURCE_MODULE_COUNT} konudan {EXAM_POOL.length} soru
-              {lastScore ? ` · Son puan: %${lastScore.percentage}` : ''}
-            </p>
+          <span className="font-display font-extrabold text-[22px] tracking-tight">öğren</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="h-9 px-3 rounded-full bg-white border border-[#E6E0D6] flex items-center gap-1.5 font-bold text-sm">
+            <Flame className="w-[18px] h-[18px]" fill="#C2410C" stroke="#C2410C" strokeWidth={1.5} />
+            <span>{streak}</span>
           </div>
+          <div className="h-9 px-3 rounded-full bg-white border border-[#E6E0D6] flex items-center gap-1.5 font-bold text-sm">
+            <Star className="w-[18px] h-[18px]" fill="#B45309" stroke="#B45309" strokeWidth={1.5} />
+            <span>{stars}</span>
+          </div>
+          <button
+            type="button"
+            onClick={onOpenSettings}
+            aria-label="Ayarlar"
+            className="w-9 h-9 rounded-full bg-white border border-[#E6E0D6] flex items-center justify-center active:scale-95 transition-transform"
+          >
+            <Settings className="w-[18px] h-[18px]" style={{ color: '#6B665E' }} strokeWidth={1.8} />
+          </button>
         </div>
-        <ArrowRight className="w-5 h-5 text-violet-700 shrink-0" />
-      </button>
+      </header>
 
-      {/* 2. ARAMA VE KATEGORİ FİLTRELERİ */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        {/* Search */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-[#A09A8F] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            id="hub-search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Öğrenme alanı ara (örn: Japonca, Kodlama, Korece)..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-white border border-[#E8E4DC] text-xs sm:text-sm text-[#1F1E1B] placeholder:text-[#A09A8F] focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all"
-          />
+      <div className="px-1 pt-1 flex flex-col gap-3">
+        <button
+          type="button"
+          id="hub-open-mock-exam"
+          onClick={() => setShowExam(true)}
+          disabled={EXAM_POOL.length === 0}
+          className="flex items-center gap-4 p-[18px] rounded-[24px] text-left disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] transition-transform"
+          style={{ background: '#1F2A44', color: '#FFFFFF' }}
+        >
+          <div
+            className="w-[60px] h-[60px] rounded-[18px] flex items-center justify-center shrink-0"
+            style={{ background: '#2E3D5F' }}
+          >
+            <Trophy className="w-8 h-8" style={{ color: '#FCD34D' }} strokeWidth={1.8} />
+          </div>
+          <span className="flex-grow font-display font-extrabold text-[21px] tracking-tight">Bilgi Yarışması</span>
+          <span
+            className="w-[52px] h-[52px] rounded-full flex items-center justify-center shrink-0"
+            style={{ background: '#FCD34D' }}
+          >
+            <Play className="w-[22px] h-[22px]" fill="#1F2A44" style={{ color: '#1F2A44' }} />
+          </span>
+        </button>
+
+        <div className="pt-3 flex items-center gap-2">
+          <Layers className="w-[18px] h-[18px]" />
+          <h2 className="font-display font-extrabold text-lg">Öğrenme Alanları</h2>
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
-          {[
-            { id: 'all' as const, label: 'Tüm Alanlar' },
-            { id: 'languages' as const, label: 'Diller' },
-            { id: 'tech' as const, label: 'Teknoloji & Kod' },
-            { id: 'culture' as const, label: 'Kültür & Sanat' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              id={`hub-filter-${tab.id}`}
-              onClick={() => setSelectedFilter(tab.id)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                selectedFilter === tab.id
-                  ? 'bg-stone-900 text-white shadow-2xs'
-                  : 'bg-white border border-[#E8E4DC] text-[#5C574F] hover:text-[#1F1E1B] hover:border-stone-400'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. ÖĞRENME ALANLARI LİSTESİ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredAreas.map((module) => {
-          const item = module.meta;
-          const isActive = item.status === 'active';
-          const progressPercent = module.getProgressPercent?.(progress) ?? 0;
-          const registryIndex = MODULE_REGISTRY.indexOf(module);
-          const theme = isActive ? getCardTheme(item.colorTheme, registryIndex) : null;
-
+        {activeModules.map((module) => {
+          const { meta } = module;
+          const accent = meta.accent ?? { color: '#1C1B19', light: '#EFEBE4' };
+          const percent = module.getProgressPercent?.(progress) ?? 0;
           return (
-            <div
-              key={item.id}
-              id={`hub-card-${item.id}`}
-              className={`rounded-3xl p-5 sm:p-6 border transition-all flex flex-col justify-between relative ${
-                isActive ? theme!.card : NEUTRAL_THEME.card
-              }`}
+            <button
+              key={meta.id}
+              type="button"
+              id={`hub-open-${meta.id}`}
+              onClick={() => onSelectModule(meta.id)}
+              className="flex items-center gap-3.5 p-3.5 bg-white border border-[#E6E0D6] rounded-[22px] text-left active:scale-[0.99] transition-transform"
             >
-              <div>
-                {/* Header row */}
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700">
-                        {item.category}
-                      </span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        isActive
-                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'
-                          : 'bg-amber-50 text-amber-800 border border-amber-200/60'
-                      }`}>
-                        {item.tag}
-                      </span>
-                    </div>
-                    <h2 className="text-lg sm:text-xl font-black text-[#1F1E1B] mt-2 tracking-tight">
-                      {item.title}
-                    </h2>
-                    <span className="text-xs font-semibold text-[#7A756D] block mt-0.5">
-                      {item.subtitle}
-                    </span>
-                  </div>
-
-                  {isActive ? (
-                    <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center font-japanese font-black text-2xl shrink-0 shadow-2xs ${theme!.icon}`}>
-                      {item.glyph ?? item.title.charAt(0)}
-                    </div>
-                  ) : (
-                    <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 ${NEUTRAL_THEME.icon}`}>
-                      <Clock className="w-5 h-5" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Description */}
-                <p className="text-xs sm:text-sm text-[#5C574F] leading-relaxed mb-4">
-                  {item.description}
-                </p>
-
-                {/* Key Features Chips */}
-                <div className="flex items-center gap-1.5 flex-wrap mb-4">
-                  {item.features.map((feat, idx) => (
-                    <span
-                      key={idx}
-                      className="text-[11px] font-medium px-2 py-0.8 rounded-lg bg-stone-100/80 text-stone-700"
-                    >
-                      ✓ {feat}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Progress bar if active */}
-                {isActive && (
-                  <div className={`border rounded-xl p-3 mb-4 ${theme!.progressBox}`}>
-                    <div className={`flex items-center justify-between text-xs font-bold mb-1.5 ${theme!.progressText}`}>
-                      <span>{item.labels?.progress ?? `${item.title} İlerlemeniz`}</span>
-                      <span>%{progressPercent}</span>
-                    </div>
-                    <div className={`w-full h-2 rounded-full overflow-hidden ${theme!.progressTrack}`}>
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${theme!.progressFill}`}
-                        style={{ width: `${progressPercent}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
+              <div
+                className="w-14 h-14 rounded-[17px] flex items-center justify-center shrink-0 font-japanese font-extrabold text-[28px]"
+                style={{ background: accent.light, color: accent.color }}
+              >
+                {meta.icon ? <meta.icon className="w-7 h-7" strokeWidth={1.8} /> : meta.glyph ?? meta.title.charAt(0)}
               </div>
-
-              {/* Action Button */}
-              <div className="pt-2 border-t border-[#F0ECE4]">
-                {isActive ? (
-                  <button
-                    type="button"
-                    id={`btn-open-${item.id}-module`}
-                    onClick={() => onSelectModule(item.id)}
-                    className={`w-full py-3 px-4 rounded-xl text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-2xs active:scale-98 ${theme!.button}`}
-                  >
-                    <span>{item.labels?.cta ?? `${item.title} • Başla / Devam Et`}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                ) : (
-                  <div className="w-full py-2.5 px-4 rounded-xl bg-stone-100 text-stone-500 font-bold text-xs flex items-center justify-center gap-2 select-none">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>Geliştirme Aşamasında • Yakında Eklenecek</span>
-                  </div>
-                )}
-              </div>
-            </div>
+              <span className="flex-grow font-display font-extrabold text-xl truncate">
+                {meta.shortTitle ?? meta.title}
+              </span>
+              <ProgressRing percent={percent} color={accent.color} />
+            </button>
           );
         })}
-      </div>
 
-      {/* 4. ALT BİLGİ VE YOL HARİTASI NOTU */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E8E4DC] shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[#7A756D]">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>
-            Yeni öğrenme alanları ve ders modülleri bu ana merkeze eklenecektir. İstediğiniz an üst menüden alanlar arasında geçiş yapabilirsiniz.
-          </span>
-        </div>
+        {plannedModules.length > 0 && (
+          <>
+            <div className="pt-2.5 flex items-center gap-2">
+              <Lock className="w-4 h-4" style={{ color: '#6B665E' }} strokeWidth={2} />
+              <span className="text-sm font-bold" style={{ color: '#6B665E' }}>
+                Yakında
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-2.5">
+              {plannedModules.map((module) => {
+                const glyph = PLANNED_GLYPH[module.meta.id];
+                const Icon = glyph?.icon;
+                return (
+                  <div
+                    key={module.meta.id}
+                    className="h-[84px] rounded-[18px] flex flex-col items-center justify-center gap-1.5"
+                    style={{ background: '#EFEBE4' }}
+                  >
+                    {Icon ? (
+                      <Icon className="w-[26px] h-[26px]" style={{ color: '#77716A' }} />
+                    ) : (
+                      <span className="font-extrabold text-2xl" style={{ color: '#77716A' }}>
+                        {glyph?.text ?? module.meta.title.charAt(0)}
+                      </span>
+                    )}
+                    <span className="text-[11px] font-semibold text-center px-1" style={{ color: '#6B665E' }}>
+                      {module.meta.shortTitle ?? module.meta.title}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
-
     </div>
   );
 };

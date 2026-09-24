@@ -133,21 +133,21 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
         } ${isMatchingFilter ? 'opacity-100' : 'opacity-35'}">
           ${
             isSelected
-              ? '<div class="absolute -inset-2 rounded-full bg-rose-500/30 animate-ping"></div>'
+              ? '<div class="absolute -inset-2 rounded-full bg-[var(--accent)]/30 animate-ping"></div>'
               : ''
           }
           <div class="w-8 h-8 rounded-full border-2 shadow-lg flex items-center justify-center font-bold text-xs cursor-pointer ${
             isSelected
-              ? 'bg-rose-600 border-white text-white ring-4 ring-rose-300'
+              ? 'bg-[var(--accent)] border-white text-white ring-4 ring-[var(--accent)]'
               : isMatchingFilter
-              ? 'bg-stone-900 border-white text-white hover:scale-110 hover:bg-rose-600'
+              ? 'bg-stone-900 border-white text-white hover:scale-110 hover:bg-[var(--accent)]'
               : 'bg-stone-400 border-white text-white'
           }">
             <span>${primaryBird?.name.substring(0, 1) || '🪶'}</span>
           </div>
           <div class="absolute top-9 whitespace-nowrap px-1.5 py-0.5 rounded-md text-[10px] font-bold shadow-xs pointer-events-none ${
             isSelected
-              ? 'bg-rose-950 text-white shadow-md'
+              ? 'bg-[var(--accent)] text-white shadow-md'
               : 'bg-white/95 text-stone-800 border border-stone-200'
           }">
             ${spot.name.split(' ')[0]}
@@ -236,14 +236,14 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Başlık ve Harita Katmanı Seçici */}
-      <div className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-6 shadow-xs">
+      <div className="bg-white rounded-[24px] border border-stone-200/80 p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-rose-500/10 text-rose-700">
+              <span className="p-2 rounded-[16px] bg-[var(--accent)]/10 text-[var(--accent)]">
                 <Globe className="w-5 h-5" />
               </span>
-              <h2 className="font-serif text-lg sm:text-xl font-bold text-stone-900">
+              <h2 className="font-display text-lg sm:text-xl font-bold text-stone-900">
                 Türkiye Kuş Gözlem Hotspotları (Gerçek Harita)
               </h2>
             </div>
@@ -253,13 +253,13 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
           </div>
 
           {/* Harita Katmanı Seçimi */}
-          <div className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-2xl border border-stone-200 self-start md:self-auto">
+          <div className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-[20px] border border-stone-200 self-start md:self-auto">
             {(Object.keys(TILE_LAYERS) as TileLayerType[]).map((layerKey) => (
               <button
                 key={layerKey}
                 id={`btn-layer-${layerKey}`}
                 onClick={() => setActiveTileLayer(layerKey)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-[16px] text-xs font-semibold transition-all ${
                   activeTileLayer === layerKey
                     ? 'bg-white text-stone-900 shadow-xs'
                     : 'text-stone-600 hover:text-stone-900'
@@ -281,9 +281,9 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
           <button
             id="filter-all-birds"
             onClick={() => handleFilterBird(null)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-all ${
+            className={`px-3 py-1.5 rounded-[16px] text-xs font-semibold shrink-0 transition-all ${
               activeBirdFilter === null
-                ? 'bg-rose-600 text-white shadow-xs'
+                ? 'bg-[var(--accent)] text-white shadow-xs'
                 : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
             }`}
           >
@@ -297,7 +297,7 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
                 key={bird.id}
                 id={`filter-bird-${bird.id}`}
                 onClick={() => handleFilterBird(isSelected ? null : bird.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 flex items-center gap-1.5 transition-all ${
+                className={`px-3 py-1.5 rounded-[16px] text-xs font-semibold shrink-0 flex items-center gap-1.5 transition-all ${
                   isSelected
                     ? 'bg-stone-900 text-white shadow-xs'
                     : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
@@ -316,7 +316,7 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
       {/* Harita ve Detay Paneli Düzeni */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Sol Kolon: Gerçek Leaflet Haritası */}
-        <div className="lg:col-span-8 bg-white rounded-3xl border border-stone-200/80 overflow-hidden shadow-xs relative">
+        <div className="lg:col-span-8 bg-white rounded-[24px] border border-stone-200/80 overflow-hidden shadow-xs relative">
           {/* Leaflet Container */}
           <div
             ref={mapContainerRef}
@@ -327,12 +327,12 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
 
           {/* Harita Üstü Kontroller */}
           <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-stone-200/80 p-1 flex flex-col">
+            <div className="bg-white/95 backdrop-blur-md rounded-[20px] shadow-md border border-stone-200/80 p-1 flex flex-col">
               <button
                 id="btn-zoom-in"
                 onClick={handleZoomIn}
                 title="Yakınlaştır"
-                className="w-8 h-8 flex items-center justify-center font-bold text-stone-700 hover:bg-stone-100 rounded-xl transition-colors text-lg"
+                className="w-8 h-8 flex items-center justify-center font-bold text-stone-700 hover:bg-stone-100 rounded-[16px] transition-colors text-lg"
               >
                 +
               </button>
@@ -341,7 +341,7 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
                 id="btn-zoom-out"
                 onClick={handleZoomOut}
                 title="Uzaklaştır"
-                className="w-8 h-8 flex items-center justify-center font-bold text-stone-700 hover:bg-stone-100 rounded-xl transition-colors text-lg"
+                className="w-8 h-8 flex items-center justify-center font-bold text-stone-700 hover:bg-stone-100 rounded-[16px] transition-colors text-lg"
               >
                 −
               </button>
@@ -351,7 +351,7 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
               id="btn-reset-map-view"
               onClick={handleResetView}
               title="Türkiye Genel Görünümüne Dön"
-              className="bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-stone-200/80 p-2 text-stone-700 hover:bg-stone-100 transition-colors flex items-center justify-center"
+              className="bg-white/95 backdrop-blur-md rounded-[20px] shadow-md border border-stone-200/80 p-2 text-stone-700 hover:bg-stone-100 transition-colors flex items-center justify-center"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -359,9 +359,9 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
 
           {/* Harita Bilgi Çubuğu */}
           <div className="absolute bottom-3 left-3 right-3 z-20 pointer-events-none">
-            <div className="bg-stone-900/80 backdrop-blur-md text-white px-3 py-2 rounded-2xl flex items-center justify-between text-xs">
+            <div className="bg-stone-900/80 backdrop-blur-md text-white px-3 py-2 rounded-[20px] flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></span>
                 <span className="font-semibold">{selectedHotspot.name}</span>
                 <span className="text-stone-300 hidden sm:inline">({selectedHotspot.city})</span>
               </div>
@@ -374,19 +374,19 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
 
         {/* Sağ Kolon: Seçili Hotspot & Kuş Ekolojisi Detay Paneli */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="bg-white rounded-3xl border border-stone-200/80 p-5 shadow-xs space-y-4">
+          <div className="bg-white rounded-[24px] border border-stone-200/80 p-5 shadow-xs space-y-4">
             {/* Hotspot Başlığı & Bölge */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--accent-light)] text-[var(--accent)]">
                   {selectedHotspot.region} • {selectedHotspot.city}
                 </span>
-                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200 flex items-center gap-1">
+                <span className="text-[11px] font-bold text-[var(--accent)] bg-[var(--accent-light)] px-2 py-0.5 rounded-lg border border-[var(--accent)]/30 flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3" />
                   <span>{selectedHotspot.density}</span>
                 </span>
               </div>
-              <h3 className="font-serif text-lg font-bold text-stone-900">
+              <h3 className="font-display text-lg font-bold text-stone-900">
                 {selectedHotspot.name}
               </h3>
               <p className="text-xs text-stone-500 font-medium">
@@ -395,12 +395,12 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
             </div>
 
             {/* Neden Burada Yoğunlar? (Ekolojik Kavram) */}
-            <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/70 space-y-1.5">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+            <div className="p-3.5 rounded-[20px] bg-[var(--accent-light)]/70 border border-[var(--accent)]/70 space-y-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--accent)]">
+                <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
                 <span>Neden Burada Yoğunlar?</span>
               </div>
-              <p className="text-xs text-amber-950 leading-relaxed">
+              <p className="text-xs text-[var(--accent)] leading-relaxed">
                 {selectedHotspot.whyHotspot}
               </p>
             </div>
@@ -434,13 +434,13 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
                   return (
                     <div
                       key={bird.id}
-                      className="p-2.5 rounded-2xl bg-stone-50/80 border border-stone-200 flex items-center justify-between gap-2.5 hover:bg-stone-50 transition-colors"
+                      className="p-2.5 rounded-[20px] bg-stone-50/80 border border-stone-200 flex items-center justify-between gap-2.5 hover:bg-stone-50 transition-colors"
                     >
                       <div
                         onClick={() => onSelectBird && onSelectBird(bird)}
                         className="flex items-center gap-2.5 min-w-0 cursor-pointer grow"
                       >
-                        <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-stone-200">
+                        <div className="w-10 h-10 rounded-[16px] overflow-hidden shrink-0 border border-stone-200">
                           <BirdPhoto
                             src={bird.imageUrl}
                             fallbackSrc={bird.fallbackImageUrl}
@@ -450,7 +450,7 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
                           />
                         </div>
                         <div className="min-w-0">
-                          <h5 className="text-xs font-bold text-stone-900 truncate hover:text-rose-600 transition-colors">
+                          <h5 className="text-xs font-bold text-stone-900 truncate hover:text-[var(--accent)] transition-colors">
                             {bird.name}
                           </h5>
                           <p className="text-[10px] text-stone-500 truncate">
@@ -465,10 +465,10 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
                           id={`play-map-bird-${bird.id}`}
                           onClick={() => handlePlaySound(bird.id)}
                           title="Kuş Sesini Dinle"
-                          className={`p-2 rounded-xl transition-all ${
+                          className={`p-2 rounded-[16px] transition-all ${
                             isPlaying
-                              ? 'bg-rose-600 text-white'
-                              : 'bg-white text-stone-700 hover:bg-rose-50 hover:text-rose-700 border border-stone-200'
+                              ? 'bg-[var(--accent)] text-white'
+                              : 'bg-white text-stone-700 hover:bg-[var(--accent-light)] hover:text-[var(--accent)] border border-stone-200'
                           }`}
                         >
                           <Volume2 className={`w-3.5 h-3.5 ${isPlaying ? 'animate-spin' : ''}`} />
@@ -480,7 +480,7 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
                             id={`open-modal-map-${bird.id}`}
                             onClick={() => onSelectBird(bird)}
                             title="Detaylı İncele"
-                            className="p-2 rounded-xl bg-white text-stone-700 hover:bg-stone-100 border border-stone-200 transition-colors"
+                            className="p-2 rounded-[16px] bg-white text-stone-700 hover:bg-stone-100 border border-stone-200 transition-colors"
                           >
                             <ArrowRight className="w-3.5 h-3.5" />
                           </button>
@@ -494,7 +494,7 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
           </div>
 
           {/* Diğer Hotspotlara Hızlı Atlama Listesi */}
-          <div className="bg-white rounded-3xl border border-stone-200/80 p-4 shadow-xs space-y-2">
+          <div className="bg-white rounded-[24px] border border-stone-200/80 p-4 shadow-xs space-y-2">
             <h4 className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
               Tüm Türkiye Hotspotları
             </h4>
@@ -505,9 +505,9 @@ export const TurkeyHotspotMap: React.FC<TurkeyHotspotMapProps> = ({ onSelectBird
                   <button
                     key={h.id}
                     onClick={() => handleSelectHotspot(h)}
-                    className={`p-2 rounded-xl text-left text-xs font-semibold truncate transition-all ${
+                    className={`p-2 rounded-[16px] text-left text-xs font-semibold truncate transition-all ${
                       isCurrent
-                        ? 'bg-rose-600 text-white shadow-xs'
+                        ? 'bg-[var(--accent)] text-white shadow-xs'
                         : 'bg-stone-50 text-stone-700 hover:bg-stone-100'
                     }`}
                   >

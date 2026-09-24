@@ -102,8 +102,8 @@ export const FeynmanVoiceActivity: React.FC<FeynmanVoiceActivityProps> = ({ onSc
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-5 rounded-2xl border border-[#EBE7E0]">
-        <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
+      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
+        <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
           Sesli Anlatım & Sözlü Pratik (Feynman Tekniği)
         </span>
         <h3 className="text-lg font-bold text-[#1F1E1B]">Sesli Anlatım & Öğretme Laboratuvarı</h3>
@@ -112,10 +112,10 @@ export const FeynmanVoiceActivity: React.FC<FeynmanVoiceActivityProps> = ({ onSc
         </p>
       </div>
 
-      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-[24px] p-6 sm:p-8 shadow-sm space-y-6">
         {/* Görev Tanımı */}
-        <div className="space-y-2 bg-[#FAF8F5] p-5 rounded-2xl border border-[#EBE7E0]">
-          <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
+        <div className="space-y-2 bg-[#FAF8F5] p-5 rounded-[20px] border border-[#EBE7E0]">
+          <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
             Sesli Anlatım Göreviniz:
           </span>
           <h2 className="text-base sm:text-lg font-bold text-[#1F1E1B] leading-snug">
@@ -128,12 +128,12 @@ export const FeynmanVoiceActivity: React.FC<FeynmanVoiceActivityProps> = ({ onSc
         </div>
 
         {/* Ses Kayıt Paneli */}
-        <div className="flex flex-col items-center justify-center p-6 bg-stone-50 rounded-2xl border border-stone-200 space-y-4">
+        <div className="flex flex-col items-center justify-center p-6 bg-stone-50 rounded-[20px] border border-stone-200 space-y-4">
           <div className="flex items-center gap-3">
             {!isRecording ? (
               <button
                 onClick={startRecording}
-                className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white shadow-md transition-all active:scale-95"
+                className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent)] text-white shadow-md transition-all active:scale-95"
               >
                 <Mic className="w-4 h-4" />
                 Ses Kaydını Başlat
@@ -143,7 +143,7 @@ export const FeynmanVoiceActivity: React.FC<FeynmanVoiceActivityProps> = ({ onSc
                 onClick={stopRecording}
                 className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-xs bg-stone-900 hover:bg-black text-white shadow-md animate-pulse"
               >
-                <Square className="w-4 h-4 text-red-500 fill-red-500" />
+                <Square className="w-4 h-4 text-[var(--accent)] fill-[var(--accent)]" />
                 Kaydı Bitir ({recordingDuration}s)
               </button>
             )}
@@ -159,7 +159,7 @@ export const FeynmanVoiceActivity: React.FC<FeynmanVoiceActivityProps> = ({ onSc
             )}
           </div>
 
-          <span className="text-xs text-[#7A7670] font-mono">
+          <span className="text-xs text-[#7A7670] ">
             {isRecording
               ? `🎙️ Kaydediliyor: ${recordingDuration} sn...`
               : audioUrl
@@ -180,16 +180,16 @@ export const FeynmanVoiceActivity: React.FC<FeynmanVoiceActivityProps> = ({ onSc
                 <button
                   key={r.id}
                   onClick={() => toggleRubric(r.id)}
-                  className={`w-full p-3.5 rounded-xl border text-left text-xs font-medium transition-all flex items-start justify-between gap-3 ${
+                  className={`w-full p-3.5 rounded-[16px] border text-left text-xs font-medium transition-all flex items-start justify-between gap-3 ${
                     isChecked
-                      ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold'
+                      ? 'bg-[var(--accent-light)] border-[var(--accent)] text-[var(--accent)] font-bold'
                       : 'bg-[#FAF8F5] border-[#E0DCD6] text-[#333] hover:bg-stone-100'
                   }`}
                 >
                   <span>{r.text}</span>
                   <CheckCircle2
                     className={`w-4 h-4 shrink-0 mt-0.5 ${
-                      isChecked ? 'text-emerald-600' : 'text-stone-300'
+                      isChecked ? 'text-[var(--accent)]' : 'text-stone-300'
                     }`}
                   />
                 </button>
@@ -203,13 +203,13 @@ export const FeynmanVoiceActivity: React.FC<FeynmanVoiceActivityProps> = ({ onSc
           <button
             onClick={handleCompleteFeynman}
             disabled={checkCount < 3}
-            className="w-full py-3.5 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-all disabled:opacity-50 shadow-sm"
+            className="w-full py-3.5 rounded-[16px] font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent)] text-white transition-all disabled:opacity-50 shadow-sm"
           >
             Feynman Anlatımımı Tamamla (+30 Puan)
           </button>
         ) : (
-          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-emerald-600 shrink-0" />
+          <div className="p-4 rounded-[20px] bg-[var(--accent-light)] border border-[var(--accent)]/30 text-[var(--accent)] text-xs flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-[var(--accent)] shrink-0" />
             <span>
               <strong>Tebrikler!</strong> Kendi cümlelerinizle öğreterek pozlama üçgenini zihninizde kalıcı hale getirdiniz.
             </span>

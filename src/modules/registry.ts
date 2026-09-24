@@ -20,6 +20,7 @@ export const MODULE_REGISTRY: LearningModule[] = [
       id: 'kanji',
       title: 'Japonca Kanji & N5 Kelimeleri',
       subtitle: 'Görsel Hatırlatıcılar & Radikaller',
+      shortTitle: 'Kanji',
       category: 'Dil',
       tag: 'Planlanan • Çok Yakında',
       description:
@@ -33,6 +34,7 @@ export const MODULE_REGISTRY: LearningModule[] = [
       id: 'korean',
       title: 'Korece Hangul Alfabesi',
       subtitle: 'Bilimsel Alfabe Mimarisi',
+      shortTitle: 'Korece',
       category: 'Dil',
       tag: 'Planlanan • Dil Modülü',
       description:
@@ -46,6 +48,7 @@ export const MODULE_REGISTRY: LearningModule[] = [
       id: 'python',
       title: 'Yapay Zeka & Python Temelleri',
       subtitle: 'Programlama Mantığı ve Algoritma',
+      shortTitle: 'Python',
       category: 'Teknoloji',
       tag: 'Planlanan • Kodlama',
       description:
@@ -59,6 +62,7 @@ export const MODULE_REGISTRY: LearningModule[] = [
       id: 'history_culture',
       title: 'Dünya Kültürleri & Tarih Notları',
       subtitle: 'Görsel & Sesli Hikayeler',
+      shortTitle: 'Kültür',
       category: 'Kültür & Sanat',
       tag: 'Planlanan • Genel Kültür',
       description:

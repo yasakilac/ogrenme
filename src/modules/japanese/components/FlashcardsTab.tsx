@@ -14,6 +14,7 @@ import {
   VolumeX
 } from 'lucide-react';
 import { soundManager } from '../../../utils/sound';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 interface FlashcardsTabProps {
   alphabet: AlphabetType;
@@ -124,12 +125,12 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
 
   if (!currentCard || cards.length === 0) {
     return (
-      <div className="p-12 text-center bg-white rounded-3xl border border-[#E8E3D8] max-w-xl mx-auto shadow-xs">
+      <div className="p-12 text-center bg-white rounded-[24px] border border-[#E8E3D8] max-w-xl mx-auto shadow-xs">
         <p className="text-base font-bold text-[#1F1E1D]">Bu grupta henüz kart bulunmuyor.</p>
         <p className="text-xs text-[#7A756D] mt-1">Lütfen yukarıdaki filtrelerden "Temel" veya "Tümü" grubunu seçin.</p>
         <button
           onClick={() => setCategory('seion')}
-          className="mt-4 px-4 py-2 rounded-xl bg-[#1F1E1D] text-white text-xs font-semibold"
+          className="mt-4 px-4 py-2 rounded-[16px] bg-[#1F1E1D] text-white text-xs font-semibold"
         >
           Temel Harflere Dön
         </button>
@@ -144,7 +145,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     <div className="max-w-xl mx-auto space-y-5 animate-in fade-in duration-200">
       
       {/* Category Pills & Direction Selector */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-2xl bg-white border border-[#E8E3D8] shadow-2xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-[20px] bg-white border border-[#E8E3D8] shadow-2xs">
         
         {/* Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto">
@@ -163,7 +164,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                 setCategory(item.id);
                 soundManager.playFlipSound();
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`px-3 py-1.5 rounded-[16px] text-xs font-semibold whitespace-nowrap transition-all ${
                 category === item.id
                   ? 'bg-[#1F1E1D] text-white shadow-xs'
                   : 'bg-[#F5F2EC] text-[#555047] hover:bg-[#EBE6DC]'
@@ -180,7 +181,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
             id="btn-shuffle-cards"
             onClick={handleShuffle}
             title="Kartları Karıştır"
-            className="p-2 rounded-xl bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] transition-colors"
+            className="p-2 rounded-[16px] bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] transition-colors"
           >
             <Shuffle className="w-4 h-4" />
           </button>
@@ -188,7 +189,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
           <button
             id="btn-toggle-card-dir"
             onClick={() => setDirection(direction === 'kana_to_romaji' ? 'romaji_to_kana' : 'kana_to_romaji')}
-            className="px-2.5 py-1.5 rounded-xl bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] text-xs font-semibold transition-colors whitespace-nowrap"
+            className="px-2.5 py-1.5 rounded-[16px] bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] text-xs font-semibold transition-colors whitespace-nowrap"
             title="Kart yönünü değiştir"
           >
             {direction === 'kana_to_romaji' ? 'Kana ➔ Okunuş' : 'Okunuş ➔ Kana'}
@@ -203,7 +204,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
           <span className="font-bold text-[#1F1E1D]">
             Kart {currentIndex + 1} / {cards.length}
           </span>
-          <span className="text-[11px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-semibold uppercase">
+          <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-semibold uppercase">
             {currentCard.category}
           </span>
         </div>
@@ -243,7 +244,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
         role="button"
         tabIndex={0}
         aria-label="Kartı çevir"
-        className="cursor-pointer select-none min-h-[340px] sm:min-h-[360px] relative rounded-3xl bg-white border-2 transition-all duration-300 shadow-md hover:shadow-lg flex flex-col justify-between overflow-hidden"
+        className="cursor-pointer select-none min-h-[340px] sm:min-h-[360px] relative rounded-[24px] bg-white border-2 transition-all duration-300 shadow-md hover:shadow-lg flex flex-col justify-between overflow-hidden"
         style={{
           borderColor: isFlipped ? '#FDA4AF' : '#E8E3D8'
         }}
@@ -257,10 +258,10 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
           <button
             onClick={handleSpeak}
             title="Telaffuzu Dinle"
-            className={`p-2.5 rounded-xl border flex items-center gap-1.5 transition-all ${
+            className={`p-2.5 rounded-[16px] border flex items-center gap-1.5 transition-all ${
               isPlayingSound 
-                ? 'bg-rose-600 text-white border-rose-600 animate-pulse'
-                : 'bg-[#FAF8F5] text-rose-600 hover:bg-rose-50 border-[#E8E2D6]'
+                ? 'bg-[var(--accent)] text-white border-[var(--accent)] animate-pulse'
+                : 'bg-[#FAF8F5] text-[var(--accent)] hover:bg-[var(--accent-light)] border-[#E8E2D6]'
             }`}
           >
             <Volume2 className="w-4 h-4" />
@@ -277,17 +278,17 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                 <div className="text-8xl sm:text-9xl font-bold text-[#1F1E1D] font-japanese leading-none">
                   {currentKana}
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold border border-rose-200">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] text-xs font-semibold border border-[var(--accent)]/30">
                   <RotateCw className="w-3.5 h-3.5" />
                   <span>Karta veya aşağıdaki butona tıklayarak cevabı gör</span>
                 </div>
               </>
             ) : (
               <>
-                <div className="text-6xl sm:text-7xl font-mono font-black text-rose-600 tracking-wider">
+                <div className="text-6xl sm:text-7xl font-black text-[var(--accent)] tracking-wider">
                   {currentCard.romaji}
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold border border-rose-200">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] text-xs font-semibold border border-[var(--accent)]/30">
                   <RotateCw className="w-3.5 h-3.5" />
                   <span>Japonca yazılışı görmek için tıkla</span>
                 </div>
@@ -302,7 +303,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-[#F0ECE4]">
               <div>
                 <div className="flex items-baseline gap-3">
-                  <span className="text-4xl sm:text-5xl font-black font-mono text-rose-600">
+                  <span className="text-4xl sm:text-5xl font-black text-[var(--accent)]">
                     {currentCard.romaji}
                   </span>
                   <span className="text-3xl font-bold text-[#1F1E1D] font-japanese">
@@ -322,8 +323,8 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
 
             {/* Turkish Pronunciation & Mnemonic */}
             <div className="space-y-2.5 text-left">
-              <div className="p-3 rounded-xl bg-amber-50/90 border border-amber-200 text-left">
-                <div className="text-[11px] font-bold text-amber-900 uppercase tracking-wider mb-0.5">
+              <div className="p-3 rounded-[16px] bg-[var(--accent-light)]/90 border border-[var(--accent)]/30 text-left">
+                <div className="text-[11px] font-bold text-[var(--accent)] uppercase tracking-wider mb-0.5">
                   Türkçe Okunuş Rehberi:
                 </div>
                 <p className="text-xs sm:text-sm text-[#47433B] font-medium leading-relaxed">
@@ -331,8 +332,8 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-rose-50/90 border border-rose-200 text-left">
-                <div className="text-[11px] font-bold text-rose-900 uppercase tracking-wider mb-0.5 flex items-center gap-1">
+              <div className="p-3 rounded-[16px] bg-[var(--accent-light)]/90 border border-[var(--accent)]/30 text-left">
+                <div className="text-[11px] font-bold text-[var(--accent)] uppercase tracking-wider mb-0.5 flex items-center gap-1">
                   <Bookmark className="w-3 h-3" />
                   Hafıza İpucu:
                 </div>
@@ -343,12 +344,12 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
 
               {/* Sample Word */}
               {currentCard.sampleWords[0] && (
-                <div className="p-2.5 rounded-xl bg-white border border-[#EAE5DA] flex items-center justify-between text-xs">
+                <div className="p-2.5 rounded-[16px] bg-white border border-[#EAE5DA] flex items-center justify-between text-xs">
                   <div>
                     <span className="font-bold text-sm text-[#1F1E1D] mr-1 font-japanese">
                       {currentCard.sampleWords[0].word}
                     </span>
-                    <span className="text-rose-700 font-mono">
+                    <span className="text-[var(--accent)] ">
                       ({currentCard.sampleWords[0].romaji})
                     </span>
                     <span className="text-[#7A756D] ml-2">
@@ -364,7 +365,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
 
         {/* Card footer indicator */}
         <div className="p-3 bg-[#FAF8F5] border-t border-[#EFECE6] text-center text-[11px] text-[#8C867B] flex items-center justify-center gap-1.5">
-          <Eye className="w-3.5 h-3.5 text-rose-500" />
+          <Eye className="w-3.5 h-3.5 text-[var(--accent)]" />
           <span>{isFlipped ? 'Ön yüze dönmek için karta tıkla' : 'Cevabı görmek için karta tıkla'}</span>
         </div>
       </div>
@@ -374,9 +375,9 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
         <button
           id="btn-show-flashcard-answer"
           onClick={handleFlip}
-          className="w-full py-4 px-6 rounded-2xl bg-[#1F1E1D] hover:bg-neutral-800 text-white font-bold text-base flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all active:scale-98"
+          className="w-full py-4 px-6 rounded-[20px] bg-[#1F1E1D] hover:bg-neutral-800 text-white font-bold text-base flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all active:scale-98"
         >
-          <Eye className="w-5 h-5 text-rose-300" />
+          <Eye className="w-5 h-5 text-[var(--accent)]" />
           <span>Cevabı & Okunuşu Göster</span>
         </button>
       ) : (
@@ -386,16 +387,18 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
             <button
               id="btn-flashcard-repeat"
               onClick={() => handleAnswer(false)}
-              className="py-3.5 px-4 rounded-2xl bg-white hover:bg-rose-50 text-rose-700 border-2 border-rose-200 hover:border-rose-400 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95"
+              style={{ background: '#FFFFFF', color: WRONG.border, borderColor: WRONG.border }}
+              className="py-3.5 px-4 rounded-[20px] border-2 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95"
             >
-              <X className="w-5 h-5 text-rose-600" />
+              <X className="w-5 h-5" style={{ color: WRONG.border }} />
               <span>Tekrar Et (Bilemedim)</span>
             </button>
 
             <button
               id="btn-flashcard-know"
               onClick={() => handleAnswer(true)}
-              className="py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95"
+              style={{ background: CORRECT.border }}
+              className="py-3.5 px-4 rounded-[20px] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95"
             >
               <Check className="w-5 h-5 text-white" />
               <span>Biliyorum! (Sıradaki)</span>

@@ -58,7 +58,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
       {/* Üst Kontrol Çubuğu (Kategori Filtresi + Görünüm Değiştirici) */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         {/* Kategori Hapları */}
-        <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-xl overflow-x-auto max-w-full">
+        <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-[16px] overflow-x-auto max-w-full">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -79,7 +79,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
         </div>
 
         {/* Görünüm Geçişi: Tek Kart vs Galeri Izgarası */}
-        <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-xl">
+        <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-[16px]">
           <button
             id="view-mode-card-btn"
             onClick={() => setViewMode('card')}
@@ -106,7 +106,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
       {/* ================= GÖRÜNÜM 1: BÜYÜK FOTOĞRAFLI ODAK KARTI ================= */}
       {viewMode === 'card' && currentBird && (
         <div className="space-y-4">
-          <div className="bg-white rounded-3xl border border-stone-200/80 shadow-xs overflow-hidden">
+          <div className="bg-white rounded-[24px] border border-stone-200/80 shadow-xs overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2">
               {/* Gerçek Fotoğraf Alanı */}
               <div className="relative aspect-4/3 md:aspect-auto md:h-full bg-stone-100 group overflow-hidden">
@@ -141,7 +141,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
               <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
                 <div className="space-y-3">
                   <div>
-                    <h3 className="text-2xl sm:text-3xl font-bold font-serif text-stone-900 tracking-tight">
+                    <h3 className="text-2xl sm:text-3xl font-bold font-display text-stone-900 tracking-tight">
                       {currentBird.name}
                     </h3>
                     <p className="text-xs text-stone-500 italic mt-0.5">
@@ -151,8 +151,8 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
 
                   {/* 2 Temel Özet Kartı */}
                   <div className="space-y-2 pt-1 text-xs">
-                    <div className="flex items-center gap-2 p-2.5 bg-stone-50 rounded-xl border border-stone-100">
-                      <Utensils className="w-4 h-4 text-rose-500 shrink-0" />
+                    <div className="flex items-center gap-2 p-2.5 bg-stone-50 rounded-[16px] border border-stone-100">
+                      <Utensils className="w-4 h-4 text-[var(--accent)] shrink-0" />
                       <div>
                         <span className="text-stone-400 block text-[10px] uppercase font-bold tracking-wider">Gaga & Beslenme</span>
                         <span className="font-semibold text-stone-800">{currentBird.beakType}</span>
@@ -160,8 +160,8 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 p-2.5 bg-stone-50 rounded-xl border border-stone-100">
-                      <MapPin className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <div className="flex items-center gap-2 p-2.5 bg-stone-50 rounded-[16px] border border-stone-100">
+                      <MapPin className="w-4 h-4 text-[var(--accent)] shrink-0" />
                       <div>
                         <span className="text-stone-400 block text-[10px] uppercase font-bold tracking-wider">Yaşam Alanı</span>
                         <span className="font-semibold text-stone-800">{currentBird.habitat}</span>
@@ -170,7 +170,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                   </div>
 
                   {/* Önemli Tek Özellik */}
-                  <p className="text-xs text-stone-600 bg-stone-50/50 p-2.5 rounded-xl border border-stone-100">
+                  <p className="text-xs text-stone-600 bg-stone-50/50 p-2.5 rounded-[16px] border border-stone-100">
                     💡 <strong className="text-stone-800">Öne Çıkan:</strong> {currentBird.features[0]}
                   </p>
                 </div>
@@ -180,10 +180,10 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                   <button
                     id={`play-sound-${currentBird.id}`}
                     onClick={(e) => handlePlayAudio(currentBird.id, e)}
-                    className={`grow flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold transition-all ${
+                    className={`grow flex items-center justify-center gap-2 py-2.5 px-4 rounded-[16px] text-xs font-semibold transition-all ${
                       playingId === currentBird.id
-                        ? 'bg-rose-600 text-white shadow-xs'
-                        : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                        ? 'bg-[var(--accent)] text-white shadow-xs'
+                        : 'bg-[var(--accent-light)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--accent)]/30'
                     }`}
                   >
                     <Volume2 className={`w-4 h-4 ${playingId === currentBird.id ? 'animate-spin' : ''}`} />
@@ -193,7 +193,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                   <button
                     id="card-details-btn"
                     onClick={() => onOpenDetails && onOpenDetails(currentBird)}
-                    className="px-4 py-2.5 rounded-xl text-xs font-medium text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 transition-colors"
+                    className="px-4 py-2.5 rounded-[16px] text-xs font-medium text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 transition-colors"
                   >
                     Detay
                   </button>
@@ -207,7 +207,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
             <button
               id="prev-bird-btn"
               onClick={handlePrev}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 hover:bg-stone-50 transition-colors"
+              className="flex items-center gap-1 px-3 py-2 rounded-[16px] text-xs font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 hover:bg-stone-50 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>Önceki</span>
@@ -220,9 +220,9 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                   key={b.id}
                   id={`thumbnail-${b.id}`}
                   onClick={() => setCurrentIndex(idx)}
-                  className={`w-10 h-10 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
+                  className={`w-10 h-10 rounded-[16px] overflow-hidden shrink-0 border-2 transition-all ${
                     idx === currentIndex
-                      ? 'border-rose-600 scale-105 shadow-xs'
+                      ? 'border-[var(--accent)] scale-105 shadow-xs'
                       : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                 >
@@ -244,7 +244,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
             <button
               id="next-bird-btn"
               onClick={handleNext}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 hover:bg-stone-50 transition-colors"
+              className="flex items-center gap-1 px-3 py-2 rounded-[16px] text-xs font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 hover:bg-stone-50 transition-colors"
             >
               <span>Sonraki</span>
               <ChevronRight className="w-4 h-4" />
@@ -263,7 +263,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                 key={b.id}
                 id={`grid-bird-${b.id}`}
                 onClick={() => onOpenDetails && onOpenDetails(b)}
-                className="group cursor-pointer bg-white rounded-2xl border border-stone-200/80 overflow-hidden shadow-2xs hover:shadow-sm hover:border-stone-300 transition-all flex flex-col"
+                className="group cursor-pointer bg-white rounded-[20px] border border-stone-200/80 overflow-hidden shadow-2xs hover:shadow-sm hover:border-stone-300 transition-all flex flex-col"
               >
                 {/* Gerçek Fotoğraf */}
                 <div className="relative aspect-square w-full bg-stone-100 overflow-hidden">
@@ -282,7 +282,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                 {/* Kart Özeti */}
                 <div className="p-3 flex flex-col justify-between grow space-y-2">
                   <div>
-                    <h4 className="font-bold text-stone-900 text-sm group-hover:text-rose-600 transition-colors truncate">
+                    <h4 className="font-bold text-stone-900 text-sm group-hover:text-[var(--accent)] transition-colors truncate">
                       {b.name}
                     </h4>
                     <p className="text-[11px] text-stone-500 truncate">{b.beakType}</p>
@@ -292,10 +292,10 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                   <button
                     id={`grid-play-${b.id}`}
                     onClick={(e) => handlePlayAudio(b.id, e)}
-                    className={`w-full py-1.5 px-2 rounded-xl text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={`w-full py-1.5 px-2 rounded-[16px] text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
                       isPlaying
-                        ? 'bg-rose-600 text-white'
-                        : 'bg-stone-50 hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200'
+                        ? 'bg-[var(--accent)] text-white'
+                        : 'bg-stone-50 hover:bg-[var(--accent-light)] text-stone-700 hover:text-[var(--accent)] border border-stone-200'
                     }`}
                   >
                     <Volume2 className={`w-3.5 h-3.5 ${isPlaying ? 'animate-spin' : ''}`} />
