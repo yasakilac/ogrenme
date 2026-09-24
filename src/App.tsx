@@ -20,7 +20,7 @@ const firstActiveModule = MODULE_REGISTRY.find((m) => m.component) ?? MODULE_REG
 export default function App() {
   // Navigation: hangi modüldeyiz + modülün hangi sekmesi (App sekme değerini yorumlamaz)
   const [currentModuleId, setCurrentModuleId] = useState<string>(firstActiveModule.meta.id);
-  const [isHub, setIsHub] = useState(false);
+  const [isHub, setIsHub] = useState(true);
   const [activeTab, setActiveTab] = useState<string>(firstActiveModule.meta.navTabs?.[0]?.id ?? '');
 
   // ponytail: alphabet + progress tek aktif modülün şeması; ikinci modül kendi
