@@ -106,6 +106,7 @@ export default function App() {
       </main>
 
       {/* Mobile-First Bottom Navigation Bar (Alanlar + aktif modülün sekmeleri) */}
+      {!isHub && (
       <MobileBottomNav
         tabs={currentModule.meta.navTabs ?? []}
         activeTab={activeTab}
@@ -113,6 +114,7 @@ export default function App() {
         isHub={isHub}
         onSelectHub={() => setIsHub(true)}
       />
+      )}
 
       {/* Settings Modal (Alfabe seçimi, ses testi, profil ve admin erişimi) */}
       <SettingsModal

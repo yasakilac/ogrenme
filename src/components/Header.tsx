@@ -7,7 +7,6 @@ import {
   ChevronDown,
   GraduationCap,
   Layers,
-  ArrowLeft,
   Check
 } from 'lucide-react';
 
@@ -173,16 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Sağ Kısım: Hızlı Durum */}
           <div className="flex items-center gap-3">
-            {isHub ? (
-              <button
-                type="button"
-                onClick={() => onSelectModule(currentModuleId)}
-                className="text-[11px] font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1"
-              >
-                <span>{currentModule?.meta.labels?.back ?? 'Modüle Dön'}</span>
-                <span className="text-xs">→</span>
-              </button>
-            ) : (
+            {!isHub && (
               <button
                 type="button"
                 onClick={() => onSelectModule('hub')}
@@ -200,27 +190,31 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
           
-          {/* Brand & Proje Başlığı */}
-          <div 
+          {/* Brand: hub'da uygulama adı, modülde modülün kendi başlığı */}
+          <div
             onClick={() => {
-              if (isHub) {
-                onSelectModule(currentModuleId);
-              } else if (tabs[0]) {
-                setActiveTab(tabs[0].id);
-              }
+              if (!isHub && tabs[0]) setActiveTab(tabs[0].id);
             }}
-            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer select-none shrink-0 group"
+            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer select-none shrink-0 group min-w-0"
           >
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-rose-600 to-red-700 text-white flex items-center justify-center font-bold text-base shadow-2xs border border-rose-700/20 font-japanese group-hover:scale-105 transition-transform">
-              {alphabet === 'hiragana' ? 'あ' : 'ア'}
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-rose-600 to-red-700 text-white flex items-center justify-center font-bold text-base shadow-2xs border border-rose-700/20 font-japanese group-hover:scale-105 transition-transform shrink-0">
+              {isHub ? (
+                <GraduationCap className="w-5 h-5" />
+              ) : currentModuleId === 'japanese' ? (
+                alphabet === 'hiragana' ? 'あ' : 'ア'
+              ) : (
+                currentModule?.meta.glyph ?? currentModule?.meta.title.charAt(0)
+              )}
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-base sm:text-lg font-black text-[#1F1E1B] tracking-tight">
-                {currentModule?.meta.title}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-base sm:text-lg font-black text-[#1F1E1B] tracking-tight truncate">
+                {isHub ? 'Kavram Öğrenimi' : currentModule?.meta.title}
               </span>
-              <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-800">
-                {alphabet === 'hiragana' ? 'Hiragana' : 'Katakana'}
-              </span>
+              {!isHub && currentModuleId === 'japanese' && (
+                <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-800">
+                  {alphabet === 'hiragana' ? 'Hiragana' : 'Katakana'}
+                </span>
+              )}
             </div>
           </div>
 
@@ -248,18 +242,7 @@ export const Header: React.FC<HeaderProps> = ({
                 );
               })}
             </nav>
-          ) : (
-            <div className="hidden md:flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => onSelectModule(currentModuleId)}
-                className="px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>{currentModule?.meta.labels?.enter ?? 'Modüle Geç'}</span>
-              </button>
-            </div>
-          )}
+          ) : null}
 
           {/* Settings Icon */}
           <div className="flex items-center gap-2">

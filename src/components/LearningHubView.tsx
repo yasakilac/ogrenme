@@ -288,7 +288,7 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
           <span>
-            Yeni öğrenme alanları ve ders modülleri bu ana merkeze eklenecektir. İstediğiniz an üst menüden Japonca ve diğer alanlar arasında geçiş yapabilirsiniz.
+            Yeni öğrenme alanları ve ders modülleri bu ana merkeze eklenecektir. İstediğiniz an üst menüden alanlar arasında geçiş yapabilirsiniz.
           </span>
         </div>
       </div>

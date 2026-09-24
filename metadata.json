@@ -1,6 +1,6 @@
 {
-  "name": "Hiragana & Katakana Öğrenme Rehberi",
-  "description": "Japonca Hiragana ve Katakana alfabelerini sesli telaffuzlar, konu anlatımları, çizim pratiği, kartlar ve testlerle öğrenme ve ilerleme takip uygulaması.",
+  "name": "Kavram Öğrenimi",
+  "description": "Görsel, sesli ve etkileşimli etkinliklerle farklı konuları kavram kavram öğrenme platformu: dil, doğa, fotoğrafçılık ve daha fazlası.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
