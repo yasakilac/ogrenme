@@ -15,6 +15,7 @@ import {
   completeQuizSession,
   saveLastStudied
 } from '../../utils/storage';
+import { JAPANESE_FINAL_TEST } from './data/kanaData';
 
 /** Japonca modülünün tüm ekranları ve kendi iç navigasyon state'i. */
 const JapaneseModule: React.FC<LearningModuleProps> = ({
@@ -149,6 +150,7 @@ export const japaneseModule: LearningModule = {
       'Sesli telaffuzlar, 13 ders ünitesi, interaktif çizim tuvali, kelime kartları ve testlerle Japonca alfabe ustalığı.',
     features: ['Hiragana & Katakana', 'Sesli Telaffuzlar', 'İnteraktif Çizim', 'Kelime & Test Modülü'],
     status: 'active',
+    colorTheme: 'rose',
     shortTitle: 'Japonca',
     glyph: '日',
     navTabs: [
@@ -168,5 +170,6 @@ export const japaneseModule: LearningModule = {
   getProgressPercent: (progress: UserProgressData) => {
     const studied = Object.values(progress.characters).filter((c) => c.masteryLevel > 0).length;
     return Math.min(100, Math.round((studied / TOTAL_KANA) * 100));
-  }
+  },
+  finalTest: JAPANESE_FINAL_TEST
 };

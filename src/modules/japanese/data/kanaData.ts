@@ -1,4 +1,5 @@
 import { KanaCharacter } from '../../../types';
+import type { FinalTestQuestion } from '../../types';
 
 export const KANA_DATA: KanaCharacter[] = [
   // --- TEMEL SESLER (GOJŪON / SEION) ---
@@ -1205,3 +1206,28 @@ export const GOJUON_ROW_LABELS: { row: string; label: string; desc: string }[] =
   { row: 'ra', label: 'Ra Sırası', desc: 'R/L sessizi (ra, ri, ru, re, ro)' },
   { row: 'wa', label: 'Wa / N', desc: 'W ve N sessizleri (wa, o, n)' }
 ];
+
+/**
+ * Deneme Sınavı havuzu için temel hiragana tanıma soruları (karakter → okunuş, 4 şık).
+ * A/Ka/Sa sıralarındaki 15 temel karakterden üretilir; yanlış şıklar 3/6/9 kaydırmayla
+ * havuzdaki diğer karakterlerden deterministik seçilir (aynı 15'lik döngüde çakışmaz).
+ */
+const FINAL_TEST_KANA_IDS = ['a', 'i', 'u', 'e', 'o', 'ka', 'ki', 'ku', 'ke', 'ko', 'sa', 'shi', 'su', 'se', 'so'];
+
+export const JAPANESE_FINAL_TEST: FinalTestQuestion[] = FINAL_TEST_KANA_IDS.map((id, index) => {
+  const chars = FINAL_TEST_KANA_IDS.map((cid) => KANA_DATA.find((k) => k.id === cid)!);
+  const char = chars[index];
+  const wrongOffsets = [3, 6, 9];
+  const options = [
+    char.romaji,
+    ...wrongOffsets.map((offset) => chars[(index + offset) % chars.length].romaji)
+  ];
+  return {
+    id: `final_${char.id}`,
+    question: `「${char.hiragana}」karakterinin okunuşu (romaji) nedir?`,
+    options,
+    correctIndex: 0,
+    explanation: char.trPronunciation,
+    mode: 'recognition'
+  };
+});

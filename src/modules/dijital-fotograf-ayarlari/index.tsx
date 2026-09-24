@@ -479,6 +479,7 @@ export const myModule: LearningModule = {
       '14 farklı kavram öğrenme etkinliği ve bitirme sınavı',
     ],
     status: 'active',
+    colorTheme: 'violet',
     shortTitle: 'Fotoğrafçılık',
     glyph: '📷',
     difficulty: 'başlangıç',

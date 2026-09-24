@@ -1,25 +1,82 @@
 import React, { useState } from 'react';
-import { 
-  Sparkles, 
-  BookOpen, 
-  Code, 
-  Globe, 
-  Brain, 
-  ArrowRight, 
+import {
+  Sparkles,
+  ArrowRight,
   Search,
-  CheckCircle2,
   Clock,
-  Flame,
-  Layers,
   GraduationCap
 } from 'lucide-react';
 import { UserProgressData } from '../types';
 import { MODULE_REGISTRY } from '../modules/registry';
+import { MockExam, EXAM_POOL, EXAM_SOURCE_MODULE_COUNT, getLastMockExamScore } from './MockExam';
 
 interface LearningHubViewProps {
   progress: UserProgressData;
   onSelectModule: (moduleId: string) => void;
 }
+
+/** Kart teması: opsiyonel `colorTheme` meta alanından, yoksa index'e göre döngüyle atanır.
+ * Tailwind v4 dinamik class üretmediği için tam class string'leri burada sabitlenir. */
+const CARD_THEMES = {
+  rose: {
+    card: 'bg-rose-50 border-rose-200 hover:border-rose-300',
+    icon: 'bg-rose-100 border-rose-200 text-rose-700',
+    progressBox: 'bg-rose-100/70 border-rose-200/70',
+    progressText: 'text-rose-900',
+    progressTrack: 'bg-rose-200/70',
+    progressFill: 'bg-rose-600',
+    button: 'bg-rose-700 hover:bg-rose-800'
+  },
+  sky: {
+    card: 'bg-sky-50 border-sky-200 hover:border-sky-300',
+    icon: 'bg-sky-100 border-sky-200 text-sky-700',
+    progressBox: 'bg-sky-100/70 border-sky-200/70',
+    progressText: 'text-sky-900',
+    progressTrack: 'bg-sky-200/70',
+    progressFill: 'bg-sky-600',
+    button: 'bg-sky-700 hover:bg-sky-800'
+  },
+  emerald: {
+    card: 'bg-emerald-50 border-emerald-200 hover:border-emerald-300',
+    icon: 'bg-emerald-100 border-emerald-200 text-emerald-700',
+    progressBox: 'bg-emerald-100/70 border-emerald-200/70',
+    progressText: 'text-emerald-900',
+    progressTrack: 'bg-emerald-200/70',
+    progressFill: 'bg-emerald-600',
+    button: 'bg-emerald-700 hover:bg-emerald-800'
+  },
+  amber: {
+    card: 'bg-amber-50 border-amber-200 hover:border-amber-300',
+    icon: 'bg-amber-100 border-amber-200 text-amber-800',
+    progressBox: 'bg-amber-100/70 border-amber-200/70',
+    progressText: 'text-amber-900',
+    progressTrack: 'bg-amber-200/70',
+    progressFill: 'bg-amber-600',
+    button: 'bg-amber-800 hover:bg-amber-900'
+  },
+  violet: {
+    card: 'bg-violet-50 border-violet-200 hover:border-violet-300',
+    icon: 'bg-violet-100 border-violet-200 text-violet-700',
+    progressBox: 'bg-violet-100/70 border-violet-200/70',
+    progressText: 'text-violet-900',
+    progressTrack: 'bg-violet-200/70',
+    progressFill: 'bg-violet-600',
+    button: 'bg-violet-700 hover:bg-violet-800'
+  }
+} as const;
+
+const THEME_CYCLE: (keyof typeof CARD_THEMES)[] = ['rose', 'sky', 'emerald', 'amber', 'violet'];
+
+/** Planlanan (henüz açılmamış) modüller daha soluk/nötr kalır. */
+const NEUTRAL_THEME = {
+  card: 'bg-[#FAF8F5] border-[#E8E4DC] opacity-90 hover:opacity-100 hover:border-stone-300 hover:bg-white',
+  icon: 'bg-stone-100 border-stone-200 text-stone-400'
+};
+
+const getCardTheme = (colorTheme: string | undefined, registryIndex: number) => {
+  if (colorTheme && colorTheme in CARD_THEMES) return CARD_THEMES[colorTheme as keyof typeof CARD_THEMES];
+  return CARD_THEMES[THEME_CYCLE[registryIndex % THEME_CYCLE.length]];
+};
 
 export const LearningHubView: React.FC<LearningHubViewProps> = ({
   progress,
@@ -27,10 +84,7 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'languages' | 'tech' | 'culture'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Öne çıkan (ilk aktif) modül: üst bannerdaki hızlı giriş kartı bunu açar
-  const featured = MODULE_REGISTRY.find((m) => m.meta.status === 'active');
-  const featuredProgress = featured?.getProgressPercent?.(progress) ?? 0;
+  const [showExam, setShowExam] = useState(false);
 
   const filteredAreas = MODULE_REGISTRY.filter(({ meta }) => {
     const matchesFilter =
@@ -47,67 +101,37 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
     return matchesFilter && matchesSearch;
   });
 
+  if (showExam) {
+    return <MockExam onExit={() => setShowExam(false)} />;
+  }
+
+  const lastScore = getLastMockExamScore();
+
   return (
     <div className="space-y-6 pb-24 sm:pb-12 max-w-5xl mx-auto">
-      
-      {/* 1. ÖĞRENME PLATFORMU ÜST BANNER */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-white via-[#FAF8F5] to-rose-50/50 border border-[#E8E4DC] rounded-3xl p-5 sm:p-8 shadow-2xs">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-900 text-white text-xs font-bold shadow-2xs">
-              <GraduationCap className="w-3.5 h-3.5 text-rose-400" />
-              <span>Öğrenme Platformu & Keşif Alanı</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#1F1E1B] tracking-tight">
-              Ne Öğrenmek İstiyorsunuz?
-            </h1>
-            <p className="text-xs sm:text-sm md:text-base text-[#5C574F] leading-relaxed">
-              Öğrenmek istediğiniz konuların yer aldığı merkezi öğrenme alanındasınız. 
-              İlk projemiz olan <span className="font-bold text-rose-700">Japonca Öğren</span> bölümü tam donanımlı olarak hazır. Zamanla yeni diller ve farklı öğrenme alanları bu merkeze dahil olacaktır.
-            </p>
 
-            {/* Quick Stats Pill */}
-            <div className="flex items-center gap-3 pt-2 flex-wrap text-xs font-semibold text-[#5C574F]">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E8E4DC]">
-                <Flame className="w-4 h-4 text-amber-600" />
-                <span>Aktif Çalışılan: <strong className="text-[#1F1E1B]">Japonca</strong></span>
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E8E4DC]">
-                <Layers className="w-4 h-4 text-rose-600" />
-                <span>Harf İlerlemesi: <strong className="text-rose-700">%{featuredProgress}</strong></span>
-              </div>
-            </div>
+      {/* 1. DENEME SINAVI GİRİŞ KARTI */}
+      <button
+        type="button"
+        id="hub-open-mock-exam"
+        onClick={() => setShowExam(true)}
+        disabled={EXAM_POOL.length === 0}
+        className="w-full text-left relative overflow-hidden bg-violet-50 border border-violet-200 hover:border-violet-300 rounded-3xl p-5 sm:p-6 shadow-2xs transition-all flex items-center justify-between gap-4 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-violet-100 border border-violet-200 flex items-center justify-center shrink-0">
+            <GraduationCap className="w-6 h-6 text-violet-700" />
           </div>
-
-          {/* Featured First Project Direct Card */}
-          <div className="w-full md:w-80 bg-white border-2 border-rose-200 rounded-2xl p-4 shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-rose-100 rounded-bl-full -mr-6 -mt-6 transition-transform group-hover:scale-110 pointer-events-none opacity-60" />
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-black uppercase tracking-wider text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/80">
-                1. Proje • Aktif
-              </span>
-              <span className="text-2xl font-japanese font-black text-rose-700">
-                日本語
-              </span>
-            </div>
-            <h2 className="text-base font-black text-[#1F1E1B] mt-1">
-              Japonca Öğren
-            </h2>
-            <p className="text-xs text-[#7A756D] mt-1 line-clamp-2">
-              Hiragana ve Katakana alfabeleri, dersler, sesli telaffuzlar ve testler.
+          <div>
+            <h2 className="text-base sm:text-lg font-black text-[#1F1E1B]">Deneme Sınavı</h2>
+            <p className="text-xs sm:text-sm text-[#5C574F] mt-0.5">
+              {EXAM_SOURCE_MODULE_COUNT} konudan {EXAM_POOL.length} soru
+              {lastScore ? ` · Son puan: %${lastScore.percentage}` : ''}
             </p>
-            <button
-              type="button"
-              id="hub-hero-open-japanese"
-              onClick={() => featured && onSelectModule(featured.meta.id)}
-              className="mt-3.5 w-full py-2.5 px-4 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-2xs active:scale-98"
-            >
-              <span>Japonca Bölümüne Git</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
           </div>
         </div>
-      </div>
+        <ArrowRight className="w-5 h-5 text-violet-700 shrink-0" />
+      </button>
 
       {/* 2. ARAMA VE KATEGORİ FİLTRELERİ */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -155,15 +179,15 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
           const item = module.meta;
           const isActive = item.status === 'active';
           const progressPercent = module.getProgressPercent?.(progress) ?? 0;
+          const registryIndex = MODULE_REGISTRY.indexOf(module);
+          const theme = isActive ? getCardTheme(item.colorTheme, registryIndex) : null;
 
           return (
             <div
               key={item.id}
               id={`hub-card-${item.id}`}
               className={`rounded-3xl p-5 sm:p-6 border transition-all flex flex-col justify-between relative ${
-                isActive
-                  ? 'bg-white border-rose-300 ring-2 ring-rose-100/80 shadow-xs hover:border-rose-400'
-                  : 'bg-[#FAF8F5] border-[#E8E4DC] opacity-90 hover:opacity-100 hover:border-stone-300 hover:bg-white'
+                isActive ? theme!.card : NEUTRAL_THEME.card
               }`}
             >
               <div>
@@ -191,12 +215,12 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
                   </div>
 
                   {isActive ? (
-                    <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center font-japanese font-black text-2xl text-rose-700 shrink-0 shadow-2xs">
+                    <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center font-japanese font-black text-2xl shrink-0 shadow-2xs ${theme!.icon}`}>
                       {item.glyph ?? item.title.charAt(0)}
                     </div>
                   ) : (
-                    <div className="w-12 h-12 rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-500 shrink-0">
-                      <Clock className="w-5 h-5 text-stone-400" />
+                    <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 ${NEUTRAL_THEME.icon}`}>
+                      <Clock className="w-5 h-5" />
                     </div>
                   )}
                 </div>
@@ -220,14 +244,14 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
 
                 {/* Progress bar if active */}
                 {isActive && (
-                  <div className="bg-rose-50/70 border border-rose-200/60 rounded-xl p-3 mb-4">
-                    <div className="flex items-center justify-between text-xs font-bold text-rose-950 mb-1.5">
+                  <div className={`border rounded-xl p-3 mb-4 ${theme!.progressBox}`}>
+                    <div className={`flex items-center justify-between text-xs font-bold mb-1.5 ${theme!.progressText}`}>
                       <span>{item.labels?.progress ?? `${item.title} İlerlemeniz`}</span>
                       <span>%{progressPercent}</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-rose-200/80 overflow-hidden">
+                    <div className={`w-full h-2 rounded-full overflow-hidden ${theme!.progressTrack}`}>
                       <div
-                        className="h-full bg-rose-600 rounded-full transition-all duration-500"
+                        className={`h-full rounded-full transition-all duration-500 ${theme!.progressFill}`}
                         style={{ width: `${progressPercent}%` }}
                       />
                     </div>
@@ -242,7 +266,7 @@ export const LearningHubView: React.FC<LearningHubViewProps> = ({
                     type="button"
                     id={`btn-open-${item.id}-module`}
                     onClick={() => onSelectModule(item.id)}
-                    className="w-full py-3 px-4 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-2xs active:scale-98"
+                    className={`w-full py-3 px-4 rounded-xl text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-2xs active:scale-98 ${theme!.button}`}
                   >
                     <span>{item.labels?.cta ?? `${item.title} • Başla / Devam Et`}</span>
                     <ArrowRight className="w-4 h-4" />

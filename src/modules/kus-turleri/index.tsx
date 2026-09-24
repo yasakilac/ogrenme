@@ -183,6 +183,7 @@ export const kusTurleriModule: LearningModule = {
       'Soru havuzlu, görsel ve ses destekli Büyük Kuş Uzmanlığı Sınavı'
     ],
     status: 'active',
+    colorTheme: 'emerald',
     shortTitle: 'Kuşlar',
     glyph: '🐦',
     difficulty: 'orta',
