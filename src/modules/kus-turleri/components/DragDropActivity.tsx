@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Move,
-  CheckCircle2,
-  AlertCircle,
+  Check,
+  X,
   RotateCcw,
-  Sparkles,
   Award,
   Layers,
   Utensils,
-  HelpCircle
+  GripVertical
 } from 'lucide-react';
 import { TURKEY_BIRDS, BirdSpecies } from '../data/birds';
 import { BirdPhoto } from './BirdPhoto';
@@ -144,27 +142,16 @@ const DIET_SLOTS: MatchSlot[] = [
   }
 ];
 
+/** E1 (Etkinlik — Sürükle Bırak) dili: kesikli kenarlı hedefler + havuz + koyu footer butonları. */
 export const DragDropActivity: React.FC = () => {
   const [activeMode, setActiveMode] = useState<ActivityMode>('habitat');
-  
-  // Placements: { [targetId]: birdId }
   const [placements, setPlacements] = useState<Record<string, string>>({});
-  
-  // Mobile / Click-to-place selected bird
   const [selectedBirdId, setSelectedBirdId] = useState<string | null>(null);
-  const [lastFeedback, setLastFeedback] = useState<{
-    targetId: string;
-    isCorrect: boolean;
-    text: string;
-  } | null>(null);
+  const [lastFeedback, setLastFeedback] = useState<{ targetId: string; isCorrect: boolean; text: string } | null>(null);
 
   const currentSlots = activeMode === 'habitat' ? HABITAT_SLOTS : DIET_SLOTS;
-
-  // Filter birds relevant to current mode
   const relevantBirdIds = currentSlots.map((s) => s.expectedBirdId);
   const poolBirds = TURKEY_BIRDS.filter((b) => relevantBirdIds.includes(b.id));
-
-  // Remaining birds that are not placed correctly yet
   const placedBirdIds = Object.values(placements);
   const unplacedBirds = poolBirds.filter((b) => !placedBirdIds.includes(b.id));
 
@@ -172,7 +159,6 @@ export const DragDropActivity: React.FC = () => {
   const correctCount = Object.entries(placements).filter(
     ([slotId, birdId]) => currentSlots.find((s) => s.targetId === slotId)?.expectedBirdId === birdId
   ).length;
-
   const isCompleted = correctCount === totalSlots;
 
   const handlePlaceBird = (targetId: string, birdId: string) => {
@@ -180,23 +166,13 @@ export const DragDropActivity: React.FC = () => {
     if (!slot) return;
 
     if (slot.expectedBirdId === birdId) {
-      // Doğru eşleşme!
       setPlacements((prev) => ({ ...prev, [targetId]: birdId }));
-      setLastFeedback({
-        targetId,
-        isCorrect: true,
-        text: `Doğru! ${slot.ecologicalFact}`
-      });
+      setLastFeedback({ targetId, isCorrect: true, text: `Doğru! ${slot.ecologicalFact}` });
       birdAudioSynth.playBirdCall(birdId);
       setSelectedBirdId(null);
     } else {
-      // Yanlış eşleşme
       const wrongBird = TURKEY_BIRDS.find((b) => b.id === birdId);
-      setLastFeedback({
-        targetId,
-        isCorrect: false,
-        text: `${wrongBird?.name || 'Bu kuş'} bu alana uygun değil. İpucu: ${slot.targetSubtitle}`
-      });
+      setLastFeedback({ targetId, isCorrect: false, text: `${wrongBird?.name || 'Bu kuş'} bu alana uygun değil. İpucu: ${slot.targetSubtitle}` });
     }
   };
 
@@ -214,161 +190,78 @@ export const DragDropActivity: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Üst Bilgi ve Mod Seçimi */}
-      <div className="bg-white rounded-[24px] border border-stone-200/80 p-5 sm:p-6 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="p-2 rounded-[16px] bg-[var(--accent)]/10 text-[var(--accent)]">
-                <Move className="w-5 h-5" />
-              </span>
-              <h2 className="font-display text-lg sm:text-xl font-bold text-stone-900">
-                Sürükle & Bırak Eşleme Atölyesi
-              </h2>
-            </div>
-            <p className="text-xs sm:text-sm text-stone-600 max-w-2xl">
-              Kuşları sürükleyip ilgili kutuya bırakın veya kuşa tıklayıp ardından yerleştirmek istediğiniz kutuyu seçin.
-            </p>
-          </div>
-
-          {/* İki Mod Arası Geçiş */}
-          <div className="flex items-center gap-2 bg-stone-100 p-1 rounded-[20px] border border-stone-200 self-start md:self-auto">
-            <button
-              id="btn-mode-habitat"
-              onClick={() => switchMode('habitat')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-[16px] text-xs font-semibold transition-all ${
-                activeMode === 'habitat'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <span>Habitat Eşleme ({HABITAT_SLOTS.length})</span>
-            </button>
-            <button
-              id="btn-mode-diet"
-              onClick={() => switchMode('diet')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-[16px] text-xs font-semibold transition-all ${
-                activeMode === 'diet'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              <Utensils className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <span>Gaga & Besin Eşleme ({DIET_SLOTS.length})</span>
-            </button>
-          </div>
-        </div>
-
-        {/* İlerleme Çubuğu */}
-        <div className="mt-4 pt-4 border-t border-stone-100 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 w-full max-w-md">
-            <div className="grow bg-stone-100 h-2.5 rounded-full overflow-hidden">
-              <div
-                className="bg-[var(--accent)] h-full rounded-full transition-all duration-500"
-                style={{ width: `${(correctCount / totalSlots) * 100}%` }}
-              />
-            </div>
-            <span className="text-xs font-bold text-stone-700 whitespace-nowrap">
-              {correctCount} / {totalSlots} Eşleşti
-            </span>
-          </div>
-
+    <div className="space-y-4">
+      {/* Mod Seçimi + İlerleme */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1 p-1 rounded-[16px]" style={{ background: '#EDE6DB' }}>
           <button
-            id="btn-reset-dragdrop"
-            onClick={handleReset}
-            className="flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-stone-800 transition-colors"
+            id="btn-mode-habitat"
+            onClick={() => switchMode('habitat')}
+            style={{ background: activeMode === 'habitat' ? '#FFFFFF' : 'transparent', color: '#1C1B19' }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-xs font-bold transition-all"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Sıfırla</span>
+            <Layers className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
+            <span>Habitat</span>
+          </button>
+          <button
+            id="btn-mode-diet"
+            onClick={() => switchMode('diet')}
+            style={{ background: activeMode === 'diet' ? '#FFFFFF' : 'transparent', color: '#1C1B19' }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-xs font-bold transition-all"
+          >
+            <Utensils className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
+            <span>Besin</span>
           </button>
         </div>
+        <span className="text-sm font-bold" style={{ color: 'var(--accent)' }}>{correctCount} / {totalSlots}</span>
       </div>
 
-      {/* Tamamlanma Tebrik Kutusu */}
       {isCompleted && (
-        <div className="bg-[var(--accent-light)] border-2 border-[var(--accent)]/30 rounded-[24px] p-5 text-center space-y-2 animate-bounce-subtle">
-          <div className="w-12 h-12 rounded-full bg-[var(--accent)] text-white flex items-center justify-center mx-auto shadow-md">
-            <Award className="w-6 h-6" />
+        <div className="rounded-[22px] p-4 text-center space-y-1.5" style={{ background: 'var(--accent-light)', border: '2px solid var(--accent)' }}>
+          <div className="w-10 h-10 rounded-full mx-auto flex items-center justify-center" style={{ background: 'var(--accent)' }}>
+            <Award className="w-5 h-5" style={{ color: '#FFFFFF' }} />
           </div>
-          <h3 className="font-display text-lg font-bold text-[var(--accent)]">
-            Tebrikler! Tüm Eşleştirmeleri Başarıyla Tamamladınız!
-          </h3>
-          <p className="text-xs text-[var(--accent)] max-w-md mx-auto">
-            Kuş türlerinin morfolojik ve ekolojik adaptasyonlarını tam olarak kavradınız. Diğer moda geçebilir veya test bölümüne ilerleyebilirsiniz.
-          </p>
+          <p className="text-xs font-bold" style={{ color: 'var(--accent)' }}>Tüm eşleştirmeler doğru! Diğer moda geçebilirsiniz.</p>
         </div>
       )}
 
-      {/* Kuş Seçim Havuzu (Sürüklenebilir Kartlar) */}
-      <div className="bg-white rounded-[24px] border border-stone-200/80 p-5 sm:p-6 shadow-xs space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[var(--accent)]" />
-            <span>Eşleştirilecek Kuşlar ({unplacedBirds.length} Bekliyor)</span>
-          </h3>
-          <span className="text-[11px] text-stone-400">
-            Masaüstünde sürükleyin veya tıklayıp seçin
-          </span>
-        </div>
-
+      {/* Kuş Havuzu */}
+      <div className="rounded-[22px] p-3 flex flex-wrap gap-2 min-h-[76px] content-start" style={{ background: '#EDE6DB' }}>
         {unplacedBirds.length === 0 ? (
-          <div className="py-6 text-center text-xs text-stone-400 font-medium">
-            Tüm kuşlar yuvalarına veya besinlerine başarıyla yerleştirildi! ✨
-          </div>
+          <span className="text-xs font-semibold m-auto" style={{ color: '#A39C91' }}>Tüm kuşlar yerleştirildi</span>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
-            {unplacedBirds.map((bird) => {
-              const isSelected = selectedBirdId === bird.id;
-              return (
-                <div
-                  key={bird.id}
-                  id={`draggable-bird-${bird.id}`}
-                  draggable={true}
-                  onDragStart={(e) => {
-                    e.dataTransfer.setData('text/plain', bird.id);
-                  }}
-                  onClick={() => {
-                    setSelectedBirdId(isSelected ? null : bird.id);
-                  }}
-                  className={`p-2.5 rounded-[20px] border cursor-grab active:cursor-grabbing transition-all select-none flex flex-col items-center text-center gap-2 ${
-                    isSelected
-                      ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)] shadow-md scale-105'
-                      : 'bg-stone-50/70 border-stone-200 hover:border-stone-300 hover:shadow-xs'
-                  }`}
-                >
-                  <div className="w-14 h-14 rounded-[16px] overflow-hidden pointer-events-none border border-stone-200">
-                    <BirdPhoto
-                      src={bird.imageUrl}
-                      fallbackSrc={bird.fallbackImageUrl}
-                      alt={bird.name}
-                      birdId={bird.id}
-                      aspectRatio="square"
-                    />
-                  </div>
-                  <div className="w-full pointer-events-none">
-                    <p className="text-[11px] font-bold text-stone-900 truncate">
-                      {bird.name.split(' ')[0]}
-                    </p>
-                    <p className="text-[9px] text-stone-500 truncate">
-                      {bird.beakType}
-                    </p>
-                  </div>
-                  {isSelected && (
-                    <span className="text-[9px] font-bold text-[var(--accent)] bg-[var(--accent-light)] px-1.5 py-0.5 rounded-md animate-pulse">
-                      Hedefe Dokun
-                    </span>
-                  )}
+          unplacedBirds.map((bird) => {
+            const isSelected = selectedBirdId === bird.id;
+            return (
+              <button
+                key={bird.id}
+                id={`draggable-bird-${bird.id}`}
+                type="button"
+                draggable
+                onDragStart={(e) => e.dataTransfer.setData('text/plain', bird.id)}
+                onClick={() => setSelectedBirdId(isSelected ? null : bird.id)}
+                aria-pressed={isSelected}
+                style={{
+                  background: isSelected ? '#1C1B19' : '#FFFFFF',
+                  color: isSelected ? '#FFFFFF' : '#1C1B19',
+                  border: isSelected ? '2px solid #1C1B19' : '1px solid #E6E0D6',
+                  transform: isSelected ? 'translateY(-3px)' : 'none',
+                }}
+                className="h-12 pl-2 pr-3.5 rounded-[16px] flex items-center gap-2 font-bold text-sm transition-all"
+              >
+                <div className="w-8 h-8 rounded-[10px] overflow-hidden shrink-0">
+                  <BirdPhoto src={bird.imageUrl} fallbackSrc={bird.fallbackImageUrl} alt="" birdId={bird.id} aspectRatio="square" />
                 </div>
-              );
-            })}
-          </div>
+                <span>{bird.name.split(' ')[0]}</span>
+                <GripVertical className="w-3.5 h-3.5 shrink-0" style={{ color: isSelected ? '#FFFFFF' : '#A39C91' }} aria-hidden="true" />
+              </button>
+            );
+          })
         )}
       </div>
 
-      {/* Hedef Yuva / Drop Alanları */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Hedef Kutular */}
+      <div className="space-y-2.5">
         {currentSlots.map((slot) => {
           const placedBirdId = placements[slot.targetId];
           const placedBird = placedBirdId ? TURKEY_BIRDS.find((b) => b.id === placedBirdId) : null;
@@ -385,96 +278,54 @@ export const DragDropActivity: React.FC = () => {
                 if (birdId) handlePlaceBird(slot.targetId, birdId);
               }}
               onClick={() => {
-                if (selectedBirdId && !placedBird) {
-                  handlePlaceBird(slot.targetId, selectedBirdId);
-                }
+                if (selectedBirdId && !placedBird) handlePlaceBird(slot.targetId, selectedBirdId);
               }}
-              className={`p-5 rounded-[24px] border transition-all relative ${
-                placedBird
-                  ? ''
-                  : selectedBirdId
-                  ? 'bg-[var(--accent-light)]/40 border-dashed border-[var(--accent)] hover:border-[var(--accent)] hover:bg-[var(--accent-light)] cursor-pointer'
-                  : 'bg-white border-dashed border-stone-300 hover:border-stone-400'
-              }`}
-              style={placedBird ? { background: `${CORRECT.bg}80`, borderColor: CORRECT.border } : undefined}
+              style={{
+                background: placedBird ? CORRECT.bg : '#FFFFFF',
+                borderWidth: 2,
+                borderStyle: placedBird ? 'solid' : 'dashed',
+                borderColor: placedBird ? CORRECT.border : selectedBirdId ? 'var(--accent)' : '#E6E0D6',
+              }}
+              className="rounded-[20px] p-3.5 transition-all"
             >
-              <div className="flex items-start justify-between gap-3">
-                {/* Sol Kategori Bilgisi */}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{slot.categoryGlyph}</span>
-                    <h4 className="font-display font-bold text-sm text-stone-900">
-                      {slot.targetTitle}
-                    </h4>
+              <div className="flex items-start justify-between gap-2.5">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-lg shrink-0" aria-hidden="true">{slot.categoryGlyph}</span>
+                  <div className="min-w-0">
+                    <h4 className="font-display font-bold text-sm truncate" style={{ color: placedBird ? CORRECT.fg : '#1C1B19' }}>{slot.targetTitle}</h4>
+                    <p className="text-[11px] truncate" style={{ color: placedBird ? CORRECT.fg : '#6B665E' }}>{slot.targetSubtitle}</p>
                   </div>
-                  <p className="text-xs text-stone-500">
-                    {slot.targetSubtitle}
-                  </p>
                 </div>
-
-                {/* Sağ Durum Rozeti */}
                 {placedBird ? (
-                  <span
-                    className="flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-[16px] shrink-0"
-                    style={{ color: CORRECT.fg, background: CORRECT.bg }}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Eşleşti</span>
-                  </span>
+                  <Check className="w-5 h-5 shrink-0" strokeWidth={3} style={{ color: CORRECT.border }} />
                 ) : (
-                  <span className="text-[10px] font-medium text-stone-400 px-2 py-1 rounded-lg bg-stone-100 shrink-0">
-                    Kuş Bırakın
-                  </span>
+                  <span className="text-[10px] font-bold px-2 py-1 rounded-[10px] shrink-0" style={{ background: '#F7F4EE', color: '#A39C91' }}>Boş</span>
                 )}
               </div>
 
-              {/* Yerleştirilen Kuş Kartı */}
               {placedBird && (
-                <div
-                  className="mt-4 p-3 rounded-[20px] bg-white border flex items-center justify-between gap-3 shadow-xs"
-                  style={{ borderColor: CORRECT.border }}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-12 h-12 rounded-[16px] overflow-hidden shrink-0 border" style={{ borderColor: CORRECT.border }}>
-                      <BirdPhoto
-                        src={placedBird.imageUrl}
-                        fallbackSrc={placedBird.fallbackImageUrl}
-                        alt={placedBird.name}
-                        birdId={placedBird.id}
-                        aspectRatio="square"
-                      />
+                <div className="mt-2.5 p-2 rounded-[16px] bg-white flex items-center justify-between gap-2" style={{ border: `1px solid ${CORRECT.border}` }}>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-9 h-9 rounded-[12px] overflow-hidden shrink-0">
+                      <BirdPhoto src={placedBird.imageUrl} fallbackSrc={placedBird.fallbackImageUrl} alt={placedBird.name} birdId={placedBird.id} aspectRatio="square" />
                     </div>
-                    <div className="min-w-0">
-                      <h5 className="text-xs font-bold text-stone-900 truncate">
-                        {placedBird.name}
-                      </h5>
-                      <p className="text-[10px] font-medium" style={{ color: CORRECT.fg }}>
-                        {slot.ecologicalFact}
-                      </p>
-                    </div>
+                    <span className="text-xs font-bold truncate" style={{ color: '#1C1B19' }}>{placedBird.name}</span>
                   </div>
-
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      birdAudioSynth.playBirdCall(placedBird.id);
-                    }}
-                    title="Sesini Dinle"
-                    className="p-2 rounded-[16px] shrink-0 transition-colors"
-                    style={{ background: CORRECT.bg, color: CORRECT.fg }}
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); birdAudioSynth.playBirdCall(placedBird.id); }}
+                    aria-label={`${placedBird.name} sesini dinle`}
+                    className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0"
+                    style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}
                   >
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Check className="w-3.5 h-3.5" strokeWidth={3} />
                   </button>
                 </div>
               )}
 
-              {/* Hata Geri Bildirimi (yanlış kuş denendi) */}
               {hasFeedback && !placedBird && (
-                <div
-                  className="mt-3 p-2.5 rounded-[16px] border flex items-start gap-2 text-xs"
-                  style={{ background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg }}
-                >
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: WRONG.border }} />
+                <div className="mt-2.5 p-2.5 rounded-[14px] flex items-start gap-2 text-xs" style={{ background: WRONG.bg, color: WRONG.fg }}>
+                  <X className="w-4 h-4 shrink-0 mt-0.5" style={{ color: WRONG.border }} />
                   <span>{lastFeedback.text}</span>
                 </div>
               )}
@@ -482,6 +333,16 @@ export const DragDropActivity: React.FC = () => {
           );
         })}
       </div>
+
+      <button
+        type="button"
+        onClick={handleReset}
+        className="w-full h-12 rounded-[16px] flex items-center justify-center gap-2 font-bold text-sm"
+        style={{ background: '#FFFFFF', border: '1px solid #E6E0D6', color: '#1C1B19' }}
+      >
+        <RotateCcw className="w-4 h-4" />
+        <span>Baştan Başla</span>
+      </button>
     </div>
   );
 };

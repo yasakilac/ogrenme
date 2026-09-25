@@ -2,22 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { KanaCharacter, AlphabetType, UserProgressData, PracticeWord } from '../../../types';
 import { KANA_DATA } from '../data/kanaData';
 import { PRACTICE_WORDS } from '../data/wordsData';
-import { 
-  CheckCircle2, 
-  XCircle, 
-  Volume2, 
-  RotateCcw, 
-  Trophy, 
-  ArrowRight,
+import {
+  CheckCircle2,
+  XCircle,
+  Volume2,
+  RotateCcw,
+  Trophy,
   Headphones,
   FileQuestion,
   BookMarked,
-  Sparkles,
-  HelpCircle,
-  Eye
+  Eye,
+  ListChecks
 } from 'lucide-react';
 import { soundManager } from '../../../utils/sound';
-import { CORRECT, WRONG } from '../../../components/ui';
+import { CORRECT, WRONG, CheckBar } from '../../../components/ui';
 
 type QuizMode = 'kana_to_romaji' | 'romaji_to_kana' | 'audio_quiz' | 'words';
 
@@ -230,8 +228,16 @@ export const QuizTab: React.FC<QuizTabProps> = ({
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-5 animate-in fade-in duration-200">
-      
+    <div className="max-w-xl mx-auto space-y-4 animate-in fade-in duration-200">
+
+      {/* Icon box + title (design screen header) */}
+      <div className="flex items-center gap-2.5 px-1">
+        <div className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0" style={{ background: 'var(--accent)' }}>
+          <ListChecks className="w-[22px] h-[22px] text-white" />
+        </div>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight" style={{ color: '#1C1B19' }}>Test</h1>
+      </div>
+
       {/* Mode Selector Tabs */}
       <div className="p-1.5 rounded-[20px] bg-white border border-[#E8E3D8] shadow-2xs flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
         {[
@@ -398,18 +404,22 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                 </div>
               )}
 
-              {/* 4 Options Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              {/* Options list — Görsel Eşleme (E8) şık dili: harf rozeti + metin + sonuç ikonu */}
+              <div className="flex flex-col gap-2.5 pt-1 text-left">
                 {currentQ.options.map((option, idx) => {
-                  let optionStyle: React.CSSProperties = { background: '#FAF8F5', color: '#1F1E1D', borderColor: '#E8E3D8' };
+                  let bg = '#FFFFFF';
+                  let border = '1px solid #E6E0D6';
+                  let fg = '#1C1B19';
+                  let kbg = '#EDE6DB';
+                  let kfg = '#6B665E';
 
                   if (isAnswered) {
                     if (option === currentQ.correctAnswer) {
-                      optionStyle = { background: CORRECT.border, color: '#FFFFFF', borderColor: CORRECT.border, fontWeight: 700 };
+                      bg = CORRECT.bg; border = `3px solid ${CORRECT.border}`; fg = CORRECT.fg; kbg = CORRECT.border; kfg = '#FFFFFF';
                     } else if (option === selectedOption) {
-                      optionStyle = { background: WRONG.border, color: '#FFFFFF', borderColor: WRONG.border, fontWeight: 700 };
+                      bg = WRONG.bg; border = `3px solid ${WRONG.border}`; fg = WRONG.fg; kbg = WRONG.border; kfg = '#FFFFFF';
                     } else {
-                      optionStyle = { background: '#F3F4F6', color: '#9CA3AF', borderColor: '#E5E7EB', opacity: 0.5 };
+                      bg = '#FFFFFF'; border = '1px solid #E6E0D6'; fg = '#A39C91'; kbg = '#EDE6DB'; kfg = '#A39C91';
                     }
                   }
 
@@ -419,15 +429,21 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                       id={`quiz-option-${idx}`}
                       disabled={isAnswered}
                       onClick={() => handleSelectOption(option)}
-                      style={optionStyle}
-                      className="py-3.5 px-4 rounded-[16px] border-2 text-center text-base sm:text-lg font-bold transition-all duration-150 flex items-center justify-center gap-2 hover:bg-white hover:border-[var(--accent)]"
+                      style={{ background: bg, border, color: fg }}
+                      className="min-h-[60px] rounded-[18px] px-3.5 py-2.5 flex items-center gap-3 transition-all duration-150"
                     >
-                      <span className="font-japanese">{option}</span>
+                      <span
+                        className="w-[38px] h-[38px] rounded-[12px] flex items-center justify-center font-extrabold text-base shrink-0"
+                        style={{ background: kbg, color: kfg }}
+                      >
+                        {'ABCD'[idx]}
+                      </span>
+                      <span className="flex-grow font-japanese font-bold text-base sm:text-lg">{option}</span>
                       {isAnswered && option === currentQ.correctAnswer && (
-                        <CheckCircle2 className="w-5 h-5 text-white" />
+                        <CheckCircle2 className="w-[22px] h-[22px] shrink-0" style={{ color: CORRECT.border }} />
                       )}
                       {isAnswered && option === selectedOption && option !== currentQ.correctAnswer && (
-                        <XCircle className="w-5 h-5 text-white" />
+                        <XCircle className="w-[22px] h-[22px] shrink-0" style={{ color: WRONG.border }} />
                       )}
                     </button>
                   );
@@ -447,32 +463,13 @@ export const QuizTab: React.FC<QuizTabProps> = ({
                 </div>
               )}
 
-              {/* Feedback Explanation & Next Button */}
+              {/* Feedback & Next — Doğru-Yanlış dilindeki CheckBar */}
               {isAnswered && (
-                <div className="p-4 rounded-[20px] bg-[#F6F3EC] border border-[#E4DED4] text-left space-y-3 animate-in fade-in duration-200">
-                  <div className="flex items-start gap-2">
-                    <Sparkles className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-xs font-bold text-[#1F1E1D]">
-                        Doğru Cevap: <span style={{ color: CORRECT.border }}>{currentQ.correctAnswer}</span>
-                      </div>
-                      <p className="text-xs text-[#47433B] mt-0.5 leading-relaxed">
-                        {currentQ.explanation}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end">
-                    <button
-                      id="btn-quiz-next"
-                      onClick={handleNext}
-                      className="px-5 py-2.5 rounded-[16px] bg-[#1F1E1D] hover:bg-neutral-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-xs"
-                    >
-                      <span>{currentIndex < questions.length - 1 ? 'Sıradaki Soru' : 'Sonuçları Gör'}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                <CheckBar
+                  correct={selectedOption === currentQ.correctAnswer}
+                  message={currentQ.explanation}
+                  onNext={handleNext}
+                />
               )}
 
             </div>

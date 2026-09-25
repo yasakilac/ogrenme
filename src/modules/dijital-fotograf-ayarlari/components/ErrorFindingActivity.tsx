@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle2, XCircle, Search, HelpCircle, Wrench } from 'lucide-react';
+import { Search, AlertTriangle, Wrench } from 'lucide-react';
 import { ERROR_FINDING_ITEMS, type ErrorFindingItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
-import { CORRECT, WRONG } from '../../../components/ui';
+import { CORRECT, WRONG, CheckBar } from '../../../components/ui';
 
 interface ErrorFindingActivityProps {
   onScoreUpdate?: (points: number) => void;
 }
+
+const IDLE = { bg: '#FFFFFF', fg: '#1C1B19', border: '1px solid #E6E0D6' };
 
 export const ErrorFindingActivity: React.FC<ErrorFindingActivityProps> = ({ onScoreUpdate }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -35,128 +37,85 @@ export const ErrorFindingActivity: React.FC<ErrorFindingActivityProps> = ({ onSc
     setCurrentIndex((prev) => (prev + 1) % ERROR_FINDING_ITEMS.length);
   };
 
+  const toneFor = (idx: number) => {
+    if (!userResult) return IDLE;
+    if (idx === item.correctOptionIndex) return { bg: CORRECT.bg, fg: CORRECT.fg, border: `3px solid ${CORRECT.border}` };
+    if (userResult.selectedIndex === idx) return { bg: WRONG.bg, fg: WRONG.fg, border: `3px solid ${WRONG.border}` };
+    return { ...IDLE, fg: '#A39C91' };
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
-        <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
-          EXIF Analizi & Kusur Teşhisi
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold" style={{ color: '#6B665E' }}>
+          Vaka {currentIndex + 1} / {ERROR_FINDING_ITEMS.length}
         </span>
-        <h3 className="text-lg font-bold text-[#1F1E1B]">Hata Bulma & Teşhis (Kamera Dedektifi)</h3>
-        <p className="text-sm text-[#66635E] mt-0.5">
-          Hatalı çekilmiş fotoğrafın EXIF verilerini ve belirtisini inceleyerek temel teknik kusuru saptayın.
+      </div>
+
+      <div className="rounded-[28px] p-5 flex flex-col gap-3.5" style={{ background: '#1F2A44' }}>
+        <div
+          className="self-start h-[34px] px-3 rounded-[17px] flex items-center gap-1.5 font-bold text-sm"
+          style={{ background: '#2E3D5F', color: '#FFFFFF' }}
+        >
+          <AlertTriangle className="w-4 h-4" style={{ color: '#FCD34D' }} />
+          <span>{item.photoExif.condition}</span>
+        </div>
+        <p className="text-sm leading-relaxed font-medium" style={{ color: '#FFFFFF' }}>
+          {item.scenario}
         </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold" style={{ color: '#FCD34D' }}>
+          <div>Diyafram: <span style={{ color: '#FFFFFF' }}>{item.photoExif.aperture}</span></div>
+          <div>Enstantane: <span style={{ color: '#FFFFFF' }}>{item.photoExif.shutter}</span></div>
+          <div>ISO: <span style={{ color: '#FFFFFF' }}>{item.photoExif.iso}</span></div>
+          <div>Lens: <span style={{ color: '#FFFFFF' }}>{item.photoExif.lens}</span></div>
+        </div>
+        <div className="self-start h-[34px] px-3 rounded-[17px] flex items-center gap-1.5 font-extrabold text-sm" style={{ background: '#FFEDD5', color: '#7C2D12' }}>
+          <AlertTriangle className="w-4 h-4" />
+          <span>{item.symptom}</span>
+        </div>
       </div>
 
-      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-[24px] p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex items-center justify-between text-xs text-[#8A8680]">
-          <span className="">VAKA {currentIndex + 1} / {ERROR_FINDING_ITEMS.length}</span>
-          <span className="px-2.5 py-0.5 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-bold">
-            Teşhis & Analiz
-          </span>
-        </div>
+      <div className="flex items-center gap-2 font-extrabold text-[17px]" style={{ color: '#1C1B19' }}>
+        <Search className="w-[22px] h-[22px]" style={{ color: 'var(--accent)' }} />
+        <span>Hatalı ayar?</span>
+      </div>
 
-        {/* Vaka Senaryosu */}
-        <div className="space-y-3">
-          <div className="p-4 rounded-[20px] bg-[#FAF8F5] border border-[#EBE7E0] space-y-2">
-            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
-              Olay / Çekim Senaryosu:
-            </span>
-            <p className="text-sm text-[#1F1E1B] leading-relaxed font-medium">{item.scenario}</p>
-          </div>
-
-          {/* EXIF Bilgi Kutusu */}
-          <div className="bg-stone-900 text-stone-200 p-4 rounded-[20px] text-xs space-y-2">
-            <div className="flex items-center justify-between border-b border-stone-800 pb-1.5 text-stone-400">
-              <span>EXIF METAVERİSİ</span>
-              <span>{item.photoExif.condition}</span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[var(--accent)] font-bold">
-              <div>Diyafram: <span className="text-white">{item.photoExif.aperture}</span></div>
-              <div>Enstantane: <span className="text-white">{item.photoExif.shutter}</span></div>
-              <div>ISO: <span className="text-white">{item.photoExif.iso}</span></div>
-              <div>Lens: <span className="text-white">{item.photoExif.lens}</span></div>
-            </div>
-            <div className="pt-1 text-stone-400 flex items-center gap-1.5 text-[11px]">
-              <AlertTriangle className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
-              <span>Gözlemlenen Belirti: <strong className="text-[var(--accent)]">{item.symptom}</strong></span>
-            </div>
-          </div>
-        </div>
-
-        {/* Çoktan Seçmeli Hata Tespiti */}
-        <div className="space-y-2.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-stone-600 block">
-            Bu hatanın temel sebebi nedir?
-          </label>
-          <div className="space-y-2">
-            {item.options.map((opt, idx) => {
-              const isSelected = userResult?.selectedIndex === idx;
-              const isCorrect = idx === item.correctOptionIndex;
-
-              let style: React.CSSProperties = { background: '#FAF8F5', borderColor: '#E0DCD6', color: '#1F1E1B' };
-              if (userResult) {
-                if (isCorrect) {
-                  style = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, fontWeight: 700 };
-                } else if (isSelected) {
-                  style = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg };
-                } else {
-                  style = { background: '#FAFAF9', borderColor: '#E7E5E4', opacity: 0.4 };
-                }
-              }
-
-              return (
-                <button
-                  key={opt}
-                  onClick={() => handleSelect(idx)}
-                  disabled={Boolean(userResult)}
-                  style={style}
-                  className="w-full p-3.5 rounded-[16px] border text-left text-xs font-medium transition-all flex items-start justify-between gap-2"
-                >
-                  <span>{opt}</span>
-                  {userResult && isCorrect && <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" style={{ color: CORRECT.border }} />}
-                  {userResult && isSelected && !isCorrect && <XCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: WRONG.border }} />}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Çözüm ve Açıklama */}
-        {userResult && (
-          <div className="space-y-3 pt-2">
-            <div
-              className="p-4 rounded-[16px] border text-xs leading-relaxed space-y-1"
-              style={{
-                background: userResult.isCorrect ? CORRECT.bg : WRONG.bg,
-                borderColor: userResult.isCorrect ? CORRECT.border : WRONG.border,
-                color: userResult.isCorrect ? CORRECT.fg : WRONG.fg
-              }}
+      <div className="flex flex-col gap-2.5">
+        {item.options.map((opt, idx) => {
+          const tone = toneFor(idx);
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => handleSelect(idx)}
+              disabled={Boolean(userResult)}
+              style={{ background: tone.bg, color: tone.fg, border: tone.border }}
+              className="min-h-[60px] rounded-[18px] p-3.5 flex items-start gap-2.5 text-left font-semibold text-sm"
             >
-              <strong className="block font-bold">
-                {userResult.isCorrect ? '🎯 Kusursuz Teşhis!' : 'Teşhis Analizi:'}
-              </strong>
-              <p>{item.explanation}</p>
-            </div>
-
-            <div className="p-3.5 rounded-[16px] bg-stone-100 border border-stone-200 text-xs flex items-start gap-2 text-stone-800">
-              <Wrench className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
-              <div>
-                <strong className="font-bold block">Önerilen Çözüm (Fix):</strong>
-                <span>{item.recommendedFix}</span>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-1">
-              <button
-                onClick={handleNext}
-                className="px-5 py-2.5 rounded-[16px] font-bold text-xs bg-stone-900 hover:bg-black text-white transition-colors"
+              <span
+                className="w-7 h-7 rounded-[10px] flex items-center justify-center font-extrabold text-xs shrink-0"
+                style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}
               >
-                Sonraki Vakaya Geç →
-              </button>
-            </div>
-          </div>
-        )}
+                {'ABCD'[idx]}
+              </span>
+              <span className="flex-grow">{opt}</span>
+            </button>
+          );
+        })}
       </div>
+
+      {userResult && (
+        <div className="space-y-3">
+          <CheckBar correct={userResult.isCorrect} message={item.explanation} onNext={handleNext} />
+          <div className="rounded-[18px] p-3.5 flex items-start gap-2" style={{ background: '#F7F4EE', border: '1px solid #E6E0D6' }}>
+            <Wrench className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--accent)' }} />
+            <p className="text-xs leading-relaxed" style={{ color: '#1C1B19' }}>
+              <strong className="font-bold block">Önerilen Çözüm:</strong>
+              {item.recommendedFix}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

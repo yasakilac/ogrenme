@@ -51,6 +51,24 @@ export type ActivityTypeId =
   | 'scenario'
   | 'analogy-metaphor';
 
+/** Tasarım ekranlarındaki h1 başlıkları (04-etkinlik serisi) — kısa, tek etkinlik adı. */
+const ACTIVITY_SHORT_TITLE: Record<ActivityTypeId, string> = {
+  flashcard: 'Kartlar',
+  'sound-matching': 'Sesi Dinle',
+  'visual-matching': 'Görselden Bul',
+  written: 'Yaz',
+  cloze: 'Boşluk Doldur',
+  sequencing: 'Sırala',
+  categorize: 'Grupla',
+  'true-false': 'Doğru mu?',
+  'error-finding': 'Hatayı Bul',
+  'diagram-labeling': 'Vizörde Bul',
+  comparison: 'Karşılaştır',
+  'feynman-voice': 'Sesli Anlat',
+  scenario: 'Senaryo',
+  'analogy-metaphor': 'Benzetme',
+};
+
 interface ActivitiesHubTabProps {
   onScoreEarned: (points: number) => void;
   onGoToHome?: () => void;
@@ -235,24 +253,31 @@ export const ActivitiesHubTab: React.FC<ActivitiesHubTabProps> = ({
   if (selectedActivityId !== null) {
     const ActiveIcon = currentActivityMeta?.icon || BookOpen;
 
+    const shortTitle = selectedActivityId ? ACTIVITY_SHORT_TITLE[selectedActivityId] : currentActivityMeta?.title ?? '';
+
     return (
       <div className="space-y-4">
         {/* Üst bar zaten App kabuğunda (ModuleTopBar: geri = modül girişi, ev = hub); burada sadece
-            aktif etkinliğin rozeti ve (kataloktan gelindiyse) kataloğa dön linki kalır. */}
+            tasarımdaki "ikon kutusu + h1" başlık satırı ve (kataloktan gelindiyse) kataloğa dön linki kalır. */}
         <div className="flex items-center justify-between gap-3">
-          <div
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full"
-            style={{ background: 'var(--accent-light)' }}
-          >
-            <ActiveIcon className="w-4 h-4" style={{ color: 'var(--accent)' }} />
-            <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>
-              {currentActivityMeta?.title}
-            </span>
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0"
+              style={{ background: 'var(--accent)' }}
+            >
+              <ActiveIcon className="w-[22px] h-[22px] text-white" />
+            </div>
+            <h1
+              className="font-display text-2xl font-extrabold"
+              style={{ color: '#1C1B19', letterSpacing: '-0.02em' }}
+            >
+              {shortTitle}
+            </h1>
           </div>
           {initialActivityId === undefined && (
             <button
               onClick={handleBackToCatalog}
-              className="flex items-center gap-1.5 text-xs font-bold"
+              className="flex items-center gap-1.5 text-xs font-bold shrink-0"
               style={{ color: '#6B665E' }}
             >
               <ArrowLeft className="w-3.5 h-3.5" />

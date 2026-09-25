@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { CheckCircle2, XCircle, RotateCcw, Award, ArrowRight, BookOpen } from 'lucide-react';
+import { Check, X, RotateCcw, Award } from 'lucide-react';
 import { TURKEY_BIRDS } from '../data/birds';
 import { BirdPhoto } from './BirdPhoto';
-import { CORRECT, WRONG } from '../../../components/ui';
+import { CORRECT, WRONG, PrimaryButton, CheckBar } from '../../../components/ui';
 
 interface Question {
   id: number;
@@ -192,89 +192,82 @@ export const QuizActivity: React.FC = () => {
 
   if (isFinished) {
     return (
-      <div className="w-full max-w-xl mx-auto p-8 bg-white rounded-[24px] border border-stone-200 text-center shadow-xs space-y-5">
-        <div className="w-14 h-14 rounded-[20px] bg-[var(--accent-light)] text-[var(--accent)] flex items-center justify-center mx-auto">
+      <div className="space-y-4 text-center rounded-[24px] bg-white p-8" style={{ border: '1px solid #E6E0D6' }}>
+        <div className="w-14 h-14 rounded-[20px] flex items-center justify-center mx-auto" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
           <Award className="w-8 h-8" />
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-stone-900 font-display">Test Tamamlandı</h3>
-          <p className="text-xs text-stone-500 mt-1">10 kavram sorusunu başarıyla yanıtladın.</p>
+          <h3 className="font-display text-2xl font-extrabold" style={{ color: '#1C1B19' }}>Test Tamamlandı</h3>
+          <p className="text-xs mt-1" style={{ color: '#6B665E' }}>
+            {QUIZ_QUESTIONS.length} kavram sorusunu başarıyla yanıtladın.
+          </p>
         </div>
 
-        <div className="inline-flex items-center gap-3 p-3 bg-stone-50 rounded-[20px] border border-stone-200 text-xs">
-          <span className="text-stone-500">Skor:</span>
-          <span className="text-xl font-bold text-[var(--accent)] ">{score} / 100</span>
+        <div className="inline-flex items-center gap-3 p-3 rounded-[20px]" style={{ background: '#FAF8F5', border: '1px solid #E6E0D6' }}>
+          <span className="text-xs" style={{ color: '#6B665E' }}>Skor:</span>
+          <span className="text-xl font-extrabold" style={{ color: 'var(--accent)' }}>{score} / {QUIZ_QUESTIONS.length * 10}</span>
         </div>
 
-        <div>
-          <button
-            id="restart-quiz-btn"
-            onClick={handleRestart}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[16px] bg-stone-900 text-white hover:bg-stone-800 text-xs font-semibold transition-all"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Yeniden Başlat</span>
-          </button>
-        </div>
+        <PrimaryButton onClick={handleRestart} icon={RotateCcw} className="mx-auto px-6">
+          Yeniden Başlat
+        </PrimaryButton>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto space-y-4">
+    <div className="space-y-4">
       {/* Üst İlerleme */}
-      <div className="flex items-center justify-between text-xs text-stone-500">
-        <span className="font-semibold text-stone-800">Soru {currentIdx + 1} / {QUIZ_QUESTIONS.length}</span>
-        <span className="px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[11px]">
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-bold" style={{ color: '#6B665E' }}>Soru {currentIdx + 1} / {QUIZ_QUESTIONS.length}</span>
+        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
           {q.conceptTag}
         </span>
-        <span className="text-[var(--accent)] font-bold">{score} Puan</span>
+        <span className="font-bold" style={{ color: 'var(--accent)' }}>{score} Puan</span>
       </div>
 
-      <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+      <div className="w-full h-2.5 rounded-full overflow-hidden" style={{ background: '#EDE6DB' }}>
         <div
-          className="h-full bg-[var(--accent)] transition-all duration-300"
-          style={{ width: `${((currentIdx + 1) / QUIZ_QUESTIONS.length) * 100}%` }}
+          className="h-full rounded-full transition-all duration-300"
+          style={{ width: `${((currentIdx + 1) / QUIZ_QUESTIONS.length) * 100}%`, background: 'var(--accent)' }}
         />
       </div>
 
       {/* Soru Kartı */}
-      <div className="p-6 bg-white rounded-[24px] border border-stone-200/80 shadow-xs space-y-5">
+      <div className="rounded-[24px] bg-white p-6 space-y-4" style={{ border: '1px solid #E6E0D6' }}>
         <div className="flex items-center gap-4">
           {relatedBird && (
-            <div className="w-16 h-16 rounded-[20px] overflow-hidden shrink-0 bg-stone-100">
+            <div className="w-16 h-16 rounded-[18px] overflow-hidden shrink-0" style={{ background: '#F7F4EE' }}>
               <BirdPhoto
                 src={relatedBird.imageUrl}
                 fallbackSrc={relatedBird.fallbackImageUrl}
                 alt={relatedBird.name}
                 birdId={relatedBird.id}
                 aspectRatio="square"
-                className="w-full h-full rounded-[20px]"
+                className="w-full h-full rounded-[18px]"
               />
             </div>
           )}
-          <h3 className="text-base font-bold text-stone-900 leading-snug">
+          <h3 className="font-display text-lg font-extrabold leading-snug" style={{ color: '#1C1B19' }}>
             {q.question}
           </h3>
         </div>
 
-        {/* Seçenekler */}
+        {/* Şıklar */}
         <div className="space-y-2">
           {q.options.map((opt, idx) => {
             const isSelected = selectedOpt === idx;
-            const isCorrect = idx === q.correctIndex;
+            const isCorrectOpt = idx === q.correctIndex;
+            const letter = 'ABCD'[idx];
 
-            let style: React.CSSProperties = { background: '#FAFAF9', borderColor: '#E7E5E4', color: '#292524' };
-
+            let style: { bg: string; border: string; fg: string; kbg: string; kfg: string } = {
+              bg: '#FFFFFF', border: '#E6E0D6', fg: '#1C1B19', kbg: '#EDE6DB', kfg: '#6B665E',
+            };
             if (isAnswered) {
-              if (isCorrect) {
-                style = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, fontWeight: 600 };
-              } else if (isSelected && !isCorrect) {
-                style = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg, fontWeight: 600 };
-              } else {
-                style = { background: '#FAFAF980', borderColor: '#F5F5F4', color: '#A8A29E', opacity: 0.5 };
-              }
+              if (isCorrectOpt) style = { ...CORRECT, kbg: CORRECT.border, kfg: '#FFFFFF' };
+              else if (isSelected) style = { ...WRONG, kbg: WRONG.border, kfg: '#FFFFFF' };
+              else style = { bg: '#FFFFFF', border: '#F2EEE7', fg: '#A39C91', kbg: '#F2EEE7', kfg: '#A39C91' };
             }
 
             return (
@@ -283,38 +276,31 @@ export const QuizActivity: React.FC = () => {
                 id={`quiz-opt-${idx}`}
                 disabled={isAnswered}
                 onClick={() => handleSelect(idx)}
-                style={style}
-                className="w-full p-3 rounded-[20px] border text-left text-xs transition-all flex items-center justify-between gap-2 hover:bg-stone-100/80"
+                style={{ background: style.bg, borderWidth: isAnswered && (isCorrectOpt || isSelected) ? 3 : 1, borderStyle: 'solid', borderColor: style.border, color: style.fg }}
+                className="w-full min-h-[56px] rounded-[18px] pl-2.5 pr-4 py-2 flex items-center gap-3 text-left font-bold text-sm transition-all"
               >
-                <span>{opt}</span>
-                {isAnswered && isCorrect && <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: CORRECT.border }} />}
-                {isAnswered && isSelected && !isCorrect && <XCircle className="w-4 h-4 shrink-0" style={{ color: WRONG.border }} />}
+                <span
+                  className="w-9 h-9 rounded-[12px] flex items-center justify-center text-sm font-extrabold shrink-0"
+                  style={{ background: style.kbg, color: style.kfg }}
+                >
+                  {letter}
+                </span>
+                <span className="flex-grow">{opt}</span>
+                {isAnswered && isCorrectOpt && <Check className="w-5 h-5 shrink-0" strokeWidth={3} style={{ color: style.border }} />}
+                {isAnswered && isSelected && !isCorrectOpt && <X className="w-5 h-5 shrink-0" strokeWidth={3} style={{ color: style.border }} />}
               </button>
             );
           })}
         </div>
-
-        {/* Açıklama */}
-        {isAnswered && (
-          <div className="p-3.5 bg-stone-50 rounded-[20px] border border-stone-200 space-y-2 animate-fade-in text-xs">
-            <div className="flex items-start gap-2">
-              <BookOpen className="w-3.5 h-3.5 text-[var(--accent)] mt-0.5 shrink-0" />
-              <p className="text-stone-700 leading-relaxed">{q.explanation}</p>
-            </div>
-
-            <div className="flex justify-end pt-1">
-              <button
-                id="next-quiz-btn"
-                onClick={handleNext}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-[16px] bg-stone-900 text-white hover:bg-stone-800 font-semibold shadow-xs text-xs"
-              >
-                <span>{currentIdx < QUIZ_QUESTIONS.length - 1 ? 'Sonraki Soru' : 'Sonuç'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {isAnswered && (
+        <CheckBar
+          correct={selectedOpt === q.correctIndex}
+          message={q.explanation}
+          onNext={handleNext}
+        />
+      )}
     </div>
   );
 };

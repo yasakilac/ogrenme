@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { KanaCharacter, AlphabetType, KanaCategory, UserProgressData } from '../../../types';
 import { KANA_DATA } from '../data/kanaData';
-import { 
-  Volume2, 
-  RotateCw, 
-  Check, 
-  X, 
-  Shuffle, 
+import {
+  Volume2,
+  RotateCw,
+  Check,
+  X,
+  Shuffle,
   ArrowRight,
   ArrowLeft,
-  Eye,
-  Bookmark,
-  VolumeX
+  Layers,
+  Bookmark
 } from 'lucide-react';
 import { soundManager } from '../../../utils/sound';
 import { CORRECT, WRONG } from '../../../components/ui';
@@ -33,7 +32,7 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
 }) => {
   const [category, setCategory] = useState<KanaCategory | 'all' | 'weak'>('seion');
   const [direction, setDirection] = useState<'kana_to_romaji' | 'romaji_to_kana'>('kana_to_romaji');
-  const [autoPlayAudio, setAutoPlayAudio] = useState(true);
+  const [autoPlayAudio] = useState(true);
 
   const [cards, setCards] = useState<KanaCharacter[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -79,7 +78,6 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
     setIsFlipped(nextFlipped);
     onCardFlipped();
 
-    // If flipped to reveal, play audio if autoplay is on
     if (nextFlipped && autoPlayAudio && currentCard) {
       const textToSpeak = alphabet === 'hiragana' ? currentCard.hiragana : currentCard.katakana;
       soundManager.speak(textToSpeak);
@@ -104,7 +102,6 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
 
     onRecordAnswer(alphabet, currentCard.id, isCorrect);
 
-    // Reset card flip and move to next
     setIsFlipped(false);
     setTimeout(() => {
       if (currentIndex < cards.length - 1) {
@@ -125,12 +122,12 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
 
   if (!currentCard || cards.length === 0) {
     return (
-      <div className="p-12 text-center bg-white rounded-[24px] border border-[#E8E3D8] max-w-xl mx-auto shadow-xs">
-        <p className="text-base font-bold text-[#1F1E1D]">Bu grupta henüz kart bulunmuyor.</p>
-        <p className="text-xs text-[#7A756D] mt-1">Lütfen yukarıdaki filtrelerden "Temel" veya "Tümü" grubunu seçin.</p>
+      <div className="p-12 text-center bg-white rounded-[24px] border border-[#E6E0D6] max-w-xl mx-auto">
+        <p className="text-base font-bold text-[#1C1B19]">Bu grupta henüz kart bulunmuyor.</p>
+        <p className="text-xs text-[#6B665E] mt-1">Lütfen yukarıdaki filtrelerden "Temel" veya "Tümü" grubunu seçin.</p>
         <button
           onClick={() => setCategory('seion')}
-          className="mt-4 px-4 py-2 rounded-[16px] bg-[#1F1E1D] text-white text-xs font-semibold"
+          className="mt-4 px-4 py-2 rounded-[16px] bg-[#1C1B19] text-white text-xs font-semibold"
         >
           Temel Harflere Dön
         </button>
@@ -142,17 +139,23 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
   const alternateKana = alphabet === 'hiragana' ? currentCard.katakana : currentCard.hiragana;
 
   return (
-    <div className="max-w-xl mx-auto space-y-5 animate-in fade-in duration-200">
-      
-      {/* Category Pills & Direction Selector */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-[20px] bg-white border border-[#E8E3D8] shadow-2xs">
-        
-        {/* Category Pills */}
+    <div className="max-w-xl mx-auto space-y-4 animate-in fade-in duration-200">
+
+      {/* Icon box + title (design screen header) */}
+      <div className="flex items-center gap-2.5 px-1">
+        <div className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0" style={{ background: 'var(--accent)' }}>
+          <Layers className="w-[22px] h-[22px] text-white" />
+        </div>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight" style={{ color: '#1C1B19' }}>Kartlar</h1>
+      </div>
+
+      {/* Category Pills & Direction Selector (mevcut özellik, tasarım dilinde korunur) */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-[18px] bg-white border border-[#E6E0D6]">
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto">
           {[
-            { id: 'seion' as const, label: 'Temel (46)' },
-            { id: 'dakuon' as const, label: 'Tenten (\")' },
-            { id: 'handakuon' as const, label: 'Maru (°)' },
+            { id: 'seion' as const, label: 'Temel' },
+            { id: 'dakuon' as const, label: 'Tenten' },
+            { id: 'handakuon' as const, label: 'Maru' },
             { id: 'yoon' as const, label: 'Bileşik' },
             { id: 'weak' as const, label: 'Hatalarım' },
             { id: 'all' as const, label: 'Tümü' }
@@ -164,10 +167,8 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
                 setCategory(item.id);
                 soundManager.playFlipSound();
               }}
-              className={`px-3 py-1.5 rounded-[16px] text-xs font-semibold whitespace-nowrap transition-all ${
-                category === item.id
-                  ? 'bg-[#1F1E1D] text-white shadow-xs'
-                  : 'bg-[#F5F2EC] text-[#555047] hover:bg-[#EBE6DC]'
+              className={`px-3 py-1.5 rounded-[14px] text-xs font-bold whitespace-nowrap transition-all ${
+                category === item.id ? 'bg-[#1C1B19] text-white' : 'bg-[#F5F2EC] text-[#555047]'
               }`}
             >
               {item.label}
@@ -175,241 +176,180 @@ export const FlashcardsTab: React.FC<FlashcardsTabProps> = ({
           ))}
         </div>
 
-        {/* Direction & Options */}
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end shrink-0">
           <button
             id="btn-shuffle-cards"
+            aria-label="Kartları karıştır"
             onClick={handleShuffle}
-            title="Kartları Karıştır"
-            className="p-2 rounded-[16px] bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] transition-colors"
+            className="w-9 h-9 rounded-[12px] bg-[#F5F2EC] text-[#555047] flex items-center justify-center shrink-0"
           >
             <Shuffle className="w-4 h-4" />
           </button>
-
           <button
             id="btn-toggle-card-dir"
+            aria-label="Kart yönünü değiştir"
             onClick={() => setDirection(direction === 'kana_to_romaji' ? 'romaji_to_kana' : 'kana_to_romaji')}
-            className="px-2.5 py-1.5 rounded-[16px] bg-[#F5F2EC] hover:bg-[#EBE6DC] text-[#555047] text-xs font-semibold transition-colors whitespace-nowrap"
-            title="Kart yönünü değiştir"
+            className="px-2.5 py-1.5 rounded-[12px] bg-[#F5F2EC] text-[#555047] text-xs font-bold whitespace-nowrap"
           >
             {direction === 'kana_to_romaji' ? 'Kana ➔ Okunuş' : 'Okunuş ➔ Kana'}
           </button>
         </div>
-
       </div>
 
-      {/* Progress Counter & Navigation Bar */}
-      <div className="flex items-center justify-between text-xs text-[#7A756D] px-2">
+      {/* Progress Counter & Navigation */}
+      <div className="flex items-center justify-between text-xs text-[#6B665E] px-2">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-[#1F1E1D]">
-            Kart {currentIndex + 1} / {cards.length}
-          </span>
-          <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-semibold uppercase">
+          <span className="font-bold text-[#1C1B19]">Kart {currentIndex + 1} / {cards.length}</span>
+          <span className="text-[11px] px-2 py-0.5 rounded-full font-bold uppercase" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
             {currentCard.category}
           </span>
         </div>
-
         <div className="flex items-center gap-1">
           <button
             id="btn-prev-card"
+            aria-label="Önceki kart"
             disabled={currentIndex === 0}
             onClick={() => {
               setIsFlipped(false);
               setCurrentIndex((prev) => Math.max(0, prev - 1));
             }}
-            className="p-1.5 rounded-lg disabled:opacity-30 text-[#555047] hover:bg-white transition-colors"
-            title="Önceki Kart"
+            className="p-1.5 rounded-lg disabled:opacity-30 text-[#555047]"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <button
             id="btn-next-card"
+            aria-label="Sonraki kart"
             disabled={currentIndex === cards.length - 1}
             onClick={() => {
               setIsFlipped(false);
               setCurrentIndex((prev) => Math.min(cards.length - 1, prev + 1));
             }}
-            className="p-1.5 rounded-lg disabled:opacity-30 text-[#555047] hover:bg-white transition-colors"
-            title="Sıradaki Kart"
+            className="p-1.5 rounded-lg disabled:opacity-30 text-[#555047]"
           >
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Interactive Card Stage */}
-      <div 
+      {/* Interactive Card Stage — design E5: 470px, flip button, audio chip top-right */}
+      <div
         id="flashcard-interactive"
         onClick={handleFlip}
         role="button"
         tabIndex={0}
         aria-label="Kartı çevir"
-        className="cursor-pointer select-none min-h-[340px] sm:min-h-[360px] relative rounded-[24px] bg-white border-2 transition-all duration-300 shadow-md hover:shadow-lg flex flex-col justify-between overflow-hidden"
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFlip(); } }}
+        className="cursor-pointer select-none min-h-[420px] sm:min-h-[470px] relative rounded-[30px] transition-all duration-300 flex flex-col items-center justify-center gap-4 overflow-hidden"
         style={{
-          borderColor: isFlipped ? '#FDA4AF' : '#E8E3D8'
+          background: isFlipped ? '#1F2A44' : '#FFFFFF',
+          border: isFlipped ? 'none' : '1px solid #E6E0D6'
         }}
       >
-        {/* Top bar on card */}
-        <div className="p-5 pb-0 flex items-center justify-between">
-          <span className="text-xs font-semibold text-[#8C867B]">
-            {isFlipped ? 'CEVAP & OKUNUŞ' : 'SORU KARTI'}
-          </span>
-          
-          <button
-            onClick={handleSpeak}
-            title="Telaffuzu Dinle"
-            className={`p-2.5 rounded-[16px] border flex items-center gap-1.5 transition-all ${
-              isPlayingSound 
-                ? 'bg-[var(--accent)] text-white border-[var(--accent)] animate-pulse'
-                : 'bg-[#FAF8F5] text-[var(--accent)] hover:bg-[var(--accent-light)] border-[#E8E2D6]'
-            }`}
-          >
-            <Volume2 className="w-4 h-4" />
-            <span className="text-xs font-bold">Dinle</span>
-          </button>
-        </div>
+        {/* Audio chip (tasarımdaki üst-sağ ikon rozeti, sesli okuma için kullanılır) */}
+        <button
+          type="button"
+          onClick={handleSpeak}
+          aria-label="Telaffuzu dinle"
+          className="absolute top-[18px] right-[18px] w-10 h-10 rounded-[20px] flex items-center justify-center transition-all"
+          style={{
+            background: isFlipped ? '#2E3D5F' : 'var(--accent-light)',
+            color: isFlipped ? '#FFFFFF' : 'var(--accent)'
+          }}
+        >
+          <Volume2 className={`w-5 h-5 ${isPlayingSound ? 'animate-pulse' : ''}`} />
+        </button>
 
-        {/* Card Body */}
         {!isFlipped ? (
           /* FRONT OF CARD */
-          <div className="p-8 sm:p-10 flex flex-col items-center justify-center space-y-4 text-center">
+          <div className="px-8 flex flex-col items-center justify-center gap-4 text-center">
             {direction === 'kana_to_romaji' ? (
               <>
-                <div className="text-8xl sm:text-9xl font-bold text-[#1F1E1D] font-japanese leading-none">
-                  {currentKana}
+                <div className="w-[120px] h-[120px] rounded-[36px] flex items-center justify-center" style={{ background: 'var(--accent-light)' }}>
+                  <span className="text-6xl font-bold font-japanese leading-none" style={{ color: '#1C1B19' }}>{currentKana}</span>
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] text-xs font-semibold border border-[var(--accent)]/30">
-                  <RotateCw className="w-3.5 h-3.5" />
-                  <span>Karta veya aşağıdaki butona tıklayarak cevabı gör</span>
-                </div>
+                <span className="font-display font-extrabold text-[28px] tracking-tight" style={{ color: 'var(--accent)' }}>{currentCard.romaji}</span>
               </>
             ) : (
               <>
-                <div className="text-6xl sm:text-7xl font-black text-[var(--accent)] tracking-wider">
-                  {currentCard.romaji}
+                <div className="w-[120px] h-[120px] rounded-[36px] flex items-center justify-center" style={{ background: 'var(--accent-light)' }}>
+                  <span className="font-display font-extrabold text-5xl tracking-tight" style={{ color: 'var(--accent)' }}>{currentCard.romaji}</span>
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] text-xs font-semibold border border-[var(--accent)]/30">
-                  <RotateCw className="w-3.5 h-3.5" />
-                  <span>Japonca yazılışı görmek için tıkla</span>
-                </div>
+                <span className="text-lg font-bold text-[#6B665E]">Japonca yazılışı görmek için tıkla</span>
               </>
             )}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
+              <RotateCw className="w-3.5 h-3.5" />
+              <span>Cevabı görmek için karta dokun</span>
+            </div>
           </div>
         ) : (
           /* BACK OF CARD (REVEALED ANSWER) */
-          <div className="p-6 sm:p-8 space-y-4 animate-in fade-in duration-200">
-            
-            {/* Main Answer Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#F0ECE4]">
-              <div>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-4xl sm:text-5xl font-black text-[var(--accent)]">
-                    {currentCard.romaji}
-                  </span>
-                  <span className="text-3xl font-bold text-[#1F1E1D] font-japanese">
-                    {currentKana}
-                  </span>
-                </div>
-                <span className="text-xs text-[#7A756D] mt-0.5 block">
-                  Diğer alfabe: <strong className="text-sm text-[#1F1E1D] font-japanese">{alternateKana}</strong> ({alphabet === 'hiragana' ? 'Katakana' : 'Hiragana'})
-                </span>
+          <div className="w-[290px] flex flex-col gap-3.5 text-left">
+            <div className="flex items-center justify-between pb-3 border-b border-white/15">
+              <div className="flex items-baseline gap-3">
+                <span className="text-4xl font-black text-white">{currentCard.romaji}</span>
+                <span className="text-2xl font-bold text-white/90 font-japanese">{currentKana}</span>
               </div>
-
-              <div className="text-right">
-                <span className="text-[11px] font-bold text-[#8A847A] block">Çizgi Sayısı</span>
-                <span className="text-lg font-bold text-[#1F1E1D]">{currentCard.strokeCount} Vuruş</span>
+              <div className="text-right shrink-0">
+                <span className="text-[10px] font-bold text-white/60 block uppercase">Vuruş</span>
+                <span className="text-base font-bold text-white">{currentCard.strokeCount}</span>
               </div>
             </div>
 
-            {/* Turkish Pronunciation & Mnemonic */}
-            <div className="space-y-2.5 text-left">
-              <div className="p-3 rounded-[16px] bg-[var(--accent-light)]/90 border border-[var(--accent)]/30 text-left">
-                <div className="text-[11px] font-bold text-[var(--accent)] uppercase tracking-wider mb-0.5">
-                  Türkçe Okunuş Rehberi:
-                </div>
-                <p className="text-xs sm:text-sm text-[#47433B] font-medium leading-relaxed">
-                  {currentCard.trPronunciation}
-                </p>
-              </div>
+            <div className="rounded-[20px] p-4 flex flex-col gap-1.5" style={{ background: '#2E3D5F' }}>
+              <span className="font-display font-extrabold text-xl" style={{ color: '#FCD34D' }}>{alternateKana}</span>
+              <span className="font-bold text-[15px] text-white">Diğer alfabe ({alphabet === 'hiragana' ? 'Katakana' : 'Hiragana'})</span>
+              <span className="font-semibold text-[13px] text-[#C7D0E4] leading-relaxed">{currentCard.trPronunciation}</span>
+            </div>
 
-              <div className="p-3 rounded-[16px] bg-[var(--accent-light)]/90 border border-[var(--accent)]/30 text-left">
-                <div className="text-[11px] font-bold text-[var(--accent)] uppercase tracking-wider mb-0.5 flex items-center gap-1">
-                  <Bookmark className="w-3 h-3" />
-                  Hafıza İpucu:
-                </div>
-                <p className="text-xs text-[#47433B] leading-relaxed">
-                  {currentCard.mnemonic}
-                </p>
-              </div>
-
-              {/* Sample Word */}
+            <div className="rounded-[20px] p-4 flex flex-col gap-1.5" style={{ background: '#2E3D5F' }}>
+              <span className="font-bold text-[13px] text-white flex items-center gap-1.5">
+                <Bookmark className="w-3.5 h-3.5" />
+                Hafıza İpucu
+              </span>
+              <span className="font-semibold text-[13px] text-[#C7D0E4] leading-relaxed">{currentCard.mnemonic}</span>
               {currentCard.sampleWords[0] && (
-                <div className="p-2.5 rounded-[16px] bg-white border border-[#EAE5DA] flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-sm text-[#1F1E1D] mr-1 font-japanese">
-                      {currentCard.sampleWords[0].word}
-                    </span>
-                    <span className="text-[var(--accent)] ">
-                      ({currentCard.sampleWords[0].romaji})
-                    </span>
-                    <span className="text-[#7A756D] ml-2">
-                      - {currentCard.sampleWords[0].meaningTr}
-                    </span>
-                  </div>
-                </div>
+                <span className="font-semibold text-[13px] text-[#C7D0E4] pt-1 border-t border-white/10 mt-1">
+                  <span className="font-japanese text-white font-bold">{currentCard.sampleWords[0].word}</span>
+                  {' '}({currentCard.sampleWords[0].romaji}) - {currentCard.sampleWords[0].meaningTr}
+                </span>
               )}
             </div>
-
           </div>
         )}
-
-        {/* Card footer indicator */}
-        <div className="p-3 bg-[#FAF8F5] border-t border-[#EFECE6] text-center text-[11px] text-[#8C867B] flex items-center justify-center gap-1.5">
-          <Eye className="w-3.5 h-3.5 text-[var(--accent)]" />
-          <span>{isFlipped ? 'Ön yüze dönmek için karta tıkla' : 'Cevabı görmek için karta tıkla'}</span>
-        </div>
       </div>
 
-      {/* DEDICATED ACTION BUTTONS: Explicit "Cevabı Göster" when not flipped */}
+      {/* DEDICATED ACTION BUTTONS: show-answer prompt, then Tekrar/Biliyorum (design E5 footer) */}
       {!isFlipped ? (
         <button
           id="btn-show-flashcard-answer"
           onClick={handleFlip}
-          className="w-full py-4 px-6 rounded-[20px] bg-[#1F1E1D] hover:bg-neutral-800 text-white font-bold text-base flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all active:scale-98"
+          className="w-full h-14 rounded-[18px] bg-[#1C1B19] text-white font-bold text-base flex items-center justify-center gap-2.5 transition-all active:scale-98"
         >
-          <Eye className="w-5 h-5 text-[var(--accent)]" />
           <span>Cevabı & Okunuşu Göster</span>
         </button>
       ) : (
-        /* Once flipped, allow marking Know vs Repeat */
-        <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              id="btn-flashcard-repeat"
-              onClick={() => handleAnswer(false)}
-              style={{ background: '#FFFFFF', color: WRONG.border, borderColor: WRONG.border }}
-              className="py-3.5 px-4 rounded-[20px] border-2 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95"
-            >
-              <X className="w-5 h-5" style={{ color: WRONG.border }} />
-              <span>Tekrar Et (Bilemedim)</span>
-            </button>
-
-            <button
-              id="btn-flashcard-know"
-              onClick={() => handleAnswer(true)}
-              style={{ background: CORRECT.border }}
-              className="py-3.5 px-4 rounded-[20px] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95"
-            >
-              <Check className="w-5 h-5 text-white" />
-              <span>Biliyorum! (Sıradaki)</span>
-            </button>
-          </div>
-
+        <div className="grid grid-cols-2 gap-3">
           <button
-            onClick={handleFlip}
-            className="w-full py-2 text-xs text-[#7A756D] hover:text-[#1F1E1D] text-center font-medium"
+            id="btn-flashcard-repeat"
+            aria-label="Tekrar et"
+            onClick={() => handleAnswer(false)}
+            style={{ background: WRONG.bg, border: `2px solid ${WRONG.border}`, color: WRONG.fg }}
+            className="h-[60px] rounded-[18px] font-extrabold text-base flex items-center justify-center gap-2 transition-all active:scale-95"
           >
-            Kartı Ön Yüze Çevir
+            <X className="w-5 h-5" style={{ color: WRONG.border }} />
+            <span>Tekrar</span>
+          </button>
+          <button
+            id="btn-flashcard-know"
+            aria-label="Biliyorum"
+            onClick={() => handleAnswer(true)}
+            style={{ background: CORRECT.bg, border: `2px solid ${CORRECT.border}`, color: CORRECT.fg }}
+            className="h-[60px] rounded-[18px] font-extrabold text-base flex items-center justify-center gap-2 transition-all active:scale-95"
+          >
+            <Check className="w-5 h-5" style={{ color: CORRECT.border }} />
+            <span>Biliyorum</span>
           </button>
         </div>
       )}

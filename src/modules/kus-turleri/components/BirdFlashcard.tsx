@@ -7,11 +7,14 @@ import {
   LayoutGrid,
   CreditCard,
   MapPin,
-  Utensils
+  Utensils,
+  Check,
+  RotateCcw,
 } from 'lucide-react';
 import { TURKEY_BIRDS, BirdSpecies } from '../data/birds';
 import { birdAudioSynth } from '../utils/audioSynth';
 import { BirdPhoto } from './BirdPhoto';
+import { CORRECT, WRONG } from '../../../components/ui';
 
 interface BirdFlashcardProps {
   onLearnToggle?: (id: string) => void;
@@ -19,8 +22,11 @@ interface BirdFlashcardProps {
   onOpenDetails?: (bird: BirdSpecies) => void;
 }
 
+/** E5 (Etkinlik — Kartlar) dili: büyük odak kart + alt "Tekrar / Biliyorum" ikilisi. */
 export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
-  onOpenDetails
+  onOpenDetails,
+  onLearnToggle,
+  learnedBirds = [],
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('Hepsi');
@@ -37,6 +43,7 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
   });
 
   const currentBird = filteredBirds[currentIndex] || filteredBirds[0];
+  const isLearned = currentBird && learnedBirds.includes(currentBird.id);
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % filteredBirds.length);
@@ -53,12 +60,16 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
     setTimeout(() => setPlayingId(null), 2000);
   };
 
+  const handleKnowIt = () => {
+    if (currentBird && !isLearned && onLearnToggle) onLearnToggle(currentBird.id);
+    handleNext();
+  };
+
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-5">
-      {/* Üst Kontrol Çubuğu (Kategori Filtresi + Görünüm Değiştirici) */}
+    <div className="space-y-4">
+      {/* Üst Kontrol Çubuğu: Kategori Filtresi + Görünüm Değiştirici */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        {/* Kategori Hapları */}
-        <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-[16px] overflow-x-auto max-w-full">
+        <div className="flex items-center gap-1 p-1 rounded-[16px] overflow-x-auto max-w-full" style={{ background: '#EDE6DB' }}>
           {categories.map((cat) => (
             <button
               key={cat}
@@ -67,26 +78,21 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                 setSelectedCategory(cat);
                 setCurrentIndex(0);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                selectedCategory === cat
-                  ? 'bg-white text-stone-900 font-semibold shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
+              style={{ background: selectedCategory === cat ? '#FFFFFF' : 'transparent', color: selectedCategory === cat ? '#1C1B19' : '#6B665E' }}
+              className="px-3 py-1.5 rounded-[12px] text-xs font-bold whitespace-nowrap transition-all"
             >
               {cat}
             </button>
           ))}
         </div>
 
-        {/* Görünüm Geçişi: Tek Kart vs Galeri Izgarası */}
-        <div className="flex items-center gap-1 p-1 bg-stone-200/60 rounded-[16px]">
+        <div className="flex items-center gap-1 p-1 rounded-[16px]" style={{ background: '#EDE6DB' }}>
           <button
             id="view-mode-card-btn"
             onClick={() => setViewMode('card')}
             title="Kart Görünümü"
-            className={`p-1.5 rounded-lg text-xs transition-all ${
-              viewMode === 'card' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-500 hover:text-stone-800'
-            }`}
+            style={{ background: viewMode === 'card' ? '#FFFFFF' : 'transparent', color: '#1C1B19' }}
+            className="p-1.5 rounded-[12px] transition-all"
           >
             <CreditCard className="w-4 h-4" />
           </button>
@@ -94,111 +100,101 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
             id="view-mode-grid-btn"
             onClick={() => setViewMode('grid')}
             title="Galeri Izgarası"
-            className={`p-1.5 rounded-lg text-xs transition-all ${
-              viewMode === 'grid' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-500 hover:text-stone-800'
-            }`}
+            style={{ background: viewMode === 'grid' ? '#FFFFFF' : 'transparent', color: '#1C1B19' }}
+            className="p-1.5 rounded-[12px] transition-all"
           >
             <LayoutGrid className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* ================= GÖRÜNÜM 1: BÜYÜK FOTOĞRAFLI ODAK KARTI ================= */}
+      {/* ================= GÖRÜNÜM 1: ODAK KARTI ================= */}
       {viewMode === 'card' && currentBird && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-[24px] border border-stone-200/80 shadow-xs overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              {/* Gerçek Fotoğraf Alanı */}
-              <div className="relative aspect-4/3 md:aspect-auto md:h-full bg-stone-100 group overflow-hidden">
-                <BirdPhoto
-                  src={currentBird.imageUrl}
-                  fallbackSrc={currentBird.fallbackImageUrl}
-                  alt={currentBird.name}
-                  birdId={currentBird.id}
-                  aspectRatio="auto"
-                  className="w-full h-full"
-                />
+        <div className="space-y-3">
+          <span className="text-sm font-bold block" style={{ color: '#6B665E' }}>
+            Kart {currentIndex + 1} / {filteredBirds.length}
+          </span>
 
-                {/* Kategori Rozeti */}
-                <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md shadow-xs ${currentBird.color.badgeBg} ${currentBird.color.badgeText}`}>
-                    {currentBird.category}
+          <div className="rounded-[28px] bg-white overflow-hidden" style={{ border: '1px solid #E6E0D6' }}>
+            <div className="relative aspect-[4/3] w-full" style={{ background: '#F7F4EE' }}>
+              <BirdPhoto
+                src={currentBird.imageUrl}
+                fallbackSrc={currentBird.fallbackImageUrl}
+                alt={currentBird.name}
+                birdId={currentBird.id}
+                aspectRatio="auto"
+                className="w-full h-full"
+              />
+
+              <div className="absolute top-4 left-4 flex items-center gap-1.5">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md shadow-xs ${currentBird.color.badgeBg} ${currentBird.color.badgeText}`}>
+                  {currentBird.category}
+                </span>
+                {isLearned && (
+                  <span className="px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1" style={{ background: CORRECT.bg, color: CORRECT.fg }}>
+                    <Check className="w-3 h-3" strokeWidth={3} />
+                    Öğrenildi
                   </span>
-                </div>
-
-                {/* Detay Büyüteç Butonu */}
-                <button
-                  id="open-modal-from-card-btn"
-                  onClick={() => onOpenDetails && onOpenDetails(currentBird)}
-                  className="absolute top-4 right-4 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-xs transition-colors"
-                  title="Tam Ekran İncele"
-                >
-                  <Maximize2 className="w-4 h-4" />
-                </button>
+                )}
               </div>
 
-              {/* Bilgi ve Eylem Alanı (Sade & Kısa Metinler) */}
-              <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
-                <div className="space-y-3">
+              <button
+                id="open-modal-from-card-btn"
+                onClick={() => onOpenDetails && onOpenDetails(currentBird)}
+                className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center text-white transition-colors"
+                style={{ background: 'rgba(28,27,25,0.5)' }}
+                title="Tam Ekran İncele"
+                aria-label="Detayları aç"
+              >
+                <Maximize2 className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3">
+              <div>
+                <h3 className="font-display text-2xl font-extrabold" style={{ color: '#1C1B19' }}>
+                  {currentBird.name}
+                </h3>
+                <p className="text-xs italic mt-0.5" style={{ color: '#6B665E' }}>
+                  {currentBird.scientificName} • {currentBird.family}
+                </p>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center gap-2.5 p-2.5 rounded-[16px]" style={{ background: '#FAF8F5', border: '1px solid #E6E0D6' }}>
+                  <Utensils className="w-4 h-4 shrink-0" style={{ color: 'var(--accent)' }} />
                   <div>
-                    <h3 className="text-2xl sm:text-3xl font-bold font-display text-stone-900 tracking-tight">
-                      {currentBird.name}
-                    </h3>
-                    <p className="text-xs text-stone-500 italic mt-0.5">
-                      {currentBird.scientificName} • {currentBird.family}
-                    </p>
+                    <span className="block text-[10px] uppercase font-bold tracking-wider" style={{ color: '#77716A' }}>Gaga & Beslenme</span>
+                    <span className="font-bold" style={{ color: '#1C1B19' }}>{currentBird.beakType}</span>
+                    <span className="block text-[11px]" style={{ color: '#6B665E' }}>{currentBird.diet}</span>
                   </div>
-
-                  {/* 2 Temel Özet Kartı */}
-                  <div className="space-y-2 pt-1 text-xs">
-                    <div className="flex items-center gap-2 p-2.5 bg-stone-50 rounded-[16px] border border-stone-100">
-                      <Utensils className="w-4 h-4 text-[var(--accent)] shrink-0" />
-                      <div>
-                        <span className="text-stone-400 block text-[10px] uppercase font-bold tracking-wider">Gaga & Beslenme</span>
-                        <span className="font-semibold text-stone-800">{currentBird.beakType}</span>
-                        <span className="text-stone-500 block text-[11px]">{currentBird.diet}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 p-2.5 bg-stone-50 rounded-[16px] border border-stone-100">
-                      <MapPin className="w-4 h-4 text-[var(--accent)] shrink-0" />
-                      <div>
-                        <span className="text-stone-400 block text-[10px] uppercase font-bold tracking-wider">Yaşam Alanı</span>
-                        <span className="font-semibold text-stone-800">{currentBird.habitat}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Önemli Tek Özellik */}
-                  <p className="text-xs text-stone-600 bg-stone-50/50 p-2.5 rounded-[16px] border border-stone-100">
-                    💡 <strong className="text-stone-800">Öne Çıkan:</strong> {currentBird.features[0]}
-                  </p>
                 </div>
 
-                {/* Ses Çalma & Detay Butonu */}
-                <div className="flex items-center gap-2 pt-2">
-                  <button
-                    id={`play-sound-${currentBird.id}`}
-                    onClick={(e) => handlePlayAudio(currentBird.id, e)}
-                    className={`grow flex items-center justify-center gap-2 py-2.5 px-4 rounded-[16px] text-xs font-semibold transition-all ${
-                      playingId === currentBird.id
-                        ? 'bg-[var(--accent)] text-white shadow-xs'
-                        : 'bg-[var(--accent-light)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--accent)]/30'
-                    }`}
-                  >
-                    <Volume2 className={`w-4 h-4 ${playingId === currentBird.id ? 'animate-spin' : ''}`} />
-                    <span>{playingId === currentBird.id ? 'Ses Çalıyor...' : 'Kuş Sesini Dinle'}</span>
-                  </button>
-
-                  <button
-                    id="card-details-btn"
-                    onClick={() => onOpenDetails && onOpenDetails(currentBird)}
-                    className="px-4 py-2.5 rounded-[16px] text-xs font-medium text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 transition-colors"
-                  >
-                    Detay
-                  </button>
+                <div className="flex items-center gap-2.5 p-2.5 rounded-[16px]" style={{ background: '#FAF8F5', border: '1px solid #E6E0D6' }}>
+                  <MapPin className="w-4 h-4 shrink-0" style={{ color: 'var(--accent)' }} />
+                  <div>
+                    <span className="block text-[10px] uppercase font-bold tracking-wider" style={{ color: '#77716A' }}>Yaşam Alanı</span>
+                    <span className="font-bold" style={{ color: '#1C1B19' }}>{currentBird.habitat}</span>
+                  </div>
                 </div>
+
+                <p className="p-2.5 rounded-[16px] leading-relaxed" style={{ background: '#FAF8F5', border: '1px solid #E6E0D6', color: '#6B665E' }}>
+                  <strong style={{ color: '#1C1B19' }}>Öne Çıkan:</strong> {currentBird.features[0]}
+                </p>
               </div>
+
+              <button
+                id={`play-sound-${currentBird.id}`}
+                onClick={(e) => handlePlayAudio(currentBird.id, e)}
+                style={{
+                  background: playingId === currentBird.id ? 'var(--accent)' : 'var(--accent-light)',
+                  color: playingId === currentBird.id ? '#FFFFFF' : 'var(--accent)',
+                }}
+                className="w-full h-12 flex items-center justify-center gap-2 rounded-[16px] text-xs font-bold transition-all"
+              >
+                <Volume2 className={`w-4 h-4 ${playingId === currentBird.id ? 'animate-spin' : ''}`} />
+                <span>{playingId === currentBird.id ? 'Ses Çalıyor...' : 'Kuş Sesini Dinle'}</span>
+              </button>
             </div>
           </div>
 
@@ -207,28 +203,31 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
             <button
               id="prev-bird-btn"
               onClick={handlePrev}
-              className="flex items-center gap-1 px-3 py-2 rounded-[16px] text-xs font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 hover:bg-stone-50 transition-colors"
+              aria-label="Önceki kuş"
+              className="w-10 h-10 rounded-[14px] flex items-center justify-center shrink-0"
+              style={{ background: '#FFFFFF', border: '1px solid #E6E0D6' }}
             >
-              <ChevronLeft className="w-4 h-4" />
-              <span>Önceki</span>
+              <ChevronLeft className="w-4 h-4" style={{ color: '#1C1B19' }} />
             </button>
 
-            {/* Yatay Küçük Resim Listesi */}
-            <div className="flex items-center gap-1.5 overflow-x-auto py-1 px-2 max-w-[65%] scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto py-1 px-1 max-w-[65%]">
               {filteredBirds.map((b, idx) => (
                 <button
                   key={b.id}
                   id={`thumbnail-${b.id}`}
                   onClick={() => setCurrentIndex(idx)}
-                  className={`w-10 h-10 rounded-[16px] overflow-hidden shrink-0 border-2 transition-all ${
-                    idx === currentIndex
-                      ? 'border-[var(--accent)] scale-105 shadow-xs'
-                      : 'border-transparent opacity-60 hover:opacity-100'
-                  }`}
+                  aria-label={b.name}
+                  className="w-10 h-10 rounded-[14px] overflow-hidden shrink-0 transition-all relative"
+                  style={{
+                    borderWidth: 2,
+                    borderStyle: 'solid',
+                    borderColor: idx === currentIndex ? 'var(--accent)' : 'transparent',
+                    opacity: idx === currentIndex ? 1 : 0.6,
+                  }}
                 >
                   <img
                     src={b.imageUrl}
-                    alt={b.name}
+                    alt=""
                     referrerPolicy="no-referrer"
                     onError={(e) => {
                       if (b.fallbackImageUrl && e.currentTarget.src !== b.fallbackImageUrl) {
@@ -237,6 +236,11 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                     }}
                     className="w-full h-full object-cover"
                   />
+                  {learnedBirds.includes(b.id) && (
+                    <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full flex items-center justify-center" style={{ background: CORRECT.border }}>
+                      <Check className="w-2 h-2" strokeWidth={4} style={{ color: '#FFFFFF' }} />
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -244,29 +248,53 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
             <button
               id="next-bird-btn"
               onClick={handleNext}
-              className="flex items-center gap-1 px-3 py-2 rounded-[16px] text-xs font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 hover:bg-stone-50 transition-colors"
+              aria-label="Sonraki kuş"
+              className="w-10 h-10 rounded-[14px] flex items-center justify-center shrink-0"
+              style={{ background: '#FFFFFF', border: '1px solid #E6E0D6' }}
             >
-              <span>Sonraki</span>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4" style={{ color: '#1C1B19' }} />
+            </button>
+          </div>
+
+          {/* Tekrar / Biliyorum */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={handleNext}
+              style={{ background: WRONG.bg, border: `2px solid ${WRONG.border}`, color: WRONG.fg }}
+              className="h-[60px] rounded-[18px] flex items-center justify-center gap-2 font-extrabold text-sm"
+            >
+              <RotateCcw className="w-5 h-5" strokeWidth={2.4} />
+              <span>Tekrar</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleKnowIt}
+              style={{ background: CORRECT.bg, border: `2px solid ${CORRECT.border}`, color: CORRECT.fg }}
+              className="h-[60px] rounded-[18px] flex items-center justify-center gap-2 font-extrabold text-sm"
+            >
+              <Check className="w-5 h-5" strokeWidth={3} />
+              <span>Biliyorum</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* ================= GÖRÜNÜM 2: TÜM TÜRLER GALERİ IZGARASI ================= */}
+      {/* ================= GÖRÜNÜM 2: GALERİ IZGARASI ================= */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {filteredBirds.map((b) => {
             const isPlaying = playingId === b.id;
+            const learned = learnedBirds.includes(b.id);
             return (
               <div
                 key={b.id}
                 id={`grid-bird-${b.id}`}
                 onClick={() => onOpenDetails && onOpenDetails(b)}
-                className="group cursor-pointer bg-white rounded-[20px] border border-stone-200/80 overflow-hidden shadow-2xs hover:shadow-sm hover:border-stone-300 transition-all flex flex-col"
+                className="cursor-pointer rounded-[20px] overflow-hidden flex flex-col"
+                style={{ background: '#FFFFFF', border: '1px solid #E6E0D6' }}
               >
-                {/* Gerçek Fotoğraf */}
-                <div className="relative aspect-square w-full bg-stone-100 overflow-hidden">
+                <div className="relative aspect-square w-full" style={{ background: '#F7F4EE' }}>
                   <BirdPhoto
                     src={b.imageUrl}
                     fallbackSrc={b.fallbackImageUrl}
@@ -274,29 +302,27 @@ export const BirdFlashcard: React.FC<BirdFlashcardProps> = ({
                     birdId={b.id}
                     aspectRatio="square"
                   />
-                  <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-semibold backdrop-blur-md ${b.color.badgeBg} ${b.color.badgeText}`}>
+                  <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-md ${b.color.badgeBg} ${b.color.badgeText}`}>
                     {b.category}
                   </span>
+                  {learned && (
+                    <span className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: CORRECT.border }}>
+                      <Check className="w-3 h-3" strokeWidth={3} style={{ color: '#FFFFFF' }} />
+                    </span>
+                  )}
                 </div>
 
-                {/* Kart Özeti */}
-                <div className="p-3 flex flex-col justify-between grow space-y-2">
+                <div className="p-3 flex flex-col justify-between grow gap-2">
                   <div>
-                    <h4 className="font-bold text-stone-900 text-sm group-hover:text-[var(--accent)] transition-colors truncate">
-                      {b.name}
-                    </h4>
-                    <p className="text-[11px] text-stone-500 truncate">{b.beakType}</p>
+                    <h4 className="font-bold text-sm truncate" style={{ color: '#1C1B19' }}>{b.name}</h4>
+                    <p className="text-[11px] truncate" style={{ color: '#6B665E' }}>{b.beakType}</p>
                   </div>
 
-                  {/* Ses Çalma Butonu */}
                   <button
                     id={`grid-play-${b.id}`}
                     onClick={(e) => handlePlayAudio(b.id, e)}
-                    className={`w-full py-1.5 px-2 rounded-[16px] text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                      isPlaying
-                        ? 'bg-[var(--accent)] text-white'
-                        : 'bg-stone-50 hover:bg-[var(--accent-light)] text-stone-700 hover:text-[var(--accent)] border border-stone-200'
-                    }`}
+                    style={{ background: isPlaying ? 'var(--accent)' : '#FAF8F5', color: isPlaying ? '#FFFFFF' : '#1C1B19', border: isPlaying ? 'none' : '1px solid #E6E0D6' }}
+                    className="w-full py-1.5 px-2 rounded-[14px] text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all"
                   >
                     <Volume2 className={`w-3.5 h-3.5 ${isPlaying ? 'animate-spin' : ''}`} />
                     <span>{isPlaying ? 'Çalıyor' : 'Sesi Dinle'}</span>

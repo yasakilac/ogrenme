@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { Target, CheckCircle2, Info, Eye, Award } from 'lucide-react';
+import { Aperture, Timer, Gauge, Sparkles, Crosshair, BarChart3 } from 'lucide-react';
 import { DIAGRAM_HOTSPOTS, type DiagramHotspot } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
+import { Card } from '../../../components/ui';
 
 interface DiagramLabelingActivityProps {
   onScoreUpdate?: (points: number) => void;
 }
+
+const FUNCTION_ICON: Record<DiagramHotspot['functionKey'], React.ElementType> = {
+  diyafram: Aperture,
+  enstantane: Timer,
+  pozometre: Gauge,
+  iso: Sparkles,
+  odak: Crosshair,
+  histogram: BarChart3,
+};
 
 export const DiagramLabelingActivity: React.FC<DiagramLabelingActivityProps> = ({ onScoreUpdate }) => {
   const [selectedHotspot, setSelectedHotspot] = useState<DiagramHotspot>(DIAGRAM_HOTSPOTS[0]);
@@ -22,141 +32,102 @@ export const DiagramLabelingActivity: React.FC<DiagramLabelingActivityProps> = (
   };
 
   const discoveredCount = Object.values(discoveredSpots).filter(Boolean).length;
+  const SelectedIcon = FUNCTION_ICON[selectedHotspot.functionKey];
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
-              Kamera Vizörü & Ekran Diyagramı
-            </span>
-            <h3 className="text-lg font-bold text-[#1F1E1B]">Kamera Vizörü & Kadran Etiketleme</h3>
-            <p className="text-sm text-[#66635E] mt-0.5">
-              DSLR/Aynasız kamera vizöründeki noktacıklara dokunarak hangi göstergenin ne işe yaradığını keşfedin.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-[16px] border border-stone-200">
-            <Award className="w-4 h-4 text-[var(--accent)]" />
-            <span className="text-xs font-bold text-stone-800">
-              {discoveredCount} / {DIAGRAM_HOTSPOTS.length} Keşfedildi
-            </span>
-          </div>
-        </div>
+    <div className="space-y-4">
+      <div
+        className="h-[76px] rounded-[22px] bg-white px-4 flex items-center gap-3.5"
+        style={{ border: '1px solid #E6E0D6' }}
+      >
+        <span
+          className="w-12 h-12 rounded-[15px] flex items-center justify-center shrink-0"
+          style={{ background: 'var(--accent-light)' }}
+        >
+          <SelectedIcon className="w-[26px] h-[26px]" style={{ color: 'var(--accent)' }} />
+        </span>
+        <span className="flex-grow font-display font-extrabold text-lg truncate" style={{ color: '#1C1B19' }}>
+          {selectedHotspot.label}
+        </span>
+        <span className="text-sm font-bold shrink-0" style={{ color: '#6B665E' }}>
+          {discoveredCount} / {DIAGRAM_HOTSPOTS.length}
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Sol Taraf: İnteraktif Vizör Diyagramı (7 Kolon) */}
-        <div className="lg:col-span-7 bg-stone-950 p-6 rounded-[24px] border-4 border-stone-800 shadow-xl flex flex-col justify-between relative aspect-16/10">
-          {/* Çekim Sahnesi Arka Planı (Şematik Manzara Çizimi) */}
-          <div className="absolute inset-4 rounded-[20px] overflow-hidden border border-stone-800 bg-stone-900 pointer-events-none opacity-40">
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-800/50 to-stone-900" />
-          </div>
+      <div className="rounded-[26px] p-3.5 flex flex-col gap-2.5" style={{ background: '#0F1422' }}>
+        <div className="relative h-[200px] rounded-xl" style={{ background: '#2A3858' }}>
+          <svg viewBox="0 0 322 200" className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
+            <path
+              d="M16 40V16h24M282 16h24v24M306 160v24h-24M40 184H16v-24"
+              fill="none"
+              stroke="#C7D0E4"
+              strokeWidth="2"
+            />
+          </svg>
 
-          {/* 3x3 Kılavuz Çizgileri */}
-          <div className="absolute inset-4 pointer-events-none grid grid-cols-3 grid-rows-3 border border-white/10 rounded-[20px]">
-            <div className="border-r border-b border-white/10" />
-            <div className="border-r border-b border-white/10" />
-            <div className="border-b border-white/10" />
-            <div className="border-r border-b border-white/10" />
-            <div className="border-r border-b border-white/10" />
-            <div className="border-b border-white/10" />
-            <div className="border-r border-white/10" />
-            <div className="border-r border-white/10" />
-            <div />
-          </div>
-
-          {/* Vizör Bilgi Çubuğu Şablonu */}
-          <div className="absolute bottom-6 inset-x-8 h-10 bg-black/80 rounded-[16px] border border-stone-700/80 flex items-center justify-around text-[var(--accent)] text-xs pointer-events-none px-4">
-            <span>1/1000</span>
-            <span>f/2.8</span>
-            <span>-2..0..+2</span>
-            <span>ISO 400</span>
-          </div>
-
-          {/* İnteraktif Hotspot Düğmeleri */}
           {DIAGRAM_HOTSPOTS.map((spot) => {
             const isSelected = selectedHotspot.id === spot.id;
             const isDiscovered = discoveredSpots[spot.id];
-
             return (
               <button
                 key={spot.id}
+                type="button"
                 onClick={() => handleSelectSpot(spot)}
+                aria-label={spot.label}
+                aria-pressed={isSelected}
                 style={{
                   left: `${spot.xPercent}%`,
                   top: `${spot.yPercent}%`,
                   transform: 'translate(-50%, -50%)',
                 }}
-                className={`absolute z-30 group flex items-center justify-center p-2 rounded-full transition-transform ${
-                  isSelected ? 'scale-125' : 'hover:scale-110'
+                className={`absolute z-10 w-11 h-11 -m-[2px] flex items-center justify-center transition-transform ${
+                  isSelected ? 'scale-110' : ''
                 }`}
-                title={spot.label}
               >
                 <span
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shadow-lg transition-colors ${
-                    isSelected
-                      ? 'bg-[var(--accent)] text-white ring-4 ring-[var(--accent)]/30 animate-pulse'
-                      : isDiscovered
-                      ? 'bg-[var(--accent)] text-white ring-2 ring-[var(--accent)]/40'
-                      : 'bg-[var(--accent)] text-black ring-2 ring-white/50'
-                  }`}
+                  className="w-6 h-6 rounded-full flex items-center justify-center shadow-lg"
+                  style={{
+                    background: isSelected || isDiscovered ? 'var(--accent)' : 'rgba(255,255,255,0.85)',
+                    boxShadow: isSelected ? '0 0 0 4px rgba(255,255,255,0.25)' : undefined,
+                  }}
                 >
-                  <Target className="w-3.5 h-3.5" />
+                  <Crosshair className="w-3.5 h-3.5" style={{ color: isSelected || isDiscovered ? '#FFFFFF' : '#1C1B19' }} />
                 </span>
               </button>
             );
           })}
         </div>
+      </div>
 
-        {/* Sağ Taraf: Seçilen Hotspot Detay Kartı (5 Kolon) */}
-        <div className="lg:col-span-5 bg-white border border-[#EBE7E0] rounded-[24px] p-6 shadow-sm flex flex-col justify-between space-y-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-[#F0ECE6] pb-3">
-              <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
-                VİZÖR GÖSTERGE BİLGİSİ
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 text-xs font-semibold">
-                {selectedHotspot.functionKey.toUpperCase()}
-              </span>
-            </div>
+      <Card>
+        <p className="text-sm leading-relaxed" style={{ color: '#1C1B19' }}>
+          {selectedHotspot.description}
+        </p>
+      </Card>
 
-            <div>
-              <h2 className="text-xl font-extrabold text-[#1F1E1B]">{selectedHotspot.label}</h2>
-              <p className="text-sm text-[#66635E] mt-2 leading-relaxed">
-                {selectedHotspot.description}
-              </p>
-            </div>
-
-            <div className="p-4 rounded-[20px] bg-[#FAF8F5] border border-[#EBE7E0] text-xs space-y-2">
-              <span className="font-bold text-[#1F1E1B] block">Fotoğrafçıya Sağladığı Kolaylık:</span>
-              <p className="text-[#66635E] leading-relaxed">
-                Vizörden gözünüzü ayırmadan enstantane, diyafram ve pozlama ibresini gerçek zamanlı takip etmenizi sağlayarak anı kaçırmadan çekim yapabilmenize imkan tanır.
-              </p>
-            </div>
-          </div>
-
-          {/* Diğer Noktalara Geçiş Listesi */}
-          <div className="pt-2 border-t border-[#F0ECE6]">
-            <span className="text-[11px] font-bold text-[#8A8680] uppercase tracking-wider block mb-2">
-              Diğer Göstergeler:
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              {DIAGRAM_HOTSPOTS.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => handleSelectSpot(s)}
-                  className={`px-3 py-2 rounded-[16px] text-left text-xs font-medium border transition-colors ${
-                    selectedHotspot.id === s.id
-                      ? 'bg-[var(--accent-light)] border-[var(--accent)] text-[var(--accent)] font-bold'
-                      : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
-                  }`}
-                >
-                  <span className="truncate block">{s.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+      <div>
+        <span className="text-xs font-bold uppercase tracking-wider block mb-2" style={{ color: '#6B665E' }}>
+          Diğer göstergeler
+        </span>
+        <div className="grid grid-cols-2 gap-2">
+          {DIAGRAM_HOTSPOTS.map((spot) => {
+            const isSelected = selectedHotspot.id === spot.id;
+            return (
+              <button
+                key={spot.id}
+                type="button"
+                onClick={() => handleSelectSpot(spot)}
+                className="min-h-[44px] px-3 py-2 rounded-[16px] text-left text-xs font-bold transition-colors"
+                style={{
+                  background: isSelected ? 'var(--accent-light)' : '#FFFFFF',
+                  border: `1px solid ${isSelected ? 'var(--accent)' : '#E6E0D6'}`,
+                  color: isSelected ? 'var(--accent)' : '#1C1B19',
+                }}
+              >
+                <span className="truncate block">{spot.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

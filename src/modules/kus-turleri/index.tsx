@@ -15,6 +15,7 @@ import {
   Bird
 } from 'lucide-react';
 import { LearningModule, LearningModuleProps } from '../types';
+import { TopicHeader } from '../../components/ui';
 import { TURKEY_BIRDS, BirdSpecies } from './data/birds';
 import { BirdFlashcard } from './components/BirdFlashcard';
 import { TurkeyHotspotMap } from './components/TurkeyHotspotMap';
@@ -120,38 +121,56 @@ const KusTurleriModuleComponent: React.FC<LearningModuleProps> = ({
       <main className="w-full">
         {/* 1. ÖĞRENME: Kuş Türleri Kartları & Galeri */}
         {activeTab === 'flashcard' && (
-          <BirdFlashcard
-            learnedBirds={progressData.learnedBirds}
-            onLearnToggle={handleToggleLearn}
-            onOpenDetails={(b) => setActiveModalBird(b)}
-          />
+          <div className="space-y-4">
+            <TopicHeader icon={Layers} title="Kartlar" />
+            <BirdFlashcard
+              learnedBirds={progressData.learnedBirds}
+              onLearnToggle={handleToggleLearn}
+              onOpenDetails={(b) => setActiveModalBird(b)}
+            />
+          </div>
         )}
 
         {/* 2. ÖĞRENME: Türkiye Haritası & Kuş Hotspotları */}
         {activeTab === 'hotspots' && (
-          <TurkeyHotspotMap
-            onSelectBird={(b) => setActiveModalBird(b)}
-          />
+          <div className="space-y-4">
+            <TopicHeader icon={MapPin} title="Haritada Bul" />
+            <TurkeyHotspotMap
+              onSelectBird={(b) => setActiveModalBird(b)}
+            />
+          </div>
         )}
 
         {/* 3. ÖĞRENME: Sürükle & Bırak Eşleme Atölyesi */}
         {activeTab === 'drag-drop' && (
-          <DragDropActivity />
+          <div className="space-y-4">
+            <TopicHeader icon={Move} title="Eşleştir" />
+            <DragDropActivity />
+          </div>
         )}
 
         {/* 4. ÖĞRENME: Morfolojik Karşılaştırma */}
         {activeTab === 'compare' && (
-          <CompareAndAnalogyActivity />
+          <div className="space-y-4">
+            <TopicHeader icon={GitCompare} title="Karşılaştır & Benzet" />
+            <CompareAndAnalogyActivity />
+          </div>
         )}
 
         {/* 5. TEST: Akustik Ses Teşhis Testi */}
         {activeTab === 'audio-match' && (
-          <AudioMatchActivity onScoreUpdate={handleAudioScore} />
+          <div className="space-y-4">
+            <TopicHeader icon={Volume2} title="Sesi Dinle" />
+            <AudioMatchActivity onScoreUpdate={handleAudioScore} />
+          </div>
         )}
 
         {/* 6. TEST: Kavram Sınavı */}
         {activeTab === 'quiz' && (
-          <QuizActivity />
+          <div className="space-y-4">
+            <TopicHeader icon={ListChecks} title="Kavram Testi" />
+            <QuizActivity />
+          </div>
         )}
 
         {/* 7. FİNAL TEST: Görsel + Ses + Bilgi Soru Havuzlu Büyük Sınav */}

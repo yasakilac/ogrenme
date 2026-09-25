@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PenTool, CheckCircle, HelpCircle, Sparkles, Send } from 'lucide-react';
+import { HelpCircle, Check, Sparkles, Send } from 'lucide-react';
 import { WRITTEN_PROMPTS, type WrittenPromptItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
 import { CORRECT, WRONG } from '../../../components/ui';
@@ -7,6 +7,8 @@ import { CORRECT, WRONG } from '../../../components/ui';
 interface WrittenResponseActivityProps {
   onScoreUpdate?: (points: number) => void;
 }
+
+const DARK = '#1F2A44';
 
 export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = ({ onScoreUpdate }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -19,23 +21,17 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
   } | null>(null);
 
   const item: WrittenPromptItem = WRITTEN_PROMPTS[currentIndex];
+  const lowerText = userText.toLowerCase();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!userText.trim()) return;
 
-    const lower = userText.toLowerCase();
-    const matched = item.requiredKeywords.filter((kw) => lower.includes(kw.toLowerCase()));
-    const missing = item.requiredKeywords.filter((kw) => !lower.includes(kw.toLowerCase()));
-
+    const matched = item.requiredKeywords.filter((kw) => lowerText.includes(kw.toLowerCase()));
+    const missing = item.requiredKeywords.filter((kw) => !lowerText.includes(kw.toLowerCase()));
     const calculatedScore = Math.round((matched.length / item.requiredKeywords.length) * 100);
 
-    setFeedback({
-      evaluated: true,
-      score: calculatedScore,
-      matchedKeywords: matched,
-      missingKeywords: missing,
-    });
+    setFeedback({ evaluated: true, score: calculatedScore, matchedKeywords: matched, missingKeywords: missing });
 
     if (calculatedScore >= 60) {
       cameraAudio.playSuccessSound();
@@ -52,115 +48,98 @@ export const WrittenResponseActivity: React.FC<WrittenResponseActivityProps> = (
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
-        <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
-          Açık Uçlu Akıl Yürütme Pratiği
+    <div className="space-y-4">
+      <div className="flex items-center justify-between text-xs font-bold" style={{ color: '#6B665E' }}>
+        <span>Soru {currentIndex + 1} / {WRITTEN_PROMPTS.length}</span>
+        <span className="px-2.5 py-0.5 rounded-full font-bold" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
+          Serbest Yazı
         </span>
-        <h3 className="text-lg font-bold text-[#1F1E1B]">Yazılı Açık Uçlu Kavram Açıklaması</h3>
-        <p className="text-sm text-[#66635E] mt-0.5">
-          Kendi cümlelerinizle fotoğrafçılık prensiplerini açıklayın; sistem anahtar optik kavramları analiz etsin.
-        </p>
       </div>
 
-      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-[24px] p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex items-center justify-between text-xs text-[#8A8680]">
-          <span className="">SORU {currentIndex + 1} / {WRITTEN_PROMPTS.length}</span>
-          <span className="px-2.5 py-0.5 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-bold">
-            Serbest Yazı
-          </span>
+      <div className="rounded-[24px] bg-white p-4.5 flex items-center gap-3.5" style={{ border: '1px solid #E6E0D6' }}>
+        <div className="w-14 h-14 rounded-[18px] flex items-center justify-center shrink-0" style={{ background: DARK }}>
+          <HelpCircle className="w-[30px] h-[30px]" style={{ color: '#FCD34D' }} />
         </div>
-
-        {/* Soru Metni */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-bold text-[#1F1E1B] leading-snug">{item.question}</h2>
-          <p className="text-xs text-[#66635E] italic bg-[#FAF8F5] p-3 rounded-[16px] border border-[#EBE7E0]">
-            İpucu Bağlamı: {item.context}
-          </p>
+        <div>
+          <p className="font-display font-extrabold text-lg leading-snug">{item.question}</p>
+          <p className="text-xs mt-1" style={{ color: '#6B665E' }}>İpucu: {item.context}</p>
         </div>
+      </div>
 
-        {/* Yazı Alanı */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-[#1F1E1B] block">Cevabınızı Buraya Yazın:</label>
-            <textarea
-              rows={4}
-              value={userText}
-              onChange={(e) => setUserText(e.target.value)}
-              disabled={feedback?.evaluated}
-              placeholder="Örn: f/1.8 daha geniştir, daha fazla ışık alarak arka planı bulanıklaştırır..."
-              className="w-full p-4 rounded-[16px] border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-[var(--accent)] bg-[#FAF8F5]"
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <label htmlFor="cevap" className="sr-only">Cevabın</label>
+        <textarea
+          id="cevap"
+          value={userText}
+          onChange={(e) => setUserText(e.target.value)}
+          disabled={Boolean(feedback?.evaluated)}
+          rows={6}
+          placeholder="Örn: f/1.8 daha geniştir, daha fazla ışık alarak arka planı bulanıklaştırır..."
+          className="w-full box-border rounded-[24px] p-4.5 text-base leading-relaxed"
+          style={{ border: '2px solid #E6E0D6', color: '#1C1B19', resize: 'none' }}
+        />
 
-          {!feedback?.evaluated ? (
-            <button
-              type="submit"
-              disabled={!userText.trim()}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent)] text-white shadow-sm transition-all disabled:opacity-50"
-            >
-              <Send className="w-3.5 h-3.5" />
-              Cevabı Değerlendir
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="px-6 py-3 rounded-[16px] font-bold text-xs bg-stone-900 hover:bg-black text-white transition-colors"
-            >
-              Sonraki Soruya Geç →
-            </button>
-          )}
-        </form>
-
-        {/* Değerlendirme & Geri Bildirim */}
-        {feedback && (
-          <div className="space-y-4 pt-4 border-t border-[#F0ECE6]">
-            <div className="flex items-center justify-between bg-stone-50 p-3 rounded-[16px] border border-stone-200">
-              <span className="text-xs font-bold text-[#1F1E1B]">Kavramsal Başarı Puanı:</span>
+        <div className="flex flex-wrap gap-2">
+          {item.requiredKeywords.map((kw) => {
+            const on = feedback ? feedback.matchedKeywords.includes(kw) : lowerText.includes(kw.toLowerCase());
+            return (
               <span
-                className="text-sm font-extrabold"
-                style={{ color: feedback.score >= 60 ? CORRECT.border : WRONG.border }}
+                key={kw}
+                className="h-11 px-3.5 rounded-2xl flex items-center gap-1.5 font-extrabold text-sm"
+                style={{
+                  background: on ? CORRECT.bg : '#FFFFFF',
+                  color: on ? CORRECT.fg : '#6B665E',
+                  border: on ? `2px solid ${CORRECT.border}` : '1px solid #E6E0D6',
+                }}
               >
-                %{feedback.score}
+                {on && <Check className="w-4 h-4" strokeWidth={3} style={{ color: CORRECT.border }} />}
+                {kw}
               </span>
-            </div>
+            );
+          })}
+        </div>
 
-            {/* Yakalanan Anahtar Terimler */}
-            <div className="text-xs space-y-1">
-              <span className="font-bold text-[#1F1E1B] block">Bahsedilen Temel Terimler:</span>
-              <div className="flex flex-wrap gap-1.5">
-                {feedback.matchedKeywords.map((kw) => (
-                  <span
-                    key={kw}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border font-medium text-[11px]"
-                    style={{ background: CORRECT.bg, color: CORRECT.fg, borderColor: CORRECT.border }}
-                  >
-                    <CheckCircle className="w-3 h-3" style={{ color: CORRECT.border }} /> {kw}
-                  </span>
-                ))}
-                {feedback.missingKeywords.map((kw) => (
-                  <span
-                    key={kw}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-stone-100 text-stone-500 border border-stone-200 text-[11px]"
-                  >
-                    (Eksik: {kw})
-                  </span>
-                ))}
-              </div>
-            </div>
+        {!feedback?.evaluated ? (
+          <button
+            type="submit"
+            disabled={!userText.trim()}
+            aria-label="Cevabı değerlendir"
+            className="w-full h-14 rounded-[18px] border-none flex items-center justify-center gap-2 font-bold text-sm disabled:opacity-40 transition-all"
+            style={{ background: '#1C1B19', color: '#FFFFFF' }}
+          >
+            <Send className="w-4 h-4" />
+            Cevabı Değerlendir
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleNext}
+            className="w-full h-14 rounded-[18px] border-none font-bold text-sm"
+            style={{ background: '#1C1B19', color: '#FFFFFF' }}
+          >
+            Sonraki Soruya Geç →
+          </button>
+        )}
+      </form>
 
-            {/* Model Cevap */}
-            <div className="p-4 rounded-[16px] bg-[var(--accent-light)]/70 border border-[var(--accent)]/30 text-xs space-y-1">
-              <span className="font-bold text-[var(--accent)] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
-                Örnek Model Cevap:
-              </span>
-              <p className="text-[var(--accent)] leading-relaxed">{item.sampleModelAnswer}</p>
+      {feedback && (
+        <div className="space-y-3 pt-1">
+          <div className="flex items-center justify-between rounded-[16px] p-3" style={{ background: '#FAF8F5', border: '1px solid #E6E0D6' }}>
+            <span className="text-xs font-bold">Kavramsal Başarı Puanı</span>
+            <span className="text-sm font-extrabold" style={{ color: feedback.score >= 60 ? CORRECT.border : WRONG.border }}>
+              %{feedback.score}
+            </span>
+          </div>
+
+          <div className="rounded-[16px] p-4 flex items-start gap-2 text-xs leading-relaxed" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
+            <Sparkles className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <strong className="block font-bold mb-0.5">Örnek Model Cevap:</strong>
+              <p>{item.sampleModelAnswer}</p>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

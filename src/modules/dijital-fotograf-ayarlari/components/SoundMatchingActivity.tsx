@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Volume2, Play, CheckCircle2, XCircle, RotateCcw, Award } from 'lucide-react';
+import { Play, Volume2, Lightbulb, Check, X } from 'lucide-react';
 import { SOUND_MATCH_ITEMS, type SoundMatchItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
-import { CORRECT, WRONG } from '../../../components/ui';
+import { CORRECT, WRONG, CheckBar } from '../../../components/ui';
 
 interface SoundMatchingActivityProps {
   onScoreUpdate?: (points: number) => void;
 }
 
+const IDLE = { bg: '#FFFFFF', border: '#E6E0D6', fg: '#1C1B19' };
+const WAVE_HEIGHTS = [10, 18, 30, 44, 26, 14, 8, 6, 8, 14, 26, 44, 30, 18, 10];
+
 export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ onScoreUpdate }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [answers, setAnswers] = useState<Record<string, { selected: string; isCorrect: boolean }>>({});
 
@@ -21,19 +23,13 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
     setIsPlaying(true);
     cameraAudio.playShutterSound(currentItem.shutterSpeed);
     const soundDurationMs = Math.max(150, currentItem.shutterSpeed * 1000 + 100);
-    setTimeout(() => {
-      setIsPlaying(false);
-    }, soundDurationMs);
+    setTimeout(() => setIsPlaying(false), soundDurationMs);
   };
 
   const handleSelectOption = (opt: string) => {
     if (userResult) return;
     const isCorrect = opt === currentItem.correctOption;
-    setSelectedOption(opt);
-    setAnswers((prev) => ({
-      ...prev,
-      [currentItem.id]: { selected: opt, isCorrect },
-    }));
+    setAnswers((prev) => ({ ...prev, [currentItem.id]: { selected: opt, isCorrect } }));
 
     if (isCorrect) {
       cameraAudio.playSuccessSound();
@@ -44,132 +40,105 @@ export const SoundMatchingActivity: React.FC<SoundMatchingActivityProps> = ({ on
   };
 
   const handleNext = () => {
-    setSelectedOption(null);
     setCurrentIndex((prev) => (prev + 1) % SOUND_MATCH_ITEMS.length);
   };
 
   const totalCorrect = Object.values(answers).filter((a) => a.isCorrect).length;
 
+  const styleFor = (opt: string) => {
+    if (!userResult) return IDLE;
+    if (opt === currentItem.correctOption) return CORRECT;
+    if (userResult.selected === opt) return WRONG;
+    return { ...IDLE, bg: '#FAF8F5', fg: '#A39C91' };
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
-              İşitsel Perde Hızı Pratiği
-            </span>
-            <h3 className="text-lg font-bold text-[#1F1E1B]">Deklanşör Sesi ile Enstantane Eşleştirme</h3>
-            <p className="text-sm text-[#66635E] mt-0.5">
-              Mekanik deklanşör sesini dinleyin ve perdenin açık kalma süresini doğru tahmin edin.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-[16px] border border-stone-200">
-            <Award className="w-4 h-4 text-[var(--accent)]" />
-            <span className="text-xs font-bold text-stone-800">
-              Skor: {totalCorrect} / {SOUND_MATCH_ITEMS.length}
-            </span>
-          </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold" style={{ color: '#6B665E' }}>
+          Ses Testi {currentIndex + 1} / {SOUND_MATCH_ITEMS.length}
+        </span>
+        <span className="text-sm font-bold" style={{ color: 'var(--accent)' }}>
+          {totalCorrect} doğru
+        </span>
+      </div>
+
+      <p className="text-xs leading-relaxed" style={{ color: '#6B665E' }}>
+        {currentItem.situation}
+      </p>
+
+      <div
+        className="rounded-[28px] flex flex-col items-center justify-center gap-5 py-8"
+        style={{ background: '#1F2A44' }}
+      >
+        <button
+          type="button"
+          onClick={handlePlaySound}
+          disabled={isPlaying}
+          aria-label="Deklanşör sesini çal"
+          style={{ boxShadow: `0 0 0 10px ${isPlaying ? 'rgba(252,211,77,0.35)' : 'rgba(252,211,77,0.12)'}` }}
+          className="w-[104px] h-[104px] rounded-full border-none bg-[#FCD34D] flex items-center justify-center transition-shadow"
+        >
+          {isPlaying ? (
+            <Volume2 className="w-11 h-11" style={{ color: '#1F2A44' }} />
+          ) : (
+            <Play className="w-11 h-11 ml-1" style={{ color: '#1F2A44' }} />
+          )}
+        </button>
+        <div className="flex items-center gap-1.5 h-12">
+          {WAVE_HEIGHTS.map((h, i) => (
+            <span
+              key={i}
+              className="block w-1.5 rounded-full transition-all"
+              style={{
+                height: isPlaying ? h : Math.max(6, Math.round(h / 3)),
+                background: isPlaying ? '#FCD34D' : '#4A5A7D',
+              }}
+            />
+          ))}
         </div>
       </div>
 
-      <div className="max-w-xl mx-auto bg-white border border-[#EBE7E0] rounded-[24px] p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex items-center justify-between border-b border-[#F0ECE6] pb-3">
-          <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
-            Ses Testi {currentIndex + 1} / {SOUND_MATCH_ITEMS.length}
-          </span>
-          <span className="text-xs text-[var(--accent)] font-semibold">{currentItem.situation}</span>
-        </div>
+      <div className="flex items-center gap-2 font-extrabold text-base">
+        <Lightbulb className="w-[22px] h-[22px]" style={{ color: 'var(--accent)' }} />
+        <span>Duyduğunuz enstantane hızı hangisi?</span>
+      </div>
 
-        {/* Ses Çalma Butonu */}
-        <div className="flex flex-col items-center justify-center py-6 space-y-3 bg-[#FAF8F5] rounded-[20px] border border-[#EBE7E0]">
-          <button
-            onClick={handlePlaySound}
-            disabled={isPlaying}
-            className={`w-20 h-20 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 ${
-              isPlaying
-                ? 'bg-[var(--accent)] text-white scale-105 animate-pulse'
-                : 'bg-[var(--accent)] hover:bg-[var(--accent)] text-white ring-4 ring-[var(--accent)]/20'
-            }`}
-          >
-            {isPlaying ? <Volume2 className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
-          </button>
-          <span className="text-xs font-bold text-stone-700">
-            {isPlaying ? 'Deklanşör çalışıyor...' : 'Sesi Dinlemek İçin Dokunun'}
-          </span>
-          <span className="text-[11px] text-stone-500 ">
-            {currentItem.shutterSpeed >= 1
-              ? `${currentItem.shutterSpeed} saniyelik çift vuruş aralığı`
-              : 'Milisaniyelik mekanik perde sesi'}
-          </span>
-        </div>
-
-        {/* Seçenekler */}
-        <div className="space-y-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-stone-600 block">
-            Duyduğunuz enstantane hızı hangisi?
-          </label>
-          <div className="grid grid-cols-1 gap-2.5">
-            {currentItem.options.map((opt) => {
-              const isSelected = userResult?.selected === opt;
-              const isCorrect = opt === currentItem.correctOption;
-
-              let btnStyle: React.CSSProperties = { background: '#FAFAF9', borderColor: '#E7E5E4', color: '#292524' };
-              if (userResult) {
-                if (isCorrect) {
-                  btnStyle = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, fontWeight: 700 };
-                } else if (isSelected) {
-                  btnStyle = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg };
-                } else {
-                  btnStyle = { background: '#FAFAF9', borderColor: '#E7E5E4', opacity: 0.5 };
-                }
-              }
-
-              return (
-                <button
-                  key={opt}
-                  onClick={() => handleSelectOption(opt)}
-                  disabled={Boolean(userResult)}
-                  style={btnStyle}
-                  className="w-full p-4 rounded-[16px] border text-left text-sm font-semibold transition-all flex items-center justify-between"
-                >
-                  <span>{opt}</span>
-                  {userResult && isCorrect && <CheckCircle2 className="w-5 h-5" style={{ color: CORRECT.border }} />}
-                  {userResult && isSelected && !isCorrect && <XCircle className="w-5 h-5" style={{ color: WRONG.border }} />}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Sonuç & Açıklama */}
-        {userResult && (
-          <div
-            className="p-4 rounded-[16px] border text-xs leading-relaxed space-y-1"
-            style={{
-              background: userResult.isCorrect ? CORRECT.bg : WRONG.bg,
-              borderColor: userResult.isCorrect ? CORRECT.border : WRONG.border,
-              color: userResult.isCorrect ? CORRECT.fg : WRONG.fg
-            }}
-          >
-            <strong className="block font-bold">
-              {userResult.isCorrect ? '✅ Doğru Tespit!' : '❌ Tekrar Dinleyin:'}
-            </strong>
-            <p>{currentItem.explanation}</p>
-          </div>
-        )}
-
-        {/* Sonraki Soru */}
-        {userResult && (
-          <div className="flex justify-end pt-2">
+      <div className="flex flex-col gap-2.5">
+        {currentItem.options.map((opt, i) => {
+          const tone = styleFor(opt);
+          const isCorrect = opt === currentItem.correctOption;
+          const isSelected = userResult?.selected === opt;
+          return (
             <button
-              onClick={handleNext}
-              className="px-5 py-2.5 rounded-[16px] font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent)] text-white transition-colors"
+              key={opt}
+              type="button"
+              onClick={() => handleSelectOption(opt)}
+              disabled={Boolean(userResult)}
+              aria-label={opt}
+              style={{ background: tone.bg, color: tone.fg, border: `${userResult ? 3 : 1}px solid ${tone.border}` }}
+              className="min-h-[60px] rounded-[18px] px-3.5 py-2.5 flex items-center gap-3 text-left font-bold text-base transition-all"
             >
-              Sonraki Ses Testi →
+              <span
+                className="w-[38px] h-[38px] rounded-xl flex items-center justify-center font-extrabold shrink-0"
+                style={{
+                  background: userResult ? tone.border : '#EDE6DB',
+                  color: userResult ? '#FFFFFF' : '#6B665E',
+                }}
+              >
+                {'ABCD'[i]}
+              </span>
+              <span className="flex-grow">{opt}</span>
+              {userResult && isCorrect && <Check className="w-[22px] h-[22px]" strokeWidth={3} style={{ color: CORRECT.border }} />}
+              {userResult && isSelected && !isCorrect && <X className="w-[22px] h-[22px]" strokeWidth={3} style={{ color: WRONG.border }} />}
             </button>
-          </div>
-        )}
+          );
+        })}
       </div>
+
+      {userResult && (
+        <CheckBar correct={userResult.isCorrect} message={currentItem.explanation} onNext={handleNext} />
+      )}
     </div>
   );
 };

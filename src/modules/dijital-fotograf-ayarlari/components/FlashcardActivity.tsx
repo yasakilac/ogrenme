@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import {
-  RotateCw,
-  CheckCircle,
-  BookOpen,
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
-} from 'lucide-react';
+import { RotateCcw, Check, ChevronLeft, ChevronRight, Aperture, Timer, Sparkles, SunMedium } from 'lucide-react';
 import { FLASHCARDS_DATA, type FlashcardItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
 
 interface FlashcardActivityProps {
   onScoreUpdate?: (points: number) => void;
 }
+
+const CATEGORY_ICON: Record<FlashcardItem['category'], React.ElementType> = {
+  Diyafram: Aperture,
+  Enstantane: Timer,
+  ISO: Sparkles,
+  Pozlama: SunMedium,
+};
 
 export const FlashcardActivity: React.FC<FlashcardActivityProps> = ({ onScoreUpdate }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -21,148 +21,155 @@ export const FlashcardActivity: React.FC<FlashcardActivityProps> = ({ onScoreUpd
 
   const card: FlashcardItem = FLASHCARDS_DATA[currentIndex];
   const isMastered = masteredCards[card.id] || false;
+  const CategoryIcon = CATEGORY_ICON[card.category];
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    setIsFlipped((prev) => !prev);
     cameraAudio.playDialTick();
   };
 
-  const handleNext = () => {
+  const goTo = (index: number) => {
     setIsFlipped(false);
-    setCurrentIndex((prev) => (prev + 1) % FLASHCARDS_DATA.length);
+    setCurrentIndex((index + FLASHCARDS_DATA.length) % FLASHCARDS_DATA.length);
   };
 
-  const handlePrev = () => {
-    setIsFlipped(false);
-    setCurrentIndex((prev) => (prev - 1 + FLASHCARDS_DATA.length) % FLASHCARDS_DATA.length);
+  const handleAgain = () => {
+    cameraAudio.playDialTick();
+    goTo(currentIndex + 1);
   };
 
-  const handleToggleMastered = () => {
-    const next = !isMastered;
-    setMasteredCards((prev) => ({ ...prev, [card.id]: next }));
-    if (next) {
+  const handleKnow = () => {
+    if (!isMastered) {
+      setMasteredCards((prev) => ({ ...prev, [card.id]: true }));
       cameraAudio.playSuccessSound();
       if (onScoreUpdate) onScoreUpdate(10);
     }
+    goTo(currentIndex + 1);
   };
 
   const masteredCount = Object.values(masteredCards).filter(Boolean).length;
 
   return (
-    <div className="space-y-6">
-      {/* Üst Durum & İlerleme */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-[20px] border border-[#EBE7E0]">
-        <div>
-          <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
-            Kavram Ezberleme Kartları
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={() => goTo(currentIndex - 1)}
+          aria-label="Önceki kart"
+          className="w-11 h-11 rounded-full bg-white border shrink-0 flex items-center justify-center"
+          style={{ borderColor: '#E6E0D6' }}
+        >
+          <ChevronLeft className="w-5 h-5" style={{ color: '#1C1B19' }} />
+        </button>
+        <div className="text-center">
+          <span className="text-sm font-bold block" style={{ color: '#6B665E' }}>
+            Kart {currentIndex + 1} / {FLASHCARDS_DATA.length}
           </span>
-          <h3 className="text-lg font-bold text-[#1F1E1B]">Kavram Flashcardları</h3>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-medium text-[#7A7670]">
-            Öğrenilen: <strong className="text-[var(--accent)] font-bold">{masteredCount}</strong> / {FLASHCARDS_DATA.length}
+          <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>
+            {masteredCount} öğrenildi
           </span>
-          <div className="w-24 h-2 bg-stone-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[var(--accent)] transition-all duration-300"
-              style={{ width: `${(masteredCount / FLASHCARDS_DATA.length) * 100}%` }}
-            />
-          </div>
         </div>
+        <button
+          type="button"
+          onClick={() => goTo(currentIndex + 1)}
+          aria-label="Sonraki kart"
+          className="w-11 h-11 rounded-full bg-white border shrink-0 flex items-center justify-center"
+          style={{ borderColor: '#E6E0D6' }}
+        >
+          <ChevronRight className="w-5 h-5" style={{ color: '#1C1B19' }} />
+        </button>
       </div>
 
-      {/* Kart Konteyneri */}
-      <div className="max-w-xl mx-auto perspective-1000">
-        <div
-          onClick={handleFlip}
-          className={`relative min-h-[340px] cursor-pointer rounded-[24px] p-6 sm:p-8 transition-all duration-500 transform shadow-md hover:shadow-lg flex flex-col justify-between select-none ${
-            isFlipped
-              ? 'bg-[#1F1E1B] text-[#FAF8F5] border-2 border-stone-700'
-              : 'bg-white text-[#1F1E1B] border-2 border-[#EBE7E0]'
-          }`}
+      <button
+        type="button"
+        onClick={handleFlip}
+        aria-label="Kartı çevir"
+        className="w-full min-h-[440px] rounded-[30px] border-none p-7 flex flex-col items-center justify-center gap-5 relative transition-colors"
+        style={{ background: isFlipped ? '#1F2A44' : '#FFFFFF', color: isFlipped ? '#FFFFFF' : '#1C1B19' }}
+      >
+        <span
+          className="absolute top-[18px] right-[18px] w-10 h-10 rounded-[20px] flex items-center justify-center"
+          style={{ background: isFlipped ? '#2E3D5F' : '#F7F4EE' }}
+          aria-hidden="true"
         >
-          {/* Kart Üst Başlık & Kategori */}
-          <div className="flex items-center justify-between">
+          <RotateCcw className="w-5 h-5" style={{ color: isFlipped ? '#FFFFFF' : '#1C1B19' }} />
+        </span>
+
+        {!isFlipped ? (
+          <>
             <span
-              className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                isFlipped ? 'bg-stone-800 text-[var(--accent)]' : 'bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30'
-              }`}
+              className="w-[120px] h-[120px] rounded-[36px] flex items-center justify-center"
+              style={{ background: 'var(--accent-light)' }}
             >
-              {card.category}
+              <CategoryIcon className="w-[60px] h-[60px]" style={{ color: 'var(--accent)' }} strokeWidth={1.6} />
             </span>
-            <span className="text-xs opacity-60">
-              {currentIndex + 1} / {FLASHCARDS_DATA.length}
+            <span className="font-display font-extrabold text-[34px] leading-tight text-center" style={{ letterSpacing: '-0.02em' }}>
+              {card.title}
             </span>
+            <span className="font-bold text-[17px] text-center" style={{ color: '#6B665E' }}>
+              {card.summary}
+            </span>
+          </>
+        ) : (
+          <div className="w-full max-w-[290px] flex flex-col gap-3.5">
+            <div className="rounded-[20px] p-4 flex flex-col gap-2 text-left" style={{ background: '#2E3D5F' }}>
+              <span className="font-display font-extrabold text-lg" style={{ color: '#FCD34D' }}>
+                Optik Detay
+              </span>
+              <span className="font-bold text-[15px]" style={{ color: '#C7D0E4' }}>
+                {card.details}
+              </span>
+            </div>
+            <div className="rounded-[20px] p-4 flex flex-col gap-2 text-left" style={{ background: '#2E3D5F' }}>
+              <span className="font-display font-extrabold text-lg" style={{ color: '#FCD34D' }}>
+                Altın Kural
+              </span>
+              <span className="font-bold text-[15px]" style={{ color: '#FFFFFF' }}>
+                {card.formulaOrRule}
+              </span>
+              <span className="font-semibold text-sm" style={{ color: '#C7D0E4' }}>
+                {card.visualEffect}
+              </span>
+            </div>
           </div>
+        )}
+      </button>
 
-          {/* Kart İçeriği (Ön vs Arka) */}
-          <div className="my-auto py-4 text-center">
-            {!isFlipped ? (
-              <div className="space-y-3">
-                <span className="text-xs font-bold text-[#8A8680] uppercase tracking-widest block">KAVRAM</span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1F1E1B]">{card.title}</h2>
-                <p className="text-sm text-[#66635E] max-w-md mx-auto leading-relaxed">{card.summary}</p>
-                <div className="pt-4 text-xs font-semibold text-[var(--accent)] flex items-center justify-center gap-1.5">
-                  <RotateCw className="w-3.5 h-3.5" /> Detaylar ve kural için karta dokunun
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4 text-left">
-                <div>
-                  <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block mb-1">
-                    OPTİK DETAY & MEKANİZMA
-                  </span>
-                  <p className="text-sm text-stone-300 leading-relaxed">{card.details}</p>
-                </div>
-                <div className="p-3 bg-stone-900 rounded-[16px] border border-stone-800">
-                  <span className="text-xs font-bold text-[var(--accent)] block mb-0.5">Altın Kural:</span>
-                  <p className="text-xs text-stone-200 ">{card.formulaOrRule}</p>
-                </div>
-                <div className="text-xs text-stone-400">
-                  <strong>Fotoğraftaki İmzası:</strong> {card.visualEffect}
-                </div>
-              </div>
-            )}
-          </div>
+      <div className="flex justify-center flex-wrap gap-1.5 px-4">
+        {FLASHCARDS_DATA.map((c, i) => (
+          <span
+            key={c.id}
+            aria-hidden="true"
+            className="block h-2 rounded-full transition-all"
+            style={{
+              width: i === currentIndex ? 28 : 8,
+              background: i <= currentIndex ? 'var(--accent)' : '#DDD5C8',
+            }}
+          />
+        ))}
+      </div>
 
-          {/* Kart Alt Çevirme İpucu */}
-          <div className="pt-2 border-t border-current/10 flex items-center justify-between text-xs opacity-75">
-            <span>{isFlipped ? 'Ön yüze dönmek için tıkla' : 'Açıklama ve formül için tıkla'}</span>
-            <span className="text-[11px]">Çift Yönlü Kart</span>
-          </div>
-        </div>
-
-        {/* Navigasyon & Öğrenildi Butonları */}
-        <div className="flex items-center justify-between mt-5 px-2">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handlePrev}
-              className="p-2.5 rounded-[16px] bg-white border border-[#EBE7E0] hover:bg-stone-100 text-[#1F1E1B] transition-colors"
-              title="Önceki Kart"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleNext}
-              className="p-2.5 rounded-[16px] bg-white border border-[#EBE7E0] hover:bg-stone-100 text-[#1F1E1B] transition-colors"
-              title="Sonraki Kart"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-
-          <button
-            onClick={handleToggleMastered}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-[16px] font-bold text-xs border transition-all ${
-              isMastered
-                ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-sm'
-                : 'bg-white text-stone-700 border-[#EBE7E0] hover:bg-[var(--accent-light)] hover:text-[var(--accent)]'
-            }`}
-          >
-            <CheckCircle className="w-4 h-4" />
-            {isMastered ? 'Öğrenildi Olarak İşaretlendi' : 'Bu Kavramı Öğrendim (+10 Puan)'}
-          </button>
-        </div>
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={handleAgain}
+          aria-label="Tekrar çalış"
+          className="h-[60px] rounded-[18px] flex items-center justify-center gap-2 font-extrabold text-base"
+          style={{ background: '#FFEDD5', border: '2px solid #C2410C', color: '#7C2D12' }}
+        >
+          <RotateCcw className="w-5 h-5" strokeWidth={2.4} />
+          <span>Tekrar</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleKnow}
+          aria-label="Bu kavramı biliyorum"
+          className="h-[60px] rounded-[18px] flex items-center justify-center gap-2 font-extrabold text-base"
+          style={{ background: '#DBEAFE', border: '2px solid #1D4ED8', color: '#1E3A8A' }}
+        >
+          <Check className="w-5 h-5" strokeWidth={3} />
+          <span>Biliyorum</span>
+        </button>
       </div>
     </div>
   );

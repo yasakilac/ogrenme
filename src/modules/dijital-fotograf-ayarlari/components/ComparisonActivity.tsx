@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Columns, CheckCircle2, Sliders, ArrowRight } from 'lucide-react';
+import { Sun, Sparkles, MapPin } from 'lucide-react';
 import { COMPARISON_MATRIX, type ComparisonMatrixItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
 
 interface ComparisonActivityProps {
   onScoreUpdate?: (points: number) => void;
 }
+
+const DARK = '#1F2A44';
+const DARK_CHIP = '#2E3D5F';
 
 export const ComparisonActivity: React.FC<ComparisonActivityProps> = ({ onScoreUpdate }) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -23,118 +26,65 @@ export const ComparisonActivity: React.FC<ComparisonActivityProps> = ({ onScoreU
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
-        <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
-          Parametre Karşılaştırma Analizi
-        </span>
-        <h3 className="text-lg font-bold text-[#1F1E1B]">Karşılaştırma & Zıtlık Matrisi</h3>
-        <p className="text-sm text-[#66635E] mt-0.5">
-          Uç ayar değerlerinin ışık geçirgenliği, görsel optik sonucu ve ideal kullanım senaryolarını kıyaslayın.
-        </p>
-      </div>
+  const sides: { value: ComparisonMatrixItem['lowValue']; dark: boolean }[] = [
+    { value: currentComparison.lowValue, dark: false },
+    { value: currentComparison.highValue, dark: true },
+  ];
 
-      {/* Sekmeler */}
-      <div className="flex gap-2 border-b border-[#EBE7E0] pb-2 overflow-x-auto">
+  return (
+    <div className="space-y-4">
+      <p className="text-xs leading-relaxed" style={{ color: '#6B665E' }}>
+        Uç ayar değerlerinin ışık geçirgenliği, görsel sonucu ve ideal kullanım senaryosunu kıyaslayın.
+      </p>
+
+      <div className="grid gap-1.5 p-1.5 rounded-[18px]" style={{ background: '#EDE6DB', gridTemplateColumns: `repeat(${COMPARISON_MATRIX.length}, minmax(0, 1fr))` }}>
         {COMPARISON_MATRIX.map((item, idx) => (
           <button
             key={item.parameter}
+            type="button"
             onClick={() => handleSelectTab(idx)}
-            className={`px-4 py-2.5 rounded-[16px] font-bold text-xs shrink-0 transition-colors ${
-              selectedIndex === idx
-                ? 'bg-[var(--accent)] text-white shadow-sm'
-                : 'bg-white border border-[#EBE7E0] text-[#1F1E1B] hover:bg-stone-100'
-            }`}
+            className="h-[46px] rounded-[14px] border-none font-extrabold text-[13px] px-1 transition-colors"
+            style={{ background: selectedIndex === idx ? '#1C1B19' : 'transparent', color: selectedIndex === idx ? '#FFFFFF' : '#1C1B19' }}
           >
             {item.parameter}
           </button>
         ))}
       </div>
 
-      {/* Karşılaştırma Tablosu (2 Yan Yana Sütun) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Sol Kolon: Düşük / Açık Değer */}
-        <div className="bg-white border-2 border-[var(--accent)]/30 rounded-[24px] p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[var(--accent)]/30">
-            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
-              AÇIK / DÜŞÜK UÇ
-            </span>
-            <span className="px-2.5 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-extrabold text-xs">
-              {currentComparison.lowValue.label}
-            </span>
-          </div>
+      <div className="grid grid-cols-2 gap-2.5">
+        {sides.map(({ value, dark }) => (
+          <div
+            key={value.label}
+            className="rounded-[24px] p-4 flex flex-col gap-3.5"
+            style={{ background: dark ? DARK : '#FFFFFF', color: dark ? '#FFFFFF' : '#1C1B19', border: dark ? 'none' : '1px solid #E6E0D6' }}
+          >
+            <span className="font-display font-extrabold text-[15px] leading-tight">{value.label}</span>
 
-          <div className="space-y-3 text-xs">
-            <div>
-              <strong className="text-stone-500 block text-[11px] uppercase tracking-wide">
-                Işık Girişi:
-              </strong>
-              <p className="text-sm font-bold text-[#1F1E1B] mt-0.5">
-                {currentComparison.lowValue.lightIntake}
-              </p>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1.5 font-bold text-[11px] opacity-80">
+                <Sun className="w-3.5 h-3.5" />
+                <span>Işık Girişi</span>
+              </div>
+              <p className="text-xs font-bold">{value.lightIntake}</p>
             </div>
 
-            <div>
-              <strong className="text-stone-500 block text-[11px] uppercase tracking-wide">
-                Görsel İmzası:
-              </strong>
-              <p className="text-[#1F1E1B] mt-0.5 leading-relaxed bg-[var(--accent-light)]/50 p-3 rounded-[16px] border border-[var(--accent)]/30">
-                {currentComparison.lowValue.visualEffect}
-              </p>
+            <div
+              className="rounded-[14px] p-2.5 flex items-start gap-2 text-[11px] font-semibold leading-relaxed"
+              style={{ background: dark ? DARK_CHIP : 'var(--accent-light)' }}
+            >
+              <Sparkles className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span>{value.visualEffect}</span>
             </div>
 
-            <div>
-              <strong className="text-stone-500 block text-[11px] uppercase tracking-wide">
-                En Uygun Çekim Alanı:
-              </strong>
-              <p className="text-[#1F1E1B] mt-0.5 font-medium">
-                {currentComparison.lowValue.idealScenario}
-              </p>
+            <div
+              className="rounded-[14px] p-2.5 flex items-start gap-2 text-[11px] font-semibold leading-relaxed"
+              style={{ background: dark ? DARK_CHIP : 'var(--accent-light)' }}
+            >
+              <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span>{value.idealScenario}</span>
             </div>
           </div>
-        </div>
-
-        {/* Sağ Kolon: Yüksek / Kısık Değer */}
-        <div className="bg-white border-2 border-[var(--accent)]/30 rounded-[24px] p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[var(--accent)]/30">
-            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
-              KISIK / YÜKSEK UÇ
-            </span>
-            <span className="px-2.5 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] font-extrabold text-xs">
-              {currentComparison.highValue.label}
-            </span>
-          </div>
-
-          <div className="space-y-3 text-xs">
-            <div>
-              <strong className="text-stone-500 block text-[11px] uppercase tracking-wide">
-                Işık Girişi:
-              </strong>
-              <p className="text-sm font-bold text-[#1F1E1B] mt-0.5">
-                {currentComparison.highValue.lightIntake}
-              </p>
-            </div>
-
-            <div>
-              <strong className="text-stone-500 block text-[11px] uppercase tracking-wide">
-                Görsel İmzası:
-              </strong>
-              <p className="text-[#1F1E1B] mt-0.5 leading-relaxed bg-[var(--accent-light)]/50 p-3 rounded-[16px] border border-[var(--accent)]/30">
-                {currentComparison.highValue.visualEffect}
-              </p>
-            </div>
-
-            <div>
-              <strong className="text-stone-500 block text-[11px] uppercase tracking-wide">
-                En Uygun Çekim Alanı:
-              </strong>
-              <p className="text-[#1F1E1B] mt-0.5 font-medium">
-                {currentComparison.highValue.idealScenario}
-              </p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

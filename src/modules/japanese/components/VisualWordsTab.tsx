@@ -16,7 +16,8 @@ import {
   BookOpen,
   Bookmark,
   ArrowLeft,
-  Sparkles
+  Sparkles,
+  Image as ImageIcon
 } from 'lucide-react';
 import { PracticeWord, AlphabetType } from '../../../types';
 import { PRACTICE_WORDS } from '../data/wordsData';
@@ -264,13 +265,18 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
     <div className="space-y-5 pb-24 sm:pb-12 max-w-4xl mx-auto">
       {!isSessionActive ? (
         <>
-          {/* 1. BAŞLIK VE AÇIKLAMA */}
+          {/* Icon box + title (design screen header) */}
+          <div className="flex items-center gap-2.5 px-1">
+            <div className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0" style={{ background: 'var(--accent)' }}>
+              <ImageIcon className="w-[22px] h-[22px] text-white" />
+            </div>
+            <h1 className="font-display text-2xl font-extrabold tracking-tight" style={{ color: '#1C1B19' }}>Görselden Bul</h1>
+          </div>
+
+          {/* 1. AÇIKLAMA VE MODLAR */}
           <div className="bg-white border border-[#E8E4DC] rounded-[24px] p-5 sm:p-6 shadow-2xs space-y-6">
             <div>
-              <h1 className="text-xl sm:text-2xl font-black text-[#1F1E1B] tracking-tight">
-                Görsel Hafıza ile Harf & Kelime Öğrenimi
-              </h1>
-              <p className="text-xs sm:text-sm text-[#5C574F] mt-1 leading-relaxed max-w-2xl">
+              <p className="text-xs sm:text-sm text-[#5C574F] leading-relaxed max-w-2xl">
                 Tüm harfler ve kelimeler harf tablosundaki gerçek Tokyo yerlisi konuşmacının stüdyo kayıtlarıyla seslendirilir.
               </p>
             </div>
@@ -685,80 +691,90 @@ export const VisualWordsTab: React.FC<VisualWordsTabProps> = ({
               </div>
             </div>
 
-            {/* Quiz Image & Clue (More compact) */}
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className="w-full sm:w-44 h-32 sm:h-36 rounded-[20px] overflow-hidden border border-[#E6E1D8] relative shrink-0 shadow-inner">
-                <img
-                  src={currentQuizWord.imageUrl}
-                  alt={currentQuizWord.meaningTr}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
-                <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur-xs">
-                  {currentQuizWord.category}
+            {/* Quiz Image (Görsel Eşleme E8: tam genişlik görsel) */}
+            <div className="h-[200px] sm:h-[220px] rounded-[24px] overflow-hidden border border-[#E6E1D8] relative shadow-inner">
+              <img
+                src={currentQuizWord.imageUrl}
+                alt={currentQuizWord.meaningTr}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover"
+              />
+              <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur-xs">
+                {currentQuizWord.category}
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-2.5 text-center sm:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30 text-xs font-semibold">
+                <span>Türkçe Anlamı:</span>
+                <strong className="text-sm text-[var(--accent)]">{currentQuizWord.meaningTr}</strong>
+              </div>
+
+              {/* Display Japanese word with missing red blank box */}
+              <div className="flex items-center justify-center sm:justify-start gap-2 pt-1">
+                <div className="w-12 h-12 rounded-[16px] border-2 border-dashed border-[var(--accent)] bg-[var(--accent-light)] flex items-center justify-center shadow-inner">
+                  {isAnswerChecked ? (
+                    <span className="text-3xl font-black text-[var(--accent)]">
+                      {currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1)}
+                    </span>
+                  ) : (
+                    <span className="text-xl font-bold text-[var(--accent)]">?</span>
+                  )}
+                </div>
+                <span className="text-3xl font-bold text-[#1F1E1B]">
+                  {currentQuizWord.kana.slice((currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1)).length)}
                 </span>
               </div>
 
-              <div className="flex-1 text-center sm:text-left space-y-2.5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/30 text-xs font-semibold">
-                  <span>Türkçe Anlamı:</span>
-                  <strong className="text-sm text-[var(--accent)]">{currentQuizWord.meaningTr}</strong>
-                </div>
-
-                {/* Display Japanese word with missing red blank box */}
-                <div className="flex items-center justify-center sm:justify-start gap-2 pt-1">
-                  <div className="w-12 h-12 rounded-[16px] border-2 border-dashed border-[var(--accent)] bg-[var(--accent-light)] flex items-center justify-center shadow-inner">
-                    {isAnswerChecked ? (
-                      <span className="text-3xl font-black text-[var(--accent)]">
-                        {currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1)}
-                      </span>
-                    ) : (
-                      <span className="text-xl font-bold text-[var(--accent)]">?</span>
-                    )}
-                  </div>
-                  <span className="text-3xl font-bold text-[#1F1E1B]">
-                    {currentQuizWord.kana.slice((currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1)).length)}
-                  </span>
-                </div>
-
-                <p className="text-xs text-[#7A756D]">
-                  Romaji İpucu: <strong className="text-sm text-[#1F1E1B]">{currentQuizWord.romaji}</strong>
-                </p>
-              </div>
+              <p className="text-xs text-[#7A756D]">
+                Romaji İpucu: <strong className="text-sm text-[#1F1E1B]">{currentQuizWord.romaji}</strong>
+              </p>
             </div>
 
-            {/* 4 Interactive Red Choice Buttons */}
-            <div className="mt-5 pt-4 border-t border-[#E6E1D8] grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              {quizChoices.map((choice) => {
+            {/* Şık listesi — Görsel Eşleme (E8) dili: harf rozeti + büyük kana + sonuç ikonu */}
+            <div className="mt-4 pt-4 border-t border-[#E6E1D8] flex flex-col gap-2.5">
+              {quizChoices.map((choice, idx) => {
                 const correctLetter = currentQuizWord.targetKana || currentQuizWord.kana.slice(0, 1);
                 const isSelected = selectedAnswer === choice;
                 const isCorrect = choice === correctLetter;
 
-                let btnStyle: React.CSSProperties = { background: '#FFFFFF', borderColor: '#E6E1D8', color: '#1F1E1B' };
+                let bg = '#FFFFFF';
+                let border = '1px solid #E6E1D8';
+                let fg = '#1F1E1B';
+                let kbg = '#EDE6DB';
+                let kfg = '#6B665E';
                 if (isAnswerChecked) {
                   if (isCorrect) {
-                    btnStyle = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, boxShadow: `0 0 0 2px ${CORRECT.border}` };
+                    bg = CORRECT.bg; border = `3px solid ${CORRECT.border}`; fg = CORRECT.fg; kbg = CORRECT.border; kfg = '#FFFFFF';
                   } else if (isSelected) {
-                    btnStyle = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg, boxShadow: `0 0 0 2px ${WRONG.border}` };
+                    bg = WRONG.bg; border = `3px solid ${WRONG.border}`; fg = WRONG.fg; kbg = WRONG.border; kfg = '#FFFFFF';
                   } else {
-                    btnStyle = { background: '#FAFAFA', borderColor: '#E5E7EB', color: '#9CA3AF', opacity: 0.6 };
+                    bg = '#FFFFFF'; border = '1px solid #E6E1D8'; fg = '#A39C91'; kbg = '#EDE6DB'; kfg = '#A39C91';
                   }
                 }
 
                 return (
                   <button
                     key={choice}
+                    id={`vw-quiz-choice-${idx}`}
                     onClick={() => handleQuizAnswer(choice)}
                     disabled={isAnswerChecked}
-                    style={btnStyle}
-                    className="p-3.5 rounded-[20px] border-2 text-center transition-all shadow-2xs active:scale-95 hover:border-[var(--accent)]"
+                    style={{ background: bg, border, color: fg }}
+                    className="min-h-[60px] rounded-[18px] px-3.5 py-2.5 flex items-center gap-3 transition-all active:scale-[0.99]"
                   >
-                    <span className="text-3xl sm:text-4xl font-black block mb-1" style={{ color: isAnswerChecked ? btnStyle.color : 'var(--accent)' }}>
-                      {choice}
+                    <span
+                      className="w-[38px] h-[38px] rounded-[12px] flex items-center justify-center font-extrabold text-base shrink-0"
+                      style={{ background: kbg, color: kfg }}
+                    >
+                      {'ABCD'[idx]}
                     </span>
-                    <span className="text-[10px] text-[#7A756D] font-medium block">
-                      (Tıkla & Dinle)
-                    </span>
+                    <span className="flex-grow text-left font-japanese font-black text-2xl">{choice}</span>
+                    {isAnswerChecked && isCorrect && (
+                      <CheckCircle className="w-[22px] h-[22px] shrink-0" style={{ color: CORRECT.border }} />
+                    )}
+                    {isAnswerChecked && isSelected && !isCorrect && (
+                      <XCircle className="w-[22px] h-[22px] shrink-0" style={{ color: WRONG.border }} />
+                    )}
                   </button>
                 );
               })}

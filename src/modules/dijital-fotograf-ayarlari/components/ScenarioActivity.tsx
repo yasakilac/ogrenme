@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Compass, CheckCircle2, XCircle, Award } from 'lucide-react';
+import { Compass, Target, Check, X } from 'lucide-react';
 import { SCENARIO_ITEMS, type ScenarioItem } from '../data/photographyData';
 import { cameraAudio } from '../utils/cameraAudio';
-import { CORRECT, WRONG } from '../../../components/ui';
+import { CORRECT, WRONG, CheckBar } from '../../../components/ui';
 
 interface ScenarioActivityProps {
   onScoreUpdate?: (points: number) => void;
 }
+
+const IDLE = { bg: '#FFFFFF', border: '#E6E0D6', fg: '#1C1B19' };
 
 export const ScenarioActivity: React.FC<ScenarioActivityProps> = ({ onScoreUpdate }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -14,13 +16,11 @@ export const ScenarioActivity: React.FC<ScenarioActivityProps> = ({ onScoreUpdat
 
   const scenario: ScenarioItem = SCENARIO_ITEMS[currentIndex];
   const userResult = answers[scenario.id];
+  const feedbackOption = userResult ? scenario.options.find((o) => o.id === userResult.optionId) : undefined;
 
   const handleSelectOption = (optId: string, isCorrect: boolean) => {
     if (userResult) return;
-    setAnswers((prev) => ({
-      ...prev,
-      [scenario.id]: { optionId: optId, isCorrect },
-    }));
+    setAnswers((prev) => ({ ...prev, [scenario.id]: { optionId: optId, isCorrect } }));
 
     if (isCorrect) {
       cameraAudio.playSuccessSound();
@@ -34,112 +34,86 @@ export const ScenarioActivity: React.FC<ScenarioActivityProps> = ({ onScoreUpdat
     setCurrentIndex((prev) => (prev + 1) % SCENARIO_ITEMS.length);
   };
 
+  const styleFor = (opt: ScenarioItem['options'][number]) => {
+    if (!userResult) return IDLE;
+    if (opt.isCorrect) return CORRECT;
+    if (userResult.optionId === opt.id) return WRONG;
+    return { ...IDLE, bg: '#FAF8F5', fg: '#A39C91' };
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-5 rounded-[20px] border border-[#EBE7E0]">
-        <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider block">
-          Gerçek Çekim Koşulları Pratiği
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold" style={{ color: '#6B665E' }}>
+          Görev {currentIndex + 1} / {SCENARIO_ITEMS.length}
         </span>
-        <h3 className="text-lg font-bold text-[#1F1E1B]">Saha Senaryoları & Ayar Kararı</h3>
-        <p className="text-sm text-[#66635E] mt-0.5">
-          Gerçek hayattaki zorlu çekim koşullarında en uygun Diyafram, Enstantane ve ISO kombinasyonunu seçin.
+        <span className="text-sm font-bold" style={{ color: 'var(--accent)' }}>
+          {scenario.title}
+        </span>
+      </div>
+
+      <div className="rounded-[28px] p-5 flex flex-col gap-3" style={{ background: 'var(--accent-light)' }}>
+        <div className="flex items-center gap-2">
+          <Compass className="w-5 h-5 shrink-0" style={{ color: 'var(--accent)' }} />
+          <span className="text-xs font-extrabold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
+            Saha Senaryosu
+          </span>
+        </div>
+        <p className="text-sm font-semibold leading-relaxed" style={{ color: '#1C1B19' }}>
+          {scenario.story}
         </p>
+        <div
+          className="flex items-center gap-2 rounded-[14px] px-3 py-2 text-xs font-bold"
+          style={{ background: '#FFFFFF', color: 'var(--accent)' }}
+        >
+          <Target className="w-4 h-4 shrink-0" />
+          <span>Hedef: {scenario.goal}</span>
+        </div>
       </div>
 
-      <div className="max-w-2xl mx-auto bg-white border border-[#EBE7E0] rounded-[24px] p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex items-center justify-between text-xs text-[#8A8680]">
-          <span className="">GÖREV {currentIndex + 1} / {SCENARIO_ITEMS.length}</span>
-          <span className="font-bold text-[#1F1E1B]">{scenario.title}</span>
-        </div>
-
-        {/* Senaryo Hikayesi */}
-        <div className="p-5 rounded-[20px] bg-[#FAF8F5] border border-[#EBE7E0] space-y-3">
-          <p className="text-sm sm:text-base text-[#1F1E1B] leading-relaxed font-medium">
-            {scenario.story}
-          </p>
-          <div className="text-xs font-bold text-[var(--accent)] bg-[var(--accent-light)] p-2.5 rounded-[16px] border border-[var(--accent)]/30">
-            🎯 Hedefiniz: {scenario.goal}
-          </div>
-        </div>
-
-        {/* Ayar Seçenekleri */}
-        <div className="space-y-2.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-stone-600 block">
-            Hangi ayar kombinasyonunu seçersiniz?
-          </label>
-          <div className="space-y-2">
-            {scenario.options.map((opt) => {
-              const isSelected = userResult?.optionId === opt.id;
-
-              let style: React.CSSProperties = { background: '#FAF8F5', borderColor: '#E0DCD6', color: '#1F1E1B' };
-              if (userResult) {
-                if (opt.isCorrect) {
-                  style = { background: CORRECT.bg, borderColor: CORRECT.border, color: CORRECT.fg, fontWeight: 700 };
-                } else if (isSelected) {
-                  style = { background: WRONG.bg, borderColor: WRONG.border, color: WRONG.fg };
-                } else {
-                  style = { background: '#FAFAF9', borderColor: '#E7E5E4', opacity: 0.4 };
-                }
-              }
-
-              return (
-                <button
-                  key={opt.id}
-                  onClick={() => handleSelectOption(opt.id, opt.isCorrect)}
-                  disabled={Boolean(userResult)}
-                  style={style}
-                  className="w-full p-4 rounded-[16px] border text-left transition-all flex items-center justify-between"
-                >
-                  <div>
-                    <span className="font-bold text-sm block">{opt.label}</span>
-                    <span className="text-[11px] opacity-75">
-                      Diyafram: {opt.settings.f} • Süre: {opt.settings.s} • ISO: {opt.settings.iso}
-                    </span>
-                  </div>
-                  {userResult && opt.isCorrect && <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: CORRECT.border }} />}
-                  {userResult && isSelected && !opt.isCorrect && <XCircle className="w-5 h-5 shrink-0" style={{ color: WRONG.border }} />}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Geri Bildirim */}
-        {userResult && (
-          <div className="space-y-3 pt-2">
-            {scenario.options.map((opt) => {
-              if (opt.id === userResult.optionId) {
-                return (
-                  <div
-                    key={opt.id}
-                    className="p-4 rounded-[16px] border text-xs leading-relaxed"
-                    style={{
-                      background: opt.isCorrect ? CORRECT.bg : WRONG.bg,
-                      borderColor: opt.isCorrect ? CORRECT.border : WRONG.border,
-                      color: opt.isCorrect ? CORRECT.fg : WRONG.fg
-                    }}
-                  >
-                    <strong className="block font-bold">
-                      {opt.isCorrect ? '✅ Harika Saha Kararı!' : 'Hata Analizi:'}
-                    </strong>
-                    <p>{opt.feedback}</p>
-                  </div>
-                );
-              }
-              return null;
-            })}
-
-            <div className="flex justify-end pt-1">
-              <button
-                onClick={handleNext}
-                className="px-5 py-2.5 rounded-[16px] font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent)] text-white transition-colors"
+      <div className="flex flex-col gap-2.5">
+        {scenario.options.map((opt, i) => {
+          const tone = styleFor(opt);
+          const isSelected = userResult?.optionId === opt.id;
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => handleSelectOption(opt.id, opt.isCorrect)}
+              disabled={Boolean(userResult)}
+              style={{ background: tone.bg, color: tone.fg, border: `${userResult ? 3 : 1}px solid ${tone.border}` }}
+              className="min-h-[66px] rounded-[20px] px-3 py-2.5 flex items-center gap-2.5 text-left transition-all"
+            >
+              <span
+                className="w-[38px] h-[38px] rounded-xl flex items-center justify-center font-extrabold shrink-0"
+                style={{
+                  background: userResult ? tone.border : '#EDE6DB',
+                  color: userResult ? '#FFFFFF' : '#6B665E',
+                }}
               >
-                Sonraki Saha Senaryosu →
-              </button>
-            </div>
-          </div>
-        )}
+                {'ABCD'[i]}
+              </span>
+              <div className="flex-grow grid grid-cols-3 gap-1.5">
+                {[opt.settings.f, opt.settings.s, opt.settings.iso].map((v, vi) => (
+                  <span
+                    key={vi}
+                    className="h-10 rounded-xl flex items-center justify-center font-extrabold text-[13px]"
+                    style={{ background: '#F7F4EE', color: '#1C1B19' }}
+                  >
+                    {v}
+                  </span>
+                ))}
+              </div>
+              {userResult && opt.isCorrect && <Check className="w-[22px] h-[22px] shrink-0" strokeWidth={3} style={{ color: CORRECT.border }} />}
+              {userResult && isSelected && !opt.isCorrect && <X className="w-[22px] h-[22px] shrink-0" strokeWidth={3} style={{ color: WRONG.border }} />}
+            </button>
+          );
+        })}
       </div>
+
+      {userResult && feedbackOption && (
+        <CheckBar correct={userResult.isCorrect} message={feedbackOption.feedback} onNext={handleNext} />
+      )}
     </div>
   );
 };
