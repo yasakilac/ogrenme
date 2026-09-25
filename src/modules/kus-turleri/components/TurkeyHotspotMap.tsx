@@ -24,8 +24,8 @@ type TileLayerType = 'voyager' | 'satellite' | 'osm';
 const TILE_LAYERS: Record<TileLayerType, { name: string; url: string; attribution: string }> = {
   voyager: {
     name: 'Doğa',
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, USGS, OpenStreetMap contributors, and the GIS User Community'
   },
   satellite: {
     name: 'Uydu',
